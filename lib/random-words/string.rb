@@ -21,4 +21,10 @@ class ::String
   def compress!
     dup.replace(compress)
   end
+
+  def terminate
+    terminators = %w[. . . ! ! ?]
+    terminator = terminators.sample
+    sub(/[.!?]*$/, terminator)
+  end
 end

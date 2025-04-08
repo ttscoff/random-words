@@ -4,34 +4,36 @@
 # Random Sentence Generator
 # This script generates random sentences using a variety of words and structures.
 # It includes nouns, verbs, adjectives, adverbs, articles, clauses, and more.
-
 class RandomWords
   attr_accessor :nouns, :verbs, :passive_verbs, :adverbs, :adjectives, :articles, :clauses, :subordinate_conjunctions,
                 :terminators, :numbers, :plural_nouns, :plural_verbs, :length, :paragraph_length, :plural_articles
+  attr_reader :source
 
   SENTENCE_PARTS = %w[random_article random_adjective random_noun random_adverb random_verb random_adjective
                       random_verb random_adverb].freeze
 
-  
+  def initialize(source = nil)
+    @source = source || :english
+    @nouns = from_file('nouns-singular.txt')
+    @plural_nouns = from_file('nouns-plural.txt')
+    @verbs = from_file('verbs-singular.txt')
+    @plural_verbs = from_file('verbs-plural.txt')
+    @passive_verbs = from_file('verbs-passive.txt')
+    @adverbs = from_file('adverbs.txt')
+    @adjectives = from_file('adjectives.txt')
+    @articles = from_file('articles-singular.txt')
+    @plural_articles = from_file('articles-plural.txt')
+    @clauses = from_file('clauses.txt')
+    @subordinate_conjunctions = from_file('conjunctions-subordinate.txt')
 
-  def initialize(source = :english)
-    @nouns = from_file("./words/#{source}/nouns-singular.txt")
-    @plural_nouns = from_file("./words/#{source}/nouns-plural.txt")
-    @verbs = from_file("./words/#{source}/verbs-singular.txt")
-    @plural_verbs = from_file("./words/#{source}/verbs-plural.txt")
-    @passive_verbs = from_file("./words/#{source}/verbs-passive.txt")
-    @adverbs = from_file("./words/#{source}/adverbs.txt")
-    @adjectives = from_file("./words/#{source}/adjectives.txt")
-    @articles = from_file("./words/#{source}/articles.txt")
-    @plural_articles = from_file("./words/#{source}/articles-plural.txt")
-    @clauses = from_file("./words/#{source}/clauses.txt")
-    @subordinate_conjunctions = from_file("./words/#{source}/conjunctions-subordinate.txt")
-
-    @terminators = %w[. . . ! ! ?]
-    @numbers = from_file("./words/#{source}/numbers.txt")
+    @numbers = from_file('numbers.txt')
     @length = :medium
     @paragraph_length = 5
     lengths
+  end
+
+  def source=(new_source)
+    initialize(new_source)
   end
 
   # Refactored lengths and lengths= methods
@@ -81,13 +83,13 @@ class RandomWords
         truncated = new_result[0...max].strip
         return truncated if truncated.length >= min
 
-        return truncated + random_terminator * (min - truncated.length)
+        return truncated.terminate * (min - truncated.length)
       end
 
       result = new_result
     end
 
-    result.strip + random_terminator * [0, min - result.length].max
+    result.strip.terminate * [0, min - result.length].max
   end
 
   def sentence
@@ -100,7 +102,7 @@ class RandomWords
 
   def generate_combined_sentence
     sentence = generate_sentence
-    return (sentence.capitalize + random_terminator).compress if sentence.length > define_length(@length)
+    return sentence.capitalize.terminate.compress if sentence.length > define_length(@length)
 
     while sentence.length < define_length(@length)
       # Generate a random number of sentences to combine
@@ -110,7 +112,7 @@ class RandomWords
       sentence = "#{sentence.strip}, #{random_conjunction} #{new_sentence}"
     end
 
-    (sentence.capitalize + random_terminator).compress
+    sentence.capitalize.terminate.compress
   end
 
   def generate_sentence(length = nil)
@@ -153,11 +155,12 @@ class RandomWords
 
   # Improved error handling for from_file
   def from_file(filename)
-    filename = File.expand_path(filename.sub(/\.txt$/, '') + '.txt')
+    filename = "#{filename.sub(/\.txt$/, '')}.txt"
+    path = File.join(__dir__, 'words', @source.to_s, filename)
 
-    filename = File.expand_path("./words/english/#{File.basename(filename)}") unless File.exist?(filename)
+    path = File.join(__dir__, 'words', 'english', filename) unless File.exist?(path)
 
-    File.read(File.expand_path(filename)).split("\n").map(&:strip) # Changed from split_lines to split("\n")
+    File.read(path).split("\n").map(&:strip) # Changed from split_lines to split("\n")
   rescue Errno::ENOENT
     warn "File not found: #{filename}"
     []
@@ -244,10 +247,6 @@ class RandomWords
 
   def random_subordinate_conjunction
     subordinate_conjunctions.sample
-  end
-
-  def random_terminator
-    terminators.sample
   end
 
   # Refactored generate_main_clause
