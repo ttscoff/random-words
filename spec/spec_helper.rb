@@ -1,19 +1,19 @@
 # frozen_string_literal: true
 
-# require "simplecov"
-# require "simplecov-console"
+require 'simplecov'
+require 'simplecov-console'
 
-# SimpleCov.start
+SimpleCov.start
 
-require "snibbets"
+require 'random-words'
 
-# SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
-#   SimpleCov::Formatter::HTMLFormatter,
-#   SimpleCov::Formatter::Console
-# ])
+SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
+                                                                 SimpleCov::Formatter::HTMLFormatter,
+                                                                 SimpleCov::Formatter::Console
+                                                               ])
 
 RSpec.configure do |config|
-  config.example_status_persistence_file_path = ".rspec_status"
+  config.example_status_persistence_file_path = '.rspec_status'
 
   config.disable_monkey_patching!
 

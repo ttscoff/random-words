@@ -7,15 +7,35 @@
 module RandomWords
   # Random character, word, and sentence generator
   class Generator
+    # @return [Array<String>] arrays of elements of speech
     attr_accessor :nouns, :verbs, :passive_verbs, :adverbs, :adjectives, :articles, :clauses, :subordinate_conjunctions,
-                  :terminators, :numbers, :plural_nouns, :plural_verbs, :sentence_length, :paragraph_length, :plural_articles
+                  :terminators, :numbers, :plural_nouns, :plural_verbs, :plural_articles
+
+    # @return [Integer] Number of sentences in paragraphs
+    attr_reader :paragraph_length
+
+    # @return [Symbol] Sentence length (:short, :medium, :long, :very_long)
+    attr_reader :sentence_length
+
+    # @return [Symbol] Dictionary in use
     attr_reader :source
 
+    # Define the default sentence parts
+    # These parts will be used to generate random sentences and character strings
     SENTENCE_PARTS = %w[random_article random_adjective random_noun random_adverb random_verb random_adjective
                         random_verb random_adverb].freeze
 
-    def initialize(source = nil, _options = {})
-      @source = source || :english
+    # Initialize the generator with a source and options
+    # @param source [Symbol] The source of the words (e.g., :english)
+    # @param _options [Hash] Options for the generator (e.g., length, paragraph_length)
+    # @example
+    #   generator = RandomWords::Generator.new(:english, sentence_length: :medium, paragraph_length: 5)
+    #   generator.source = :french
+    #   generator.lengths = { short: 50, medium: 150 }
+    #   generator.sentence_length = :long
+    #   generator.paragraph_length = 3
+    def initialize(source = :english, options = {})
+      @source = source
       @nouns = from_file('nouns-singular.txt')
       @plural_nouns = from_file('nouns-plural.txt')
       @verbs = from_file('verbs-singular.txt')
@@ -31,11 +51,94 @@ module RandomWords
       @numbers = from_file('numbers.txt')
 
       @options = {
-        length: :medium,
+        sentence_length: :medium,
         paragraph_length: 5
       }
-      @options.merge!(_options) if _options.is_a?(Hash)
+      @options.merge!(options) if options.is_a?(Hash)
+      @sentence_length = @options[:sentence_length]
+      @paragraph_length = @options[:paragraph_length]
       lengths
+    end
+
+    # Define number of sentences in paragraphs
+    # @param length [Integer] The number of sentences in the paragraph
+    def paragraph_length=(length)
+      raise ArgumentError, 'Paragraph length must be a positive integer' unless length.is_a?(Integer) && length.positive?
+
+      @paragraph_length = length
+    end
+
+    # Define sentence length
+    # @param length [Symbol] :short, :medium, :long, or :very_long
+    def sentence_length=(length)
+      to_set = case length.to_s
+               when /^s/
+                 :short
+               when /^m/
+                 :medium
+               when /^l/
+                 :long
+               when /^v/
+                 :very_long
+               else
+                 raise ArgumentError, "Invalid length: #{length}. Use :short, :medium, :long, or :very_long."
+               end
+      @sentence_length = to_set
+    end
+
+    # Bad init method for testing purposes
+    # @!visibility private
+    def bad_init
+      @nouns = from_file('nouns-noent.txt')
+    end
+
+    # define all lengths for testing purposes
+    # @!visibility private
+    def define_all_lengths
+      @lengths = {
+        short: 60,
+        medium: 200,
+        long: 300,
+        very_long: 500
+      }
+      res = []
+      res << define_length(:short)
+      res << define_length(:medium)
+      res << define_length(:long)
+      res << define_length(:very_long)
+      res
+    end
+
+    # Define a bad length for testing purposes
+    # @!visibility private
+    def bad_length
+      define_length(:bad_length)
+    end
+
+    # Test random generators
+    # These methods are used to test the random generation of words and sentences
+    # @!visibility private
+    def test_random
+      res = []
+      res << random_noun
+      res << random_verb
+      res << random_adjective
+      res << random_adverb
+      res << random_article
+      res << random_article_for_noun('apple')
+      res << random_article_for_noun('apples')
+      res << random_article_for_noun('banana')
+      res << random_article_for_noun('bananas')
+      res << random_plural_article
+      res << random_clause
+      res << random_subordinate_conjunction
+      res << random_number_with_plural
+      res << random_conjunction
+      res << random_passive_verb
+      res << random_plural_noun
+      res << random_plural_verb
+      res << generate_additional_clauses.join(' ')
+      res
     end
 
     # Define a new source dictionary and re-initialize
@@ -71,8 +174,10 @@ module RandomWords
     # Generate a set number of random words
     # @param number [Integer] The number of words to generate
     def words(number)
-      result = SENTENCE_PARTS.cycle.take(number).map { |part| send(part.to_sym) }
-      result.join(' ').compress.strip
+      result = SENTENCE_PARTS.cycle.take(number).map { |part| send(part.to_sym) }.take(number)
+      result.map do |word|
+        word.split(/ /).last
+      end.join(' ').compress
     end
 
     # Generate a series of random words up to a specified length
@@ -94,7 +199,7 @@ module RandomWords
       while result.length < max && result.length < min
         word = send(SENTENCE_PARTS[current_part].to_sym)
         current_part = (current_part + 1) % SENTENCE_PARTS.length
-        new_result = "#{result} #{word}".gsub(/\s+/, ' ').strip
+        new_result = "#{result} #{word}".compress
 
         return handle_overflow(OverflowConfig.new(new_result, result, min, max, whole_words, dead_switch)) if new_result.length > max
         return new_result if new_result.length == max
@@ -106,6 +211,7 @@ module RandomWords
     end
 
     # Generate a random sentence
+    # @param length [Integer] The desired length of the sentence in characters
     # @return [String] A randomly generated sentence
     def sentence(length = nil)
       generate_combined_sentence(length)
@@ -129,22 +235,28 @@ module RandomWords
     # @example
     #   generate_combined_sentence # Generates a combined sentence
     def generate_combined_sentence(length = nil)
-      length ||= define_length(@options[:sentence_length])
+      length ||= define_length(@sentence_length)
       sentence = generate_sentence
-      return sentence.capitalize.terminate.compress if sentence.length > length
+      return sentence.capitalize.compress.terminate if sentence.length > length
 
       while sentence.length < length
         # Generate a random number of sentences to combine
         new_sentence = generate_sentence(length / 2)
 
         # Combine the sentences with random conjunctions
-        sentence = "#{sentence.strip}, #{random_conjunction} #{new_sentence}"
+        sentence = "#{sentence.strip.no_term}, #{random_conjunction} #{new_sentence}"
       end
 
-      sentence.capitalize.terminate.compress
+      sentence.capitalize.compress.terminate
     end
 
-    def paragraph(length = @options[:paragraph_length])
+    # Generate a random paragraph
+    # @param length [Integer] The desired number of sentences in the paragraph
+    # @return [String] A randomly generated paragraph
+    # This method generates a random paragraph by combining multiple sentences.
+    # It uses the generate_combined_sentence method to create each sentence.
+    # @see #generate_combined_sentence
+    def paragraph(length = @paragraph_length)
       sentences = []
       length.times do
         sentences << generate_combined_sentence
@@ -158,15 +270,18 @@ module RandomWords
     OverflowConfig = Struct.new(:new_result, :result, :min, :max, :whole_words, :dead_switch)
 
     def handle_overflow(config)
-      needed = config.max - config.result.gsub(/\s+/, ' ').length - 1
-      options = nouns_of_length(needed)
-      return "#{config.result} #{options.sample}".gsub(/\s+/, ' ') unless options.empty?
+      needed = config.max - config.result.compress.length - 1
+      config.min = config.max if config.min > config.max
+      if needed > 1
+        options = nouns_of_length(needed)
+        return "#{config.result} #{options.sample}".compress unless options.empty?
+      end
 
       if config.whole_words
         return characters(config.min, config.max, whole_words: config.whole_words, dead_switch: config.dead_switch + 1)
       end
 
-      truncated = config.new_result.strip[0...config.max]
+      truncated = config.new_result.compress[0...config.max]
       truncated.strip if truncated.strip.length.between?(config.min, config.max)
     end
 
@@ -180,7 +295,7 @@ module RandomWords
     #   generate_sentence(100) # Generates a sentence with a length of 100 characters
     #   generate_sentence # Generates a sentence with the default length
     def generate_sentence(length = nil)
-      length ||= define_length(@options[:sentence_length])
+      length ||= define_length(@sentence_length)
       sentence_components = []
 
       # Randomly decide if we include a plural noun with a number
@@ -255,15 +370,6 @@ module RandomWords
       nouns.select { |word| word.length == length }
     end
 
-    # Generate a random noun with a specific length
-    # @param length [Integer] The desired length of the noun
-    # @return [String] A randomly selected noun with the specified length
-    # @example
-    #   random_noun_with_length(5) # Returns a random noun with a length of 5 characters
-    def random_noun_with_length(length)
-      nouns_of_length(length).sample
-    end
-
     # Generate a random conjunction
     # @return [String] A randomly selected conjunction
     # @example
@@ -278,9 +384,8 @@ module RandomWords
     # @example
     #   random_number_with_plural # Returns a string like "three cats"
     def random_number_with_plural
-      plural_noun = plural_nouns.sample
       number = numbers.sample
-      "#{number} #{plural_noun}"
+      "#{number} #{random_plural_noun}"
     end
 
     # Generate a random noun
@@ -389,11 +494,6 @@ module RandomWords
     # Simplified generate_additional_clauses
     def generate_additional_clauses
       Array.new(rand(1..2)) { random_clause }
-    end
-
-    # Added helper method for compressing and stripping
-    def compress_and_strip(text)
-      text.gsub(/\s+/, ' ').strip
     end
 
     # Roll a random number to determine if an action should occur
