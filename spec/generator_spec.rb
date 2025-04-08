@@ -130,4 +130,35 @@ RSpec.describe RandomWords::Generator do
       expect(generator.source).to eq(:corporate)
     end
   end
+
+  describe '#sentence_length=' do
+    it 'updates the sentence length' do
+      generator.sentence_length = :short
+      expect(generator.sentence_length).to eq(:short)
+
+      generator.sentence_length = :medium
+      expect(generator.sentence_length).to eq(:medium)
+
+      generator.sentence_length = :long
+      expect(generator.sentence_length).to eq(:long)
+
+      generator.sentence_length = :very_long
+      expect(generator.sentence_length).to eq(:very_long)
+    end
+
+    it "raises an error for invalid sentence length" do
+      expect { generator.sentence_length = :invalid }.to raise_error(ArgumentError)
+    end
+  end
+
+  describe '#paragraph_length=' do
+    it "updates the paragraph length" do
+      generator.paragraph_length = 3
+      expect(generator.paragraph_length).to eq(3)
+    end
+
+    it "raises an error for invalid paragraph length" do
+      expect { generator.paragraph_length = -1 }.to raise_error(ArgumentError)
+    end
+  end
 end

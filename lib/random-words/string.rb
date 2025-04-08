@@ -45,6 +45,12 @@ class ::String
   def terminate
     terminators = %w[. . . ! ! ?]
     terminator = terminators.sample
-    sub(/[.!?]*$/, terminator)
+    sub(/[.!?;,-]*$/, terminator)
+  end
+
+  # Remove any punctuation mark from the end of a string.
+  # @return [String] The string with the last punctuation mark removed.
+  def no_term
+    sub(/[.!?;,-]*$/, '')
   end
 end

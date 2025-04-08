@@ -11,8 +11,11 @@ module RandomWords
     attr_accessor :nouns, :verbs, :passive_verbs, :adverbs, :adjectives, :articles, :clauses, :subordinate_conjunctions,
                   :terminators, :numbers, :plural_nouns, :plural_verbs, :plural_articles
 
-    # @return [Integer] Lengths
-    attr_accessor :sentence_length, :paragraph_length
+    # @return [Integer] Number of sentences in paragraphs
+    attr_reader :paragraph_length
+
+    # @return [Symbol] Sentence length (:short, :medium, :long, :very_long)
+    attr_reader :sentence_length
 
     # @return [Symbol] Dictionary in use
     attr_reader :source
@@ -31,8 +34,8 @@ module RandomWords
     #   generator.lengths = { short: 50, medium: 150 }
     #   generator.sentence_length = :long
     #   generator.paragraph_length = 3
-    def initialize(source = nil, _options = {})
-      @source = source || :english
+    def initialize(source = :english, options = {})
+      @source = source
       @nouns = from_file('nouns-singular.txt')
       @plural_nouns = from_file('nouns-plural.txt')
       @verbs = from_file('verbs-singular.txt')
@@ -51,8 +54,36 @@ module RandomWords
         sentence_length: :medium,
         paragraph_length: 5
       }
-      @options.merge!(_options) if _options.is_a?(Hash)
+      @options.merge!(options) if options.is_a?(Hash)
+      @sentence_length = @options[:sentence_length]
+      @paragraph_length = @options[:paragraph_length]
       lengths
+    end
+
+    # Define number of sentences in paragraphs
+    # @param length [Integer] The number of sentences in the paragraph
+    def paragraph_length=(length)
+      raise ArgumentError, 'Paragraph length must be a positive integer' unless length.is_a?(Integer) && length.positive?
+
+      @paragraph_length = length
+    end
+
+    # Define sentence length
+    # @param length [Symbol] :short, :medium, :long, or :very_long
+    def sentence_length=(length)
+      to_set = case length.to_s
+               when /^s/
+                 :short
+               when /^m/
+                 :medium
+               when /^l/
+                 :long
+               when /^v/
+                 :very_long
+               else
+                 raise ArgumentError, "Invalid length: #{length}. Use :short, :medium, :long, or :very_long."
+               end
+      @sentence_length = to_set
     end
 
     # Bad init method for testing purposes
@@ -204,19 +235,19 @@ module RandomWords
     # @example
     #   generate_combined_sentence # Generates a combined sentence
     def generate_combined_sentence(length = nil)
-      length ||= define_length(@options[:sentence_length])
+      length ||= define_length(@sentence_length)
       sentence = generate_sentence
-      return sentence.capitalize.terminate.compress if sentence.length > length
+      return sentence.capitalize.compress.terminate if sentence.length > length
 
       while sentence.length < length
         # Generate a random number of sentences to combine
         new_sentence = generate_sentence(length / 2)
 
         # Combine the sentences with random conjunctions
-        sentence = "#{sentence.strip}, #{random_conjunction} #{new_sentence}"
+        sentence = "#{sentence.strip.no_term}, #{random_conjunction} #{new_sentence}"
       end
 
-      sentence.capitalize.terminate.compress
+      sentence.capitalize.compress.terminate
     end
 
     # Generate a random paragraph
@@ -225,7 +256,7 @@ module RandomWords
     # This method generates a random paragraph by combining multiple sentences.
     # It uses the generate_combined_sentence method to create each sentence.
     # @see #generate_combined_sentence
-    def paragraph(length = @options[:paragraph_length])
+    def paragraph(length = @paragraph_length)
       sentences = []
       length.times do
         sentences << generate_combined_sentence
@@ -264,7 +295,7 @@ module RandomWords
     #   generate_sentence(100) # Generates a sentence with a length of 100 characters
     #   generate_sentence # Generates a sentence with the default length
     def generate_sentence(length = nil)
-      length ||= define_length(@options[:sentence_length])
+      length ||= define_length(@sentence_length)
       sentence_components = []
 
       # Randomly decide if we include a plural noun with a number

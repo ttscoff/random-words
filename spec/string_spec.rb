@@ -8,6 +8,23 @@ RSpec.describe String do
     end
   end
 
+  describe '.no_term' do
+    it 'removes punctuation from the end of a string' do
+      str = 'Hello World!'
+      expect(str.no_term).to eq('Hello World')
+    end
+
+    it 'handles strings with no punctuation' do
+      str = 'Hello World'
+      expect(str.no_term).to eq('Hello World')
+    end
+
+    it 'handles empty strings' do
+      str = ''
+      expect(str.no_term).to eq('')
+    end
+  end
+
   describe '.clean' do
     it 'removes unwanted characters and whitespace' do
       str = '  Hello, World!  '
