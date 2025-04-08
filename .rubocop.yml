@@ -1,0 +1,64 @@
+AllCops:
+  NewCops: enable
+
+# Offense count: 3
+# This cop supports safe autocorrection (--autocorrect).
+Lint/ScriptPermission:
+  Exclude:
+    - 'lib/random-words.rb'
+    - 'lib/random-words/loremipsum.rb'
+    - 'lib/random-words/string.rb'
+
+# Offense count: 1
+# This cop supports safe autocorrection (--autocorrect).
+# Configuration parameters: AutoCorrect.
+Lint/UselessAssignment:
+  Exclude:
+    - 'lib/random-words/loremipsum.rb'
+
+# Offense count: 3
+# Configuration parameters: AllowedMethods, AllowedPatterns, CountRepeatedAttributes.
+Metrics/AbcSize:
+  Max: 39
+
+# Offense count: 1
+# Configuration parameters: CountComments, CountAsOne.
+Metrics/ClassLength:
+  Max: 300
+
+# Offense count: 2
+# Configuration parameters: AllowedMethods, AllowedPatterns.
+Metrics/CyclomaticComplexity:
+  Max: 10
+
+# Offense count: 3
+# Configuration parameters: CountComments, CountAsOne, AllowedMethods, AllowedPatterns.
+Metrics/MethodLength:
+  Max: 50
+
+# Offense count: 1
+# Configuration parameters: AllowedMethods, AllowedPatterns.
+Metrics/PerceivedComplexity:
+  Max: 11
+
+# Offense count: 1
+# Configuration parameters: AllowedConstants.
+Style/Documentation:
+  Exclude:
+    - 'spec/**/*'
+    - 'test/**/*'
+    - 'lib/random-words/string.rb'
+
+# Offense count: 1
+# This cop supports unsafe autocorrection (--autocorrect-all).
+# Configuration parameters: RequireEnglish.
+# SupportedStyles: use_perl_names, use_english_names, use_builtin_english_names
+Style/SpecialGlobalVars:
+  EnforcedStyle: use_perl_names
+
+# Offense count: 1
+# This cop supports safe autocorrection (--autocorrect).
+# Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, AllowedPatterns, SplitStrings.
+# URISchemes: http, https
+Layout/LineLength:
+  Max: 135

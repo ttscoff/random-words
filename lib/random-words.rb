@@ -3,4 +3,4 @@
 
 require_relative 'random-words/version'
 require_relative 'random-words/string'
-require_relative 'random-words/loremipsum'
+require_relative 'random-words/generator'
