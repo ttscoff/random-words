@@ -20,6 +20,9 @@ module RandomWords
     # @return [Symbol] Dictionary in use
     attr_reader :source
 
+    # @return [Boolean] Testing mode
+    attr_accessor :testing
+
     # Define the default sentence parts
     # These parts will be used to generate random sentences and character strings
     SENTENCE_PARTS = %w[random_article random_adjective random_noun random_adverb random_verb random_adjective
@@ -119,6 +122,7 @@ module RandomWords
     # These methods are used to test the random generation of words and sentences
     # @!visibility private
     def test_random
+      @testing = true
       res = []
       res << random_noun
       res << random_verb
@@ -190,18 +194,25 @@ module RandomWords
     #   characters(50) # Generates a string with at least 50 characters
     #   characters(50, 100) # Generates a string with between 50 and 100 characters
     #   characters(50, whole_words: false) # Generates a string with 50 characters allowing word truncation
-    def characters(min, max = nil, whole_words: true, dead_switch: 0)
+    def characters(min, max = nil, whole_words: true, whitespace: true, dead_switch: 0)
       result = ''
       max ||= min
       raise ArgumentError, 'Infinite loop detected' if dead_switch > 20
 
+      whole_words = false if dead_switch > 15
+
+      space = whitespace ? ' ' : ''
       current_part = 0
       while result.length < max && result.length < min
         word = send(SENTENCE_PARTS[current_part].to_sym)
+        word.gsub!(/ +/, '') unless whitespace
         current_part = (current_part + 1) % SENTENCE_PARTS.length
-        new_result = "#{result} #{word}".compress
+        new_result = "#{result}#{space}#{word}".compress
 
-        return handle_overflow(OverflowConfig.new(new_result, result, min, max, whole_words, dead_switch)) if new_result.length > max
+        if new_result.length > max
+          return handle_overflow(OverflowConfig.new(new_result, result, min, max, whole_words, whitespace,
+                                                    dead_switch))
+        end
         return new_result if new_result.length == max
 
         result = new_result
@@ -267,18 +278,21 @@ module RandomWords
     private
 
     # Handle overflow when the new result exceeds the maximum length
-    OverflowConfig = Struct.new(:new_result, :result, :min, :max, :whole_words, :dead_switch)
+    OverflowConfig = Struct.new(:new_result, :result, :min, :max, :whole_words, :whitespace, :dead_switch)
 
     def handle_overflow(config)
-      needed = config.max - config.result.compress.length - 1
+      space = config.whitespace ? ' ' : ''
+      needed = config.max - config.result.compress.length - space.length
       config.min = config.max if config.min > config.max
+
       if needed > 1
         options = nouns_of_length(needed)
-        return "#{config.result} #{options.sample}".compress unless options.empty?
+        return "#{config.result}#{space}#{options.sample}".compress unless options.empty?
       end
 
       if config.whole_words
-        return characters(config.min, config.max, whole_words: config.whole_words, dead_switch: config.dead_switch + 1)
+        return characters(config.min, config.max, whole_words: config.whole_words, whitespace: config.whitespace,
+                                                  dead_switch: config.dead_switch + 1)
       end
 
       truncated = config.new_result.compress[0...config.max]
@@ -445,6 +459,7 @@ module RandomWords
     #   random_article_for_noun('apple') # Returns 'an'
     def random_article_for_noun(noun)
       article = plural_nouns.include?(noun) ? random_plural_article : random_article
+      article = 'an' if @testing
       if noun.start_with?(/[aeiou]/i) && article =~ /^an?$/
         article = 'an' if article == 'a'
       elsif article == 'an'

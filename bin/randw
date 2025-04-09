@@ -1,0 +1,334 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../lib/random-words'
+require 'optparse'
+
+module RandomWords
+  class Terminal
+    def initialize(source = :english)
+      # Create an instance of the generator
+      @sentence_generator = RandomWords::Generator.new(source)
+      @colors = {
+        text: :yellow,
+        counter: :boldcyan,
+        marker: :boldgreen,
+        bracket: :cyan
+      }
+    end
+
+    def colors
+      {
+        black: 30,
+        red: 31,
+        green: 32,
+        yellow: 33,
+        blue: 34,
+        magenta: 35,
+        cyan: 36,
+        white: 37,
+        boldblack: '1;30',
+        boldred: '1;31',
+        boldgreen: '1;32',
+        boldyellow: '1;33',
+        boldblue: '1;34',
+        boldmagenta: '1;35',
+        boldcyan: '1;36',
+        boldwhite: '1;37',
+        reset: 0
+      }
+    end
+
+    def colorize_text(text, color)
+      color_code = colors[color]
+
+      "\e[#{color_code}m#{text}\e[0m"
+    end
+
+    def header_1(text)
+      puts colorize_text("\n\n#{text}", :boldgreen)
+      puts colorize_text('=' * text.length, :boldgreen)
+      puts "\n"
+    end
+
+    def header_2(text)
+      puts colorize_text("\n\n#{text}", :boldyellow)
+      puts colorize_text('-' * text.length, :boldyellow)
+      puts "\n"
+    end
+
+    def paragraphs(length, count = 3)
+      @sentence_generator.sentence_length = length
+      @sentence_generator.paragraph_length = count
+
+      header_2("Random Paragraph (#{@sentence_generator.paragraph_length} #{@sentence_generator.sentence_length} sentences)")
+      graf = @sentence_generator.paragraph
+      puts text(graf)
+      puts counter("#{graf.split(/ /).count} words, #{graf.length} characters")
+    end
+
+    def sentence(length)
+      header_2("Random #{length} sentence")
+      @sentence_generator.sentence_length = length
+      s = @sentence_generator.sentence
+      puts text(s)
+      puts counter("#{s.split(/ /).count} words, #{s.length} characters")
+    end
+
+    # Generate and print random combined sentences
+    def combined_sentences(length = nil)
+      number_of_sentences = length || 3
+      header_1('Random Combined Sentences:')
+      @sentence_generator.sentences(number_of_sentences).each_with_index do |_sentence, _index|
+        puts text(sentence(:medium))
+      end
+    end
+
+    def random_sentences
+      header_1('Random Sentences')
+      @sentence_generator.lengths.keys.each do |length|
+        sentence(length)
+      end
+    end
+
+    def random_paragraphs
+      header_1('Random Paragraphs')
+      @sentence_generator.lengths.keys.each do |length|
+        paragraphs(length, 3)
+      end
+    end
+
+    # Generate and print specified number of words
+    def random_words
+      number_of_words = 10
+      header_1("#{number_of_words} Random Words")
+      s = @sentence_generator.words(number_of_words)
+      puts "#{marker} #{text(s)}  "
+      puts counter("#{s.split(/ /).count} words, #{s.length} characters")
+    end
+
+    # Generate and print specified number of characters
+    def random_characters
+      header_1('Random Characters (exact length)')
+      [20, 50, 120, 200].each do |i|
+        chars = @sentence_generator.characters(i, whole_words: true)
+        puts "#{marker} #{colorize_text("#{i}:", :boldwhite)} #{text(chars)} #{counter(chars.length)}"
+      end
+
+      # Generate and print specified number of characters
+      max_characters = [15, 25, 53, 110, 600]
+      min_characters = [10, 20, 50, 100, 500]
+      header_1('Random Characters (length range)')
+      max_characters.count.times do |i|
+        chars = @sentence_generator.characters(min_characters[i], max_characters[i], whole_words: true)
+        range = "#{marker} #{colorize_text("[#{min_characters[i]}-#{max_characters[i]}]: ", :boldwhite)}"
+        puts "#{range}#{text(chars)} #{counter(chars.length)}"
+      end
+    end
+
+    def marker
+      colorize_text('•', @colors[:marker])
+    end
+
+    def text(text)
+      colorize_text(text, @colors[:text])
+    end
+
+    def counter(length)
+      "#{colorize_text('[',
+                       @colors[:bracket])}#{colorize_text("#{length}", @colors[:counter])}#{colorize_text(']', @colors[:bracket])}"
+    end
+
+    def print_test
+      combined_sentences(3)
+      random_sentences
+      random_paragraphs
+      random_words
+      random_characters
+    end
+  end
+end
+
+@options = {
+  source: :latin,
+  length: :medium,
+  paragraph_length: 3,
+  count: 1,
+  method: nil,
+  debug: false,
+  whitespace: true,
+  separator: ' '
+}
+
+OptionParser.new do |opts|
+  opts.banner = 'Usage: randw [options]'
+
+  opts.separator 'Options:'
+
+  opts.on('-S', '--source [SOURCE]', 'Specify the source language (default: latin)') do |source|
+    @options[:source] = case source
+                        when /^e/
+                          :english
+                        when /^l/
+                          :latin
+                        when /^(co|pro)/
+                          :corporate
+                        when /^(me|ba|ca)/
+                          :bacon
+                        else
+                          :latin
+                        end
+  end
+
+  opts.on('-l', '--length [short|medium|long|very_long]', 'Specify the length of the sentence') do |length|
+    @options[:length] = case length
+                        when /^s/
+                          :short
+                        when /^l/
+                          :long
+                        when /^v/
+                          :very_long
+                        else
+                          :medium
+                        end
+  end
+
+  opts.on('--graf-length [NUMBER]', 'Specify the number of sentences in a paragraph') do |length|
+    @options[:paragraph_length] = length.to_i
+  end
+
+  opts.on('-s', '--sentences [NUMBER]', 'Generate random sentences') do |number|
+    @options[:method] = :sentences
+    @options[:count] = number.to_i
+  end
+
+  opts.on('-p', '--paragraphs [NUMBER]', 'Generate random paragraphs') do |number|
+    @options[:method] = :paragraphs
+    @options[:count] = number
+  end
+
+  opts.on('-w', '--words [NUMBER]', 'Generate random words') do |number|
+    @options[:method] = :words
+    @options[:count] = number
+  end
+
+  opts.on('-c', '--characters [NUMBER]', 'Generate random characters') do |number|
+    @options[:method] = :characters
+    @options[:count] = number
+  end
+
+  opts.on('--password', 'Generate a random password') do
+    @options[:method] = :password
+    @options[:count] = 20
+  end
+
+  opts.on('--separator [CHAR]', 'Specify the separator character for the password') do |separator|
+    @options[:separator] = separator
+  end
+
+  opts.on('-n', '--no-whitespace', 'Specify whether to remove whitespace in generated text (characters only)') do
+    @options[:whitespace] = false
+  end
+
+  opts.on('-d', '--debug', 'Enable debug mode, displays sentence/word/character counts') do
+    @options[:debug] = true
+  end
+
+  opts.on('-h', '--help', 'Display this help message') do
+    puts opts
+    exit
+  end
+
+  opts.on('-v', '--version', 'Display the version') do
+    puts "RandomWords v#{RandomWords::VERSION}"
+    exit
+  end
+
+  opts.on('-t', '--test', 'Run the full debug test') do
+    @options[:method] = :test
+    @options[:debug] = true
+  end
+end.parse!
+
+def debug(msg)
+  return unless @options[:debug]
+
+  # length = msg.length
+  # message = RandomWords::Terminal.new.colorize_text(msg, :boldblack)
+  # puts RandomWords::Terminal.new.colorize_text('-' * length, :boldblack)
+  # puts message
+  # puts RandomWords::Terminal.new.colorize_text('-' * length, :boldblack)
+  warn RandomWords::Terminal.new.colorize_text(" [#{msg}]", :cyan)
+end
+
+@rw = RandomWords::Generator.new(@options[:source])
+@rw.sentence_length = @options[:length] || :medium
+@rw.paragraph_length = @options[:paragraph_length] || 3
+@options[:count] = @options[:count].to_i
+
+case @options[:method]
+when :sentences
+  total = {
+    sentences: @options[:count],
+    words: 0,
+    characters: 0
+  }
+  @options[:count].times do
+    s = @rw.sentence
+    total[:words] += s.split(/ /).count
+    total[:characters] += s.length
+    print s
+    debug "#{s.split(/ /).count}w, #{s.length}c"
+  end
+  debug "Total: #{total[:sentences]}s, #{total[:words]}w, #{total[:characters]}c"
+when :paragraphs
+  total = {
+    sentences: 0,
+    words: 0,
+    characters: 0
+  }
+  @options[:count].times do
+    p = @rw.paragraph
+    total[:sentences] += p.scan(/[?.!]/).count
+    total[:words] += p.split(/ /).count
+    total[:characters] += p.length
+    print p
+    debug "#{p.scan(/[?.!]/).count}s, #{p.split(/ /).count}w, #{p.length}c"
+    puts "\n\n"
+  end
+  debug "Total: #{total[:sentences]}s, #{total[:words]}w, #{total[:characters]}c"
+when :words
+  w = @rw.words(@options[:count])
+  print w
+  debug "#{w.split(/ /).count}w, #{w.length}c"
+when :characters
+  c = @rw.characters(@options[:count], whitespace: @options[:whitespace])
+  print c
+  debug "#{c.split(/ /).count}w, #{c.length}c"
+when :password
+  p = @rw.characters(20, whitespace: @options[:whitespace])
+
+  m = p.match(/[oleat]/i)
+  if m
+    num_char = m.begin(0)
+    char = m[0].tr('oleat', '01347')
+  else
+    num_char = p.length
+    char = rand(10).to_s
+  end
+  p[num_char] = char
+
+  cap_char = rand(20)
+  cap_char = rand(20) while p[cap_char] == ' '
+  p[cap_char] = p[cap_char].upcase
+
+  tail_char = p =~ /[^a-z0-9]/i ? '' : %w[! @ # $ % ^ & * ( ) _ + - = ; : < > , . ? /].sample
+
+  print p.gsub(/ /, @options[:separator]) + tail_char
+  debug "#{p.split(@options[:separator]).count}w, #{p.length}c"
+when :test
+  t = RandomWords::Terminal.new(@options[:source])
+  t.print_test
+else
+  puts 'Please specify a valid method: sentences, paragraphs, words, or characters.'
+end
