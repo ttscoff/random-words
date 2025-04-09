@@ -1,5 +1,4 @@
-# RandomWords
-<!--README-->
+
 
 [![RubyGems.org](https://img.shields.io/gem/v/snibbets)](https://rubygems.org/gems/snibbets)
 
@@ -89,4 +88,3 @@ rw.source
 rw.paragraph_length
 rw.sentence_length
 ```
-<!--END README-->
