@@ -22,6 +22,47 @@ class ::String
     gsub(/[^-a-zA-Z0-9\s]/, '').strip
   end
 
+  # Captialize instances of "i" in a string.
+  # @return [String] The string with "i" capitalized.
+  # @example
+  #   "this is an i".capitalize_i # => "this is an I"
+  # @example
+  #   "this is an iPhone".capitalize_i # => "this is an iPhone"
+  #
+  def capitalize_i
+    gsub(/\bi\b/, 'I')
+  end
+
+  # Capitalize the first letter of a string.
+  # @return [String] The string with the first letter capitalized.
+  # @example
+  #  "hello world".capitalize # => "Hello world"
+  def capitalize
+    letters = split('')
+    string = []
+    while letters[0] =~ /[:word:]/
+      string << letters.shift
+    end
+    string << letters.shift.upcase
+    string.concat(letters)
+    string.join("")
+  end
+
+  # Remove duplicate commas
+  # @return [String] The string with duplicate commas removed.
+  # @example
+  #  "Hello, , World!".remove_duplicate_commas # => "Hello, World!"
+  def dedup_commas
+    gsub(/(, +)+/, ',').gsub(/,/, ', ')
+  end
+
+  # Generate a sentence with capitalization and terminator
+  # @param terminator [Array<String>] An array of beginning and ending punctuation marks.
+  # @return [String] The string with a random punctuation mark at the end.
+  def to_sent(terminator)
+    capitalize.compress.capitalize_i.dedup_commas.terminate(terminator)
+  end
+
   # Split a string by newlines, clean each line, and remove empty lines.
   # @return [Array<String>] The string split into lines, cleaned, and empty lines removed.
   # @example
@@ -38,14 +79,13 @@ class ::String
   end
 
   # Terminate a string with a random punctuation mark.
+  # @param terminator [Array<String>] An array of beginning and ending punctuation marks.
   # @return [String] The string with a random punctuation mark at the end.
   # @example
-  #   "Hello World".terminate # => "Hello World."
+  #   "Hello World".terminate(["", "."]) # => "Hello World."
   #
-  def terminate
-    terminators = %w[. . . ! ! ?]
-    terminator = terminators.sample
-    sub(/[.!?;,-]*$/, terminator)
+  def terminate(terminator)
+    sub(/^[a-z0-9]*/, terminator[0]).sub(/[^a-z0-9]*$/i, terminator[1])
   end
 
   # Remove any punctuation mark from the end of a string.

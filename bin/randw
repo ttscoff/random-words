@@ -13,8 +13,10 @@ module RandomWords
         text: :yellow,
         counter: :boldcyan,
         marker: :boldgreen,
-        bracket: :cyan
+        bracket: :cyan,
+        language: :boldmagenta
       }
+      @sources = @sentence_generator.sources.keys.map(&:to_s)
     end
 
     def colors
@@ -60,6 +62,7 @@ module RandomWords
     def paragraphs(length, count = 3)
       @sentence_generator.sentence_length = length
       @sentence_generator.paragraph_length = count
+      @sentence_generator.source = @sources.sample
 
       header_2("Random Paragraph (#{@sentence_generator.paragraph_length} #{@sentence_generator.sentence_length} sentences)")
       graf = @sentence_generator.paragraph
@@ -77,40 +80,55 @@ module RandomWords
 
     # Generate and print random combined sentences
     def combined_sentences(length = nil)
-      number_of_sentences = length || 3
+      number_of_sentences = length || 2
+
       header_1('Random Combined Sentences:')
-      @sentence_generator.sentences(number_of_sentences).each_with_index do |_sentence, _index|
-        puts text(sentence(:medium))
+      @sources.count.times do |i|
+        @sentence_generator.source = @sources[i]
+        @sentence_generator.sentence_length = :medium
+        @sentence_generator.paragraph_length = number_of_sentences
+        @sentence_generator.sentences(number_of_sentences)
+        s = @sentence_generator.sentence
+        puts "#{marker} #{text(s)}"
+        puts counter("#{s.split(/ /).count} words, #{s.length} characters")
+        puts colorize_text(' ' * 2, :boldwhite)
       end
     end
 
     def random_sentences
       header_1('Random Sentences')
-      @sentence_generator.lengths.keys.each do |length|
+      @sentence_generator.lengths.keys.each_with_index  do |length, index|
+        @sentence_generator.source = @sources[index]
         sentence(length)
       end
     end
 
     def random_paragraphs
       header_1('Random Paragraphs')
-      @sentence_generator.lengths.keys.each do |length|
+      @sentence_generator.lengths.keys.each_with_index do |length, index|
+        @sentence_generator.source = @sources[index]
         paragraphs(length, 3)
       end
     end
 
     # Generate and print specified number of words
     def random_words
-      number_of_words = 10
+      number_of_words = [5, 10, 20, 50, 100]
       header_1("#{number_of_words} Random Words")
-      s = @sentence_generator.words(number_of_words)
-      puts "#{marker} #{text(s)}  "
-      puts counter("#{s.split(/ /).count} words, #{s.length} characters")
+      @sources.each_with_index do |source, index|
+        header_2("#{number_of_words[index]} Random Words")
+        @sentence_generator.source = source
+        s = @sentence_generator.words(number_of_words[index])
+        puts "#{marker} #{text(s)}  "
+        puts counter("#{s.split(/ /).count} words, #{s.length} characters")
+      end
     end
 
     # Generate and print specified number of characters
     def random_characters
       header_1('Random Characters (exact length)')
-      [20, 50, 120, 200].each do |i|
+      [20, 50, 120, 200, 500].each_with_index do |i, index|
+        @sentence_generator.source = @sources[index]
         chars = @sentence_generator.characters(i, whole_words: true)
         puts "#{marker} #{colorize_text("#{i}:", :boldwhite)} #{text(chars)} #{counter(chars.length)}"
       end
@@ -118,8 +136,10 @@ module RandomWords
       # Generate and print specified number of characters
       max_characters = [15, 25, 53, 110, 600]
       min_characters = [10, 20, 50, 100, 500]
+
       header_1('Random Characters (length range)')
       max_characters.count.times do |i|
+        @sentence_generator.source = @sources[i]
         chars = @sentence_generator.characters(min_characters[i], max_characters[i], whole_words: true)
         range = "#{marker} #{colorize_text("[#{min_characters[i]}-#{max_characters[i]}]: ", :boldwhite)}"
         puts "#{range}#{text(chars)} #{counter(chars.length)}"
@@ -134,9 +154,16 @@ module RandomWords
       colorize_text(text, @colors[:text])
     end
 
+    def language
+      "#{colorize_text("(",
+                       @colors[:bracket])}#{colorize_text("#{@sentence_generator.source}", @colors[:language])}#{colorize_text(")",
+                       @colors[:bracket])}"
+
+    end
+
     def counter(length)
-      "#{colorize_text('[',
-                       @colors[:bracket])}#{colorize_text("#{length}", @colors[:counter])}#{colorize_text(']', @colors[:bracket])}"
+      "#{colorize_text("[",
+                       @colors[:bracket])}#{colorize_text("#{length}", @colors[:counter])}#{colorize_text("]", @colors[:bracket])} #{language}"
     end
 
     def print_test
@@ -160,24 +187,43 @@ end
   separator: ' '
 }
 
+def transform_source(source)
+  case source
+  when /^(lat|lor)/i
+    :latin
+  when /^(eng|en)/i
+    :english
+  when /^(bac|mea)/i
+    :bacon
+  when /^veg/
+    :veggie
+  when /^(cor|prod)/i
+    :corporate
+  else
+    source
+  end
+end
+
 OptionParser.new do |opts|
   opts.banner = 'Usage: randw [options]'
 
   opts.separator 'Options:'
 
   opts.on('-S', '--source [SOURCE]', 'Specify the source language (default: latin)') do |source|
-    @options[:source] = case source
-                        when /^e/
-                          :english
-                        when /^l/
-                          :latin
-                        when /^(co|pro)/
-                          :corporate
-                        when /^(me|ba|ca)/
-                          :bacon
-                        else
-                          :latin
-                        end
+    @rw = RandomWords::Generator.new(:latin)
+    new_source = nil
+    @rw.sources.each do |k, v|
+      v.names.each do |name|
+        next unless name.to_s =~ /^#{source}/i
+
+        new_source = v.name
+        break
+      end
+
+      break if new_source
+    end
+    new_source ||= transform_source(source).to_sym
+    @options[:source] = new_source
   end
 
   opts.on('-l', '--length [short|medium|long|very_long]', 'Specify the length of the sentence') do |length|
@@ -230,6 +276,25 @@ OptionParser.new do |opts|
     @options[:whitespace] = false
   end
 
+  opts.separator 'Dictionaries:'
+
+  opts.on('--list-dictionaries', 'List available dictionaries') do
+    @rw = RandomWords::Generator.new(:latin)
+
+    @rw.sources.each do |k, v|
+      puts "#{v.name}: #{v.description}"
+      puts "triggers: (#{v.names.join(", ")})"
+      puts
+    end
+    Process.exit 0
+  end
+
+  opts.on('--create-dictionary [NAME]', 'Create a new dictionary') do |name|
+    @rw = RandomWords::Generator.new(:latin)
+    @rw.create_dictionary(name)
+    Process.exit 0
+  end
+
   opts.on('-d', '--debug', 'Enable debug mode, displays sentence/word/character counts') do
     @options[:debug] = true
   end
@@ -273,13 +338,13 @@ when :sentences
     words: 0,
     characters: 0
   }
-  @options[:count].times do
-    s = @rw.sentence
+  # @options[:count].times do
+    s = @rw.sentences(@options[:count]).join(' ')
     total[:words] += s.split(/ /).count
     total[:characters] += s.length
     print s
     debug "#{s.split(/ /).count}w, #{s.length}c"
-  end
+  # end
   debug "Total: #{total[:sentences]}s, #{total[:words]}w, #{total[:characters]}c"
 when :paragraphs
   total = {
@@ -308,10 +373,10 @@ when :characters
 when :password
   p = @rw.characters(20, whitespace: @options[:whitespace])
 
-  m = p.match(/[oleat]/i)
+  m = p.match(/[oleats]/i)
   if m
     num_char = m.begin(0)
-    char = m[0].tr('oleat', '01347')
+    char = m[0].tr('oleats', '013475')
   else
     num_char = p.length
     char = rand(10).to_s
@@ -319,7 +384,7 @@ when :password
   p[num_char] = char
 
   cap_char = rand(20)
-  cap_char = rand(20) while p[cap_char] == ' '
+  cap_char = rand(20) while p[cap_char] !~ /[a-z]/
   p[cap_char] = p[cap_char].upcase
 
   tail_char = p =~ /[^a-z0-9]/i ? '' : %w[! @ # $ % ^ & * ( ) _ + - = ; : < > , . ? /].sample

@@ -1,0 +1,4 @@
+---
+name: latin
+description: Latin words, more traditional Lorem Ipsum
+triggers: [latin, lorem, ipsum]

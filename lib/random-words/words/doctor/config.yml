@@ -1,0 +1,10 @@
+---
+name: doctor
+triggers:
+- doctor
+- medical
+- medicine
+- health
+- physician
+- nurse
+description: User dictionary for doctor

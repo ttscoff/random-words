@@ -8,8 +8,9 @@ module RandomWords
   # Random character, word, and sentence generator
   class Generator
     # @return [Array<String>] arrays of elements of speech
-    attr_accessor :nouns, :verbs, :passive_verbs, :adverbs, :adjectives, :articles, :clauses, :subordinate_conjunctions,
-                  :terminators, :numbers, :plural_nouns, :plural_verbs, :plural_articles
+    attr_reader :nouns, :verbs, :passive_verbs, :adverbs, :adjectives, :articles, :clauses, :subordinate_conjunctions,
+                  :terminators, :numbers, :plural_nouns, :plural_verbs, :plural_articles, :prepositions, :coordinating_conjunctions,
+                  :all_words
 
     # @return [Integer] Number of sentences in paragraphs
     attr_reader :paragraph_length
@@ -20,8 +21,8 @@ module RandomWords
     # @return [Symbol] Dictionary in use
     attr_reader :source
 
-    # @return [Boolean] Testing mode
-    attr_accessor :testing
+    # @return [Array] List of available sources
+    attr_reader :sources
 
     # Define the default sentence parts
     # These parts will be used to generate random sentences and character strings
@@ -38,20 +39,27 @@ module RandomWords
     #   generator.sentence_length = :long
     #   generator.paragraph_length = 3
     def initialize(source = :english, options = {})
+      @tested = []
+      @config = RandomWords::Config.new(source)
       @source = source
-      @nouns = from_file('nouns-singular.txt')
-      @plural_nouns = from_file('nouns-plural.txt')
-      @verbs = from_file('verbs-singular.txt')
-      @plural_verbs = from_file('verbs-plural.txt')
-      @passive_verbs = from_file('verbs-passive.txt')
-      @adverbs = from_file('adverbs.txt')
-      @adjectives = from_file('adjectives.txt')
-      @articles = from_file('articles-singular.txt')
-      @plural_articles = from_file('articles-plural.txt')
-      @clauses = from_file('clauses.txt')
-      @subordinate_conjunctions = from_file('conjunctions-subordinate.txt')
 
-      @numbers = from_file('numbers.txt')
+      @nouns = @config.dictionary[:nouns]
+      @plural_nouns = @config.dictionary[:plural_nouns]
+      @verbs = @config.dictionary[:verbs]
+      @plural_verbs = @config.dictionary[:plural_verbs]
+      @passive_verbs = @config.dictionary[:passive_verbs]
+      @adverbs = @config.dictionary[:adverbs]
+      @adjectives = @config.dictionary[:adjectives]
+      @articles = @config.dictionary[:articles]
+      @plural_articles = @config.dictionary[:plural_articles]
+      @prepositions = @config.dictionary[:prepositions]
+      @clauses = @config.dictionary[:clauses]
+      @coordinating_conjunctions = @config.dictionary[:coordinating_conjunctions]
+      @subordinate_conjunctions = @config.dictionary[:subordinate_conjunctions]
+      @numbers = @config.dictionary[:numbers]
+      @sources = @config.sources
+      @terminators = @config.dictionary[:terminators]
+      @all_words = @config.dictionary[:all_words]
 
       @options = {
         sentence_length: :medium,
@@ -61,6 +69,10 @@ module RandomWords
       @sentence_length = @options[:sentence_length]
       @paragraph_length = @options[:paragraph_length]
       lengths
+    end
+
+    def create_dictionary(title)
+      @config.create_user_dictionary(title)
     end
 
     # Define number of sentences in paragraphs
@@ -89,20 +101,14 @@ module RandomWords
       @sentence_length = to_set
     end
 
-    # Bad init method for testing purposes
-    # @!visibility private
-    def bad_init
-      @nouns = from_file('nouns-noent.txt')
-    end
-
     # define all lengths for testing purposes
     # @!visibility private
     def define_all_lengths
       @lengths = {
-        short: 60,
-        medium: 200,
-        long: 300,
-        very_long: 500
+        short: 20,
+        medium: 60,
+        long: 100,
+        very_long: 300
       }
       res = []
       res << define_length(:short)
@@ -122,26 +128,32 @@ module RandomWords
     # These methods are used to test the random generation of words and sentences
     # @!visibility private
     def test_random
-      @testing = true
+      RandomWords.testing = true
       res = []
       res << random_noun
       res << random_verb
       res << random_adjective
       res << random_adverb
       res << random_article
-      res << random_article_for_noun('apple')
-      res << random_article_for_noun('apples')
-      res << random_article_for_noun('banana')
-      res << random_article_for_noun('bananas')
+      res << random_article_for_word('apple')
+      res << random_article_for_word('apples')
+      res << random_article_for_word('banana')
+      res << random_article_for_word('bananas')
       res << random_plural_article
       res << random_clause
       res << random_subordinate_conjunction
+      res << random_coordinating_conjunction
       res << random_number_with_plural
       res << random_conjunction
       res << random_passive_verb
       res << random_plural_noun
       res << random_plural_verb
+      res << random_preposition
+      res << random_prepositional_phrase
+      res << random_terminator.join(' ')
       res << generate_additional_clauses.join(' ')
+      res << words_of_length(5).join(' ')
+      res << nouns_of_length(5).join(' ')
       res
     end
 
@@ -153,9 +165,9 @@ module RandomWords
     # Refactored lengths and lengths= methods
     # This method returns the lengths of sentences
     # The default lengths are set to the following values:
-    # short: 60, medium: 200, long: 300, very_long: 500
+    # short: 20, medium: 60, long: 100, very_long: 300
     def lengths
-      @lengths ||= { short: 60, medium: 200, long: 300, very_long: 500 }
+      @lengths ||= { short: 20, medium: 60, long: 100, very_long: 300 }
     end
 
     # This method allows you to set new lengths for the sentences
@@ -248,7 +260,7 @@ module RandomWords
     def generate_combined_sentence(length = nil)
       length ||= define_length(@sentence_length)
       sentence = generate_sentence
-      return sentence.capitalize.compress.terminate if sentence.length > length
+      return sentence.to_sent(random_terminator) if sentence.length > length
 
       while sentence.length < length
         # Generate a random number of sentences to combine
@@ -258,7 +270,7 @@ module RandomWords
         sentence = "#{sentence.strip.no_term}, #{random_conjunction} #{new_sentence}"
       end
 
-      sentence.capitalize.compress.terminate
+      sentence.to_sent(random_terminator)
     end
 
     # Generate a random paragraph
@@ -282,11 +294,11 @@ module RandomWords
 
     def handle_overflow(config)
       space = config.whitespace ? ' ' : ''
-      needed = config.max - config.result.compress.length - space.length
+      needed = config.max - config.result.compress.length
+      needed -= space.length if needed > 0 && config.result.compress.length.positive?
       config.min = config.max if config.min > config.max
-
       if needed > 1
-        options = nouns_of_length(needed)
+        options = words_of_length(needed)
         return "#{config.result}#{space}#{options.sample}".compress unless options.empty?
       end
 
@@ -294,9 +306,9 @@ module RandomWords
         return characters(config.min, config.max, whole_words: config.whole_words, whitespace: config.whitespace,
                                                   dead_switch: config.dead_switch + 1)
       end
-
+      puts "made it"
       truncated = config.new_result.compress[0...config.max]
-      truncated.strip if truncated.strip.length.between?(config.min, config.max)
+      truncated.compress.length == config.max ? truncated.compress : nil
     end
 
     # Generate a random sentence with a specified length
@@ -313,7 +325,7 @@ module RandomWords
       sentence_components = []
 
       # Randomly decide if we include a plural noun with a number
-      sentence_components << random_number_with_plural if roll(20) # 20% chance to include a plural noun
+      sentence_components << random_number_with_plural if roll(10) # 10% chance to include a plural noun
 
       # Construct main clause
       sentence_components << generate_main_clause
@@ -321,38 +333,25 @@ module RandomWords
       # Include any additional clauses
       # sentence_components.concat(generate_additional_clauses)
 
-      # while sentence_components.join(' ').strip.length < length
-      #   # Randomly include a subordinate conjunction
-      #   additional_clauses = generate_additional_clauses
-      #   sentence_components.concat(additional_clauses)
-      #   sentence_components.map!(&:strip)
-      #   break if sentence_components.join(' ').length >= length
-
-      #   conjunction = random_subordinate_conjunction.strip
-      #   sentence_components.unshift(conjunction.capitalize) # Place conjunction at the start
-      # end
+      while sentence_components.join(' ').strip.length < length
+        # Randomly include a subordinate conjunction
+        additional_clauses = generate_additional_clauses
+        sentence_components.concat(additional_clauses)
+        sentence_components.map!(&:strip)
+        break if sentence_components.join(' ').length >= length
+        conjunction = if roll(50) || (RandomWords.testing && !RandomWords.tested.include?('subordinate_conjunction'))
+          RandomWords.tested << 'subordinate_conjunction' if RandomWords.testing
+          random_subordinate_conjunction.strip
+        else
+          RandomWords.tested << 'coordinating_conjunction' if RandomWords.testing
+          random_coordinating_conjunction.strip
+        end
+        # sentence_components.unshift(conjunction.capitalize) # Place conjunction at the start
+        sentence_components << conjunction unless conjunction.empty?
+      end
 
       # Join all parts into a single sentence
       sentence_components.join(' ').strip.compress
-    end
-
-    # Load words from a dictionary file
-    # Files are plain text with one word or phrase per line
-    # The @source variable defines which dictionary to be used and should be defined before calling this method
-    # @param filename [String] The name of the file to load
-    # @return [Array] An array of words loaded from the file
-    # @example
-    #   from_file('nouns.txt') # Loads words from words/[source]/nouns.txt
-    def from_file(filename)
-      filename = "#{filename.sub(/\.txt$/, '')}.txt"
-      path = File.join(__dir__, 'words', @source.to_s, filename)
-
-      path = File.join(__dir__, 'words', 'english', filename) unless File.exist?(path)
-
-      File.read(path).split("\n").map(&:strip) # Changed from split_lines to split("\n")
-    rescue Errno::ENOENT
-      warn "File not found: #{filename}"
-      []
     end
 
     # Convert a length symbol to a specific length value
@@ -384,6 +383,10 @@ module RandomWords
       nouns.select { |word| word.length == length }
     end
 
+    def words_of_length(length)
+      all_words.select { |word| word.length == length }
+    end
+
     # Generate a random conjunction
     # @return [String] A randomly selected conjunction
     # @example
@@ -398,8 +401,15 @@ module RandomWords
     # @example
     #   random_number_with_plural # Returns a string like "three cats"
     def random_number_with_plural
-      number = numbers.sample
-      "#{number} #{random_plural_noun}"
+      num = rand(1000)
+      number = num.to_word(@numbers)
+      if num == 1 || (RandomWords.testing && !RandomWords.tested.include?('random_noun'))
+        RandomWords.tested << 'random_noun' if RandomWords.testing
+        "#{number} #{random_noun}"
+      else
+        RandomWords.tested << 'random_plural_noun' if RandomWords.testing
+        "#{number} #{random_plural_noun}"
+      end
     end
 
     # Generate a random noun
@@ -456,11 +466,13 @@ module RandomWords
     # This method checks if the noun is plural and selects an appropriate article.
     # If the noun starts with a vowel, it uses 'an' instead of 'a'.
     # @example
-    #   random_article_for_noun('apple') # Returns 'an'
-    def random_article_for_noun(noun)
-      article = plural_nouns.include?(noun) ? random_plural_article : random_article
-      article = 'an' if @testing
-      if noun.start_with?(/[aeiou]/i) && article =~ /^an?$/
+    #   random_article_for_word('apple') # Returns 'an'
+    def random_article_for_word(word)
+      article = plural_nouns.include?(word) ? random_plural_article : random_article
+      # puts [word, article].inspect
+      article = 'an' if RandomWords.testing && !RandomWords.tested.include?('random_article_for_word')
+      RandomWords.tested << 'random_article_for_word' if RandomWords.testing
+      if word.start_with?(/[aeiou]/i) && article =~ /^an?$/
         article = 'an' if article == 'a'
       elsif article == 'an'
         article = 'a'
@@ -486,6 +498,41 @@ module RandomWords
       subordinate_conjunctions.sample
     end
 
+    # Generate a random coordinating conjunction
+    # @return [String] A randomly selected coordinating conjunction
+    def random_coordinating_conjunction
+      coordinating_conjunctions.sample
+    end
+
+    # Generate a random preposition
+    # @return [String] A randomly selected preposition
+    def random_preposition
+      prepositions.sample
+    end
+
+    # Generate a random prepositional phrase
+    # @return [String] A randomly generated prepositional phrase
+    # This method constructs a prepositional phrase using a random preposition and a random noun.
+    def random_prepositional_phrase
+      preposition = random_preposition
+      phrase = if roll(20) || (@testing && !@tested.include?('random_plural_article'))
+                 @tested << 'random_plural_article' if @testing
+                 "#{random_plural_article} #{random_number_with_plural}"
+               else
+                 @tested << 'random_article_for_word' if @testing
+                 noun = random_noun
+                 "#{random_article_for_word(noun)} #{noun}"
+               end
+
+      "#{preposition} #{phrase}"
+    end
+
+    # Generate a random terminator
+    # @return [Array] A randomly selected terminator pair
+    def random_terminator
+      terminators.sample
+    end
+
     # Generate a random main clause
     # @return [String] A randomly generated main clause
     # This method constructs a main clause using a random number of words.
@@ -495,15 +542,17 @@ module RandomWords
     # @example
     #   generate_main_clause # Returns a random main clause
     def generate_main_clause
-      beginning = if roll(50)
+
+      beginning = if roll(20)
                     "#{random_number_with_plural} #{random_adverb} #{random_plural_verb}"
                   else
                     noun = random_noun
-                    "#{random_article_for_noun(noun)} #{random_adjective} #{noun} #{random_adverb} #{random_verb}"
+                    adjective = random_adjective
+                    "#{random_article_for_word(noun)} #{adjective} #{noun} #{random_adverb} #{random_verb}"
                   end
-
-      tail = roll(20) ? ", #{random_clause}" : ''
-      "#{beginning.strip}#{tail.strip}"
+      tail = roll(50) ? " #{random_prepositional_phrase}" : ""
+      tail += roll(10) ? ", #{random_clause}" : ""
+      "#{beginning.strip.sub(/,?$/, ', ')}#{tail}"
     end
 
     # Simplified generate_additional_clauses

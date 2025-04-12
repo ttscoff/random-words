@@ -1,0 +1,105 @@
+artichoke
+arugula
+asparagus
+basket
+bean
+beet
+bell pepper
+bite
+bitter melon
+bok choy
+broccoli
+brussels sprout
+bunch
+bundle
+cabbage
+cabbage turnip
+carrot
+carton
+cauliflower
+celery
+chard
+chayote
+chile
+chili
+choice
+chunk
+collard green
+combination
+container
+corn
+course
+crop
+cucumber
+cuisine
+daikon
+dandelion green
+diet
+dish
+eggplant
+element
+endive
+fennel
+flavor
+fruit
+garlic
+garnish
+ginger
+green
+green bean
+helping
+herb
+herbicide
+ingredient
+jicama
+kale
+kohlrabi
+leek
+legume
+meal
+microgreen
+mineral
+mushroom
+mustard green
+nutrient
+offering
+onion
+package
+parsnip
+pea
+pea shoot
+pepper
+pesticide
+piece
+potato
+preparation
+pumpkin
+radish
+recipe
+root
+rutabaga
+salad
+sauce
+savoy cabbage
+scoop
+seaweed
+selection
+serving
+shallot
+slice
+snack
+snow pea
+spinach
+sprout
+squash
+sugar snap pea
+sweet potato
+taste
+tomato
+tuber
+turnip
+variety
+vegetable
+vitamin
+watercress
+zucchini

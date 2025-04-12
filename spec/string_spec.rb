@@ -42,7 +42,7 @@ RSpec.describe String do
   describe '.terminate' do
     it 'terminates a string with a random punctuation mark' do
       str = 'Hello World'
-      expect(str.terminate).to match(/Hello World[.!?]$/)
+      expect(str.terminate(["(", ")"])).to match(/\(Hello World\)$/)
     end
   end
 end
