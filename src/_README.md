@@ -1,15 +1,139 @@
-<!--README-->
 # RandomWords
+<!--README-->
+
+[![RubyGems.org](https://img.shields.io/gem/v/snibbets)](https://rubygems.org/gems/snibbets)
 
 A random text (Lorem Ipsum) generator.
 
-## Installation
+### Installation
 
     gem install random-words
 
-Depending on your setup, you may need `gem install --user-install random-words`, or in worst case scenario, `sudo gem install random-words`. You can also use `brew gem install random-words` if you use [Homebrew](https://brew.sh).
+Depending on your setup, you may need
+`gem install --user-install random-words`, or in
+worst case scenario, `sudo gem install random-words`.
+You can also use `brew gem install random-words` if
+you use [Homebrew](https://brew.sh).
 
-## Library
+### CLI
+
+The gem installs a binary `randw`. It can generate random characters, sentences, paragraphs, and passwords.
+
+```console
+Usage: randw [options]
+Options:
+    -S, --source [SOURCE]            Specify the source language (default: latin)
+    -l [short|medium|long|very_long],
+        --length                     Specify the length of the sentence
+        --graf-length [NUMBER]       Specify the number of sentences in a paragraph
+    -s, --sentences [NUMBER]         Generate random sentences
+    -p, --paragraphs [NUMBER]        Generate random paragraphs
+    -w, --words [NUMBER]             Generate random words
+    -c, --characters [NUMBER]        Generate random characters
+        --password                   Generate a random password
+        --separator [CHAR]           Specify the separator character for the password
+    -n, --no-whitespace              Specify whether to remove whitespace in generated text (characters only)
+Dictionaries:
+        --list-dictionaries          List available dictionaries
+        --create-dictionary [NAME]   Create a new dictionary
+    -d, --debug                      Enable debug mode, displays sentence/word/character counts
+    -h, --help                       Display this help message
+    -v, --version                    Display the version
+    -t, --test                       Run the full debug test
+```
+
+#### Creating A New Dictionary
+
+You can add your own sources for generating your random
+text. A dictionary is a directory containing several text
+files, one for each part of speech that RandomWords uses.
+All of the parts must exist. The directory name is the same
+as the name of the dictionary.
+
+User dictionaries must be stored in `~/.config/random-words/words/[NAME]`.
+
+The easiest way to generate a new language is to use the CLI:
+
+```console
+randw --create-dictionary [NAME]
+```
+
+Once this command is run, a new directory in
+`~/.config/random-words/words` will be created containing
+all of the necessary files with English defaults. Simply
+edit these files, and then you'll be able to call the
+language by its name (or triggers defined in the config, see
+below). If a language of the same name exists, missing files
+will be filled in, but existing files will not be
+overwritten.
+
+The necessary files are:
+
+```console
+adjectives.txt
+adverbs.txt
+articles-plural.txt
+articles-singular.txt
+clauses.txt
+config.yml
+conjunctions-coordinating.txt
+conjunctions-subordinate.txt
+nouns-plural.txt
+nouns-singular.txt
+numbers.txt
+prepositions.txt
+terminators.txt
+verbs-passive.txt
+verbs-plural.txt
+verbs-singular.txt
+```
+
+The `terminators.txt` file contains pairs of punctuation,
+separated by commas, one per line. If a sentene terminator
+doesn't have opening punctuation, start the line with a
+comma. More than one character can be used in either side of
+the pair. For example, to create a double quoted sentence
+with a period inside the closing quote, you would use:
+
+    ",."
+
+A blank line (or any line not containing a comma) will
+separate regular punctuation from extended punctuation. In
+the default file, `.`, `?`, and `!` are considered regular
+punctuation, and parenthesis and quotes are considered
+extended punctuation. Extended punctuation is off by
+default, but in the CLI can be enabled with `--extended`,
+and using the library you can include
+`use_extended_punctuation: true` in the options when
+initializing, or use `@rw.use_extended_punctuation = true`
+to set it after initializing.
+
+
+##### Language Configuration
+
+The `config.yml` file in a language directory is a simple
+YAML configuration. It contains the keys:
+
+```yaml
+---
+name: english
+description: English words
+triggers: [english]
+```
+
+A default configuration file will be created when running `--create-dictionary` with the CLI.
+
+- `name`: The name of the dictionary, which should be the same as the directory name in most cases
+- `description`: Just used for display when running `--list-dictionaries`
+- `triggers`: An array of triggers that can be used to trigger the language. For example, the `bacon` language has the triggers `[bacon, meat, carnivore]`, so you can use `randw -S meat` on the command line (or with the library).
+
+> RandomWords loosely uses English rules for sentence construction, so non-English languages will likely generate even more nonsensical strings.
+
+If you create a fun dictionary, please let me know (or make a PR) and I'll gladly include (most) new dictionaries in the main distribution.
+
+> The easiest way to get words is with AI. A ChatGPT prompt like "give me 100 plural nouns related to the medical profession, in plain text, one per line, sorted alphabetically" will get you a good list of words you can then just paste into `nouns-plural.txt` in your dictionary.
+
+### Library
 
 ```ruby
 require 'random-words'
@@ -62,29 +186,5 @@ rw.numbers
 rw.source
 rw.paragraph_length
 rw.sentence_length
-```
-
-## CLI
-
-The gem installs a binary `randw`. It can generate random characters, sentences, paragraphs, and passwords.
-
-```console
-Usage: randw [options]
-Options:
-    -S, --source [SOURCE]            Specify the source language (default: latin)
-    -l [short|medium|long|very_long],
-        --length                     Specify the length of the sentence
-        --graf-length [NUMBER]       Specify the number of sentences in a paragraph
-    -s, --sentences [NUMBER]         Generate random sentences
-    -p, --paragraphs [NUMBER]        Generate random paragraphs
-    -w, --words [NUMBER]             Generate random words
-    -c, --characters [NUMBER]        Generate random characters
-        --password                   Generate a random password
-        --separator [CHAR]           Specify the separator character for the password
-    -n, --no-whitespace              Specify whether to remove whitespace in generated text (characters only)
-    -d, --debug                      Enable debug mode, displays sentence/word/character counts
-    -h, --help                       Display this help message
-    -v, --version                    Display the version
-    -t, --test                       Run the full debug test
 ```
 <!--END README-->

@@ -1,0 +1,84 @@
+analyses
+anesthesiologists
+antibiotics
+antivirals
+appointments
+assessments
+associates
+associations
+billings
+certifications
+clinics
+colleagues
+community services
+conditions
+conferences
+consultations
+cultures
+databases
+devices
+diagnoses
+diagnostic tools
+doctors
+emergencies
+equipments
+evaluations
+forms
+guidelines
+healthcare systems
+hospitals
+injections
+innovations
+instruments
+insurance plans
+interventions
+journals
+laboratories
+licenses
+medications
+monitorings
+narratives
+networks
+nurses
+observations
+organizations
+outcomes
+outreach programs
+pathologies
+patients
+patients' families
+pharmacists
+policies
+prescriptions
+procedures
+professionals
+protocols
+publications
+radiologists
+records
+referrals
+regulations
+reimbursements
+researches
+samples
+scans
+specialties
+staffs
+standards
+studies
+support groups
+surgeons
+surgeries
+symposiums
+symptoms
+technologies
+tests
+therapies
+therapists
+treatments
+trials
+units
+vaccines
+volunteers
+wards
+workshops

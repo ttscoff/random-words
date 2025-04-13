@@ -62,3 +62,4 @@ Style/SpecialGlobalVars:
 # URISchemes: http, https
 Layout/LineLength:
   Max: 135
+  Exclude: bin/randw

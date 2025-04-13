@@ -1,0 +1,4 @@
+---
+name: alice
+description: Alice in Wonderland
+triggers: [alice,madhatter,wonderland]

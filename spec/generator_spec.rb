@@ -2,22 +2,23 @@
 
 RSpec.describe RandomWords::Generator do
   subject(:generator) { described_class.new }
+  subject(:opening_regex) {"[A-Z#{Regexp.escape(described_class.new.terminators.map { |t| t[0].split("").first }.delete_if(&:nil?).sort.uniq.join)}]"}
+  subject(:closing_regex) {"[#{Regexp.escape(described_class.new.terminators.map { |t| t[1].split("").last }.delete_if(&:nil?).sort.uniq.join)}]"}
+  subject(:sentence_regex) { Regexp.new("^#{opening_regex}.*?#{closing_regex}$") }
 
   describe '#initialize' do
     it 'creates a new generator with default values' do
       expect(generator.source).to eq(:english)
       expect(generator.lengths).to include(
-        short: 60,
-        medium: 200,
-        long: 300,
-        very_long: 500
+        short: 20,
+        medium: 60,
+        long: 100,
+        very_long: 300
       )
     end
-  end
 
-  describe '#bad_init' do
-    it 'returns empty array when bad filename is provided' do
-      expect(generator.bad_init).to be_empty
+    it 'initializes with use_extended_punctuation set to true' do
+      expect(described_class.new(:english, {use_extended_punctuation: true}).use_extended_punctuation).to be true
     end
   end
 
@@ -76,10 +77,10 @@ RSpec.describe RandomWords::Generator do
     it 'returns the lengths hash' do
       expect(generator.lengths).to be_a(Hash)
       expect(generator.lengths).to include(
-        short: 60,
-        medium: 200,
-        long: 300,
-        very_long: 500
+        short: 20,
+        medium: 60,
+        long: 100,
+        very_long: 300
       )
     end
 
@@ -88,14 +89,14 @@ RSpec.describe RandomWords::Generator do
     end
 
     it 'defines all lengths' do
-      expect(generator.define_all_lengths).to eq([60, 200, 300, 500])
+      expect(generator.define_all_lengths).to eq([20, 60, 100, 300])
     end
   end
 
   describe '#sentence' do
     it 'generates a valid sentence' do
       result = generator.sentence
-      expect(result).to match(/^[A-Z].*[.!?]$/)
+      expect(result).to match(sentence_regex)
     end
   end
 
@@ -104,7 +105,7 @@ RSpec.describe RandomWords::Generator do
       result = generator.sentences(3)
       expect(result).to be_an(Array)
       expect(result.length).to eq(3)
-      expect(result).to all(match(/^[A-Z].*[.!?]$/))
+      expect(result).to all(match(sentence_regex))
     end
   end
 
@@ -159,6 +160,69 @@ RSpec.describe RandomWords::Generator do
 
     it "raises an error for invalid paragraph length" do
       expect { generator.paragraph_length = -1 }.to raise_error(ArgumentError)
+    end
+  end
+
+  describe '#create_dictionary' do
+    it 'calls create_user_dictionary on config' do
+      generator = described_class.new
+      expect(generator.instance_variable_get(:@config)).to receive(:create_user_dictionary).with('test_dict')
+      generator.create_dictionary('test_dict')
+    end
+  end
+
+  describe '#generate_combined_sentence' do
+    it 'generates a valid sentence that matches sentence regex' do
+      result = generator.send(:generate_combined_sentence)
+      expect(result).to match(sentence_regex)
+    end
+
+    it 'generates sentence at requested length' do
+      result = generator.send(:generate_combined_sentence, 50)
+      expect(result.length).to be >= 50
+    end
+
+    it 'combines sentences when length is insufficient' do
+      short_result = generator.send(:generate_combined_sentence, 1000)
+      conjunctions = generator.coordinating_conjunctions.concat(generator.subordinate_conjunctions)
+      expect(short_result.scan(/,/).count).to be >= 1
+      expect(short_result.scan(/#{Regexp.union(conjunctions)}/).count).to be >= 1
+    end
+
+    it 'returns single sentence when length is sufficient' do
+      long_result = generator.send(:generate_combined_sentence, 1)
+      expect(long_result.scan(sentence_regex).count).to eq(1)
+    end
+
+    it 'properly capitalizes and terminates combined sentences' do
+      result = generator.send(:generate_combined_sentence)
+      expect(result).to match(sentence_regex)
+    end
+  end
+
+  describe "#use_extended_punctuation" do
+    it "raises an error if use_extended_punctuation is set to an invalid value" do
+      expect { generator.use_extended_punctuation = "invalid" }.to raise_error(ArgumentError)
+    end
+
+    it "returns a sentence with extended punctuation if use_extended_punctuation is true" do
+      generator.use_extended_punctuation = true
+      result = [generator.paragraph(10)]
+      10.times do
+        result << generator.paragraph(10)
+      end
+      result = result.join("\n\n")
+      expect(result).to match(/[()"']/)
+    end
+
+    it "returns a sentence without extended punctuation if use_extended_punctuation is false" do
+      generator.use_extended_punctuation = false
+      result = [generator.paragraph(10)]
+      10.times do
+        result << generator.paragraph(10)
+      end
+      result = result.join("\n\n")
+      expect(result).not_to match(/[()"']/)
     end
   end
 end

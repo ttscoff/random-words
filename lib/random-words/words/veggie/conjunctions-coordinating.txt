@@ -1,0 +1,20 @@
+after
+although
+and
+as
+because
+before
+but
+even though
+for
+if
+nor
+or
+since
+so
+unless
+until
+whereas
+whether
+while
+yet

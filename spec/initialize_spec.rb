@@ -2,7 +2,7 @@
 
 RSpec.describe RandomWords::Generator do
   describe '#initialize' do
-    subject(:generator) { described_class.new }
+    subject(:generator) { described_class.new(:english) }
 
     it 'sets default source to :english' do
       expect(generator.source).to eq(:english)
