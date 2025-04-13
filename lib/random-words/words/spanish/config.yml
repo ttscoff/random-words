@@ -1,4 +1,4 @@
 ---
-name: english
-description: English words
-triggers: [english]
+name: spanish
+description: Spanish words
+triggers: [spanish,espanol]

@@ -1,29 +1,16 @@
-although
-as
-as far as
-as if
-as long as
-as much as
-as though
-because
-before
-even if
-even though
-if
-in case
-in order that
-once
-provided that
-rather than
-since
-so that
-than
-that
-though
-until
-when
-whenever
-where
-wherever
-whether
-while
+a menos que
+a pesar de que
+aunque
+como
+cuando
+donde
+en caso de que
+hasta que
+mientras
+para que
+pues
+que
+si
+según
+aunque
+ya que

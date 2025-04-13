@@ -154,15 +154,10 @@ module RandomWords
         warn "Created #{target_file}"
       end
 
-
-
       if all_parts_of_speech?(lang_dir, lang) || (RandomWords.testing && !RandomWords.tested.include?('create_user_dictionary'))
         RandomWords.tested << 'create_user_dictionary'
         warn "Created #{lang} in #{lang_dir}"
         lang.to_sym
-      else
-        warn "Failed to create dictionary for #{lang}"
-        nil
       end
     end
 

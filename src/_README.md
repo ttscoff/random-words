@@ -9,7 +9,11 @@ A random text (Lorem Ipsum) generator.
 
     gem install random-words
 
-Depending on your setup, you may need `gem install --user-install random-words`, or in worst case scenario, `sudo gem install random-words`. You can also use `brew gem install random-words` if you use [Homebrew](https://brew.sh).
+Depending on your setup, you may need
+`gem install --user-install random-words`, or in
+worst case scenario, `sudo gem install random-words`.
+You can also use `brew gem install random-words` if
+you use [Homebrew](https://brew.sh).
 
 ### CLI
 
@@ -40,7 +44,11 @@ Dictionaries:
 
 #### Creating A New Dictionary
 
-You can add your own sources for generating your random text. A dictionary is a directory containing several text files, one for each part of speech that RandomWords uses. All of the parts must exist. The directory name is the same as the name of the dictionary.
+You can add your own sources for generating your random
+text. A dictionary is a directory containing several text
+files, one for each part of speech that RandomWords uses.
+All of the parts must exist. The directory name is the same
+as the name of the dictionary.
 
 User dictionaries must be stored in `~/.config/random-words/words/[NAME]`.
 
@@ -50,7 +58,14 @@ The easiest way to generate a new language is to use the CLI:
 randw --create-dictionary [NAME]
 ```
 
-Once this command is run, a new directory in `~/.config/random-words/words` will be created containing all of the necessary files with English defaults. Simply edit these files, and then you'll be able to call the language by its name (or triggers defined in the config, see below). If a language of the same name exists, missing files will be filled in, but existing files will not be overwritten.
+Once this command is run, a new directory in
+`~/.config/random-words/words` will be created containing
+all of the necessary files with English defaults. Simply
+edit these files, and then you'll be able to call the
+language by its name (or triggers defined in the config, see
+below). If a language of the same name exists, missing files
+will be filled in, but existing files will not be
+overwritten.
 
 The necessary files are:
 
@@ -73,9 +88,31 @@ verbs-plural.txt
 verbs-singular.txt
 ```
 
+The `terminators.txt` file contains pairs of punctuation,
+separated by commas, one per line. If a sentene terminator
+doesn't have opening punctuation, start the line with a
+comma. More than one character can be used in either side of
+the pair. For example, to create a double quoted sentence
+with a period inside the closing quote, you would use:
+
+    ",."
+
+A blank line (or any line not containing a comma) will
+separate regular punctuation from extended punctuation. In
+the default file, `.`, `?`, and `!` are considered regular
+punctuation, and parenthesis and quotes are considered
+extended punctuation. Extended punctuation is off by
+default, but in the CLI can be enabled with `--extended`,
+and using the library you can include
+`use_extended_punctuation: true` in the options when
+initializing, or use `@rw.use_extended_punctuation = true`
+to set it after initializing.
+
+
 ##### Language Configuration
 
-The `config.yml` file in a language directory is a simple YAML configuration. It contains the keys:
+The `config.yml` file in a language directory is a simple
+YAML configuration. It contains the keys:
 
 ```yaml
 ---

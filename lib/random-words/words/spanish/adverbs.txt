@@ -1,462 +1,87 @@
-abruptly
-absolutely
-accidentally
-accurately
-actually
-actually
-additionally
-adventurously
-adventurously
-affectionately
-alternatively
-alternatively
-anxiously
-anxiously
-appropriately
-arrhythmically
-artfully
-artificially
-assuredly
-attractively
-authentically
-automatically
-avertedly
-awkwardly
-babyishly
-badly
-barely
-beautifully
-belatedly
-bounding
-bravely
-briefly
-brightly
-brilliantly
-briskly
-calmly
-carefully
-carefully
-casually
-catastrophically
-cautiously
-certainly
-chaotically
-chaotically
-cheerfully
-cleanly
-clearly
-cleverly
-clumsily
-coherently
-colorfully
-commonly
-compassionately
-compassionately
-completely
-confidently
-constructively
-constructively
-contextually
-conveniently
-conventionally
-courageously
-courageously
-courageously
-creatively
-crucially
-cunningly
-curiously
-deceptively
-definitely
-deliberately
-delicately
-delicately
-delightfully
-delightfully
-dependably
-desperately
-devotedly
-diligently
-distinctly
-dramatically
-dramatically
-dramatically
-eagerly
-easily
-effectively
-effortfully
-effortlessly
-elegantly
-embarrassingly
-emotionally
-emotionally
-encouragingly
-endlessly
-energetically
-enormously
-enthusiastically
-equally
-eternally
-evenly
-eventually
-exceedingly
-exceedingly
-excessively
-excitedly
-exclusively
-explicitly
-explicitly
-extensively
-fabulously
-faithfully
-faithfully
-feelingly
-fervently
-fervently
-fiddlingly
-fiendishly
-firmly
-foolishly
-foolishly
-forcibly
-frequently
-frequently
-frustratingly
-fundamentally
-generously
-generously
-gently
-genuinely
-gloriously
-glowingly
-gracefully
-gracefully
-gradually
-habitually
-happily
-harmoniously
-harshly
-harshly
-hasn’t
-heroically
-holistically
-honestly
-honestly
-hopelessly
-horribly
-hostilely
-hostilely
-humbly
-humorously
-ignorantly
-immediately
-imperfectly
-impertinently
-imprecisely
-impressively
-inadequately
-inclusively
-inclusively
-incredibly
-incredibly
-innocently
-innocently
-instinctively
-insultingly
-intensely
-intentionally
-interestingly
-intriguingly
-invariably
-irrationally
-irrationally
-irresistibly
-irreverently
-irritably
-jauntily
-joyfully
-jubilantly
-keenly
-kindly
-knowingly
-knowingly
-lazily
-lightheartedly
-lightly
-likely
-logically
-loudly
-lovingly
-loyally
-luckily
-madly
-mainly
-majestically
-manipulatively
-manually
-masterfully
-meditatively
-merrily
-methodically
-meticulously
-mildly
-miraculously
-monotonously
-mysteriously
-naturally
-naturally
-neatly
-nervously
-nervously
-notoriously
-obscurely
-obviously
-obviously
-occasionally
-openly
-opportunely
-optimistically
-optimistically
-ordinarily
-ordinarily
-painfully
-passionately
-passively
-patiently
-peacefully
-peacefully
-permanently
-persistently
-playfully
-poetically
-politely
-politically
-poorly
-positively
-powerfully
-precisely
-presumably
-previously
-primarily
-proudly
-questionably
-quickly
-quietly
-randomly
-rarely
-reactively
-readily
-readily
-reflectively
-reliably
-reluctantly
-remarkably
-repeatedly
-resolutely
-respectfully
-respectfully
-responsibly
-richly
-rigorously
-romantically
-routinely
-rushingly
-safely
-safely
-satisfactorily
-secretly
-sensibly
-serenely
-seriously
-shamefully
-shortly
-significantly
-silently
-simply
-simultaneously
-sincerely
-sincerely
-smoothly
-smoothly
-softly
-solemnly
-sophisticatedly
-sophisticatedly
-speedily
-spiritually
-spontaneously
-spontaneously
-steadily
-strategically
-strategically
-strongly
-subsequently
-subtly
-superbly
-surprisingly
-suspiciously
-synergistically
-tactfully
-tactically
-temporarily
-tenderly
-tenderly
-thankfully
-theatrically
-theoretically
-thoroughly
-thoughtfully
-thoughtfully
-threateningly
-tightly
-together
-touchingly
-traditionally
-traditionally
-transcendently
-triumphantly
-typically
-unabashedly
-unbelievably
-uncharacteristically
-uncommonly
-unconventionally
-undeniably
-understandably
-unexpectedly
-unfortunately
-unpredictably
-unwaveringly
-urgently
-vaguely
-validly
-very
-vicariously
-viciously
-vigorously
-vividly
-warmly
-warmly
-weekly
-well
-widely
-willingly
-wisely
-wistfully
-wistfully
-with a flourish
-with a smile
-with abandon
-with accuracy
-with affection
-with agreement
-with ambition
-with anticipation
-with apathy
-with audacity
-with authority
-with awareness
-with beauty
-with boldness
-with brilliance
-with care
-with caution
-with charm
-with clarity
-with clarity
-with commitment
-with compassion
-with concern
-with confidence
-with consent
-with conviction
-with creativity
-with curiosity
-with dedication
-with delight
-with determination
-with dignity
-with diligence
-with ease
-with elegance
-with emotion
-with encouragement
-with enthusiasm
-with expectation
-with finesse
-with flair
-with flexibility
-with focus
-with force
-with generosity
-with grace
-with gratitude
-with gratitude
-with happiness
-with harmony
-with honesty
-with humility
-with humor
-with impatience
-with independence
-with insight
-with intensity
-with intention
-with interest
-with kindness
-with knowledge
-with laughter
-with laughter
-with lightness
-with logic
-with love
-with loyalty
-with maturity
-with meaning
-with melancholy
-with nobility
-with openness
-with openness
-with optimism
-with optimism
-with passion
-with patience
-with perseverance
-with poise
-with power
-with precision
-with pride
-with purpose
-with purpose
-with quickness
-with quiet
-with radiance
-with readiness
-with reflection
-with resilience
-with resolve
-with responsibility
-with sincerity
-with skill
-with stability
-with subtlety
-with symmetry
-with sympathy
-with tact
-with taste
-with tenderness
-with tranquility
-with transparency
-with trust
-with understanding
-with urgency
-with vision
-with warmth
-with wisdom
-with zeal
-with zeal
-with thoughtfulness
-wonderfully
-wonderingly
-yearly
-zenithally
+absolutamente
+además
+alegremente
+anteriormente
+apenas
+apropiadamente
+así
+básicamente
+bien
+casi
+cerca
+claro
+cómodamente
+completamente
+constantemente
+cualquier
+cuidadosamente
+decididamente
+despacio
+donde
+efectivamente
+eficazmente
+enérgicamente
+especialmente
+exactamente
+excepcionalmente
+fácilmente
+felizmente
+fielmente
+frecuentemente
+generalmente
+gratamente
+gruesamente
+habitualmente
+incluso
+indudablemente
+inmediatamente
+intencionalmente
+intensamente
+irónicamente
+lastimosamente
+lentamente
+lógicamente
+mal
+más
+mayormente
+mejor
+menor
+menos
+naturalmente
+necesariamente
+normalmente
+nuevamente
+obviamente
+ocasionalmente
+optimistamente
+pacíficamente
+particularmente
+perfectamente
+posiblemente
+prácticamente
+precisamente
+pronto
+rápidamente
+rápido
+realmente
+recientemente
+relativamente
+responsablemente
+sabiamente
+saludablemente
+seguro
+sencillamente
+siempre
+sistemáticamente
+sólo
+tarde
+temporalmente
+temprano
+típicamente
+tranquilamente
+tristemente
+últimamente
+usualmente
+valientemente
+verdaderamente
+vivamente

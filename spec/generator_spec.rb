@@ -16,6 +16,10 @@ RSpec.describe RandomWords::Generator do
         very_long: 300
       )
     end
+
+    it 'initializes with use_extended_punctuation set to true' do
+      expect(described_class.new(:english, {use_extended_punctuation: true}).use_extended_punctuation).to be true
+    end
   end
 
   describe '#word' do
@@ -168,30 +172,57 @@ RSpec.describe RandomWords::Generator do
   end
 
   describe '#generate_combined_sentence' do
-  it 'generates a valid sentence that matches sentence regex' do
-    result = generator.send(:generate_combined_sentence)
-    expect(result).to match(sentence_regex)
+    it 'generates a valid sentence that matches sentence regex' do
+      result = generator.send(:generate_combined_sentence)
+      expect(result).to match(sentence_regex)
+    end
+
+    it 'generates sentence at requested length' do
+      result = generator.send(:generate_combined_sentence, 50)
+      expect(result.length).to be >= 50
+    end
+
+    it 'combines sentences when length is insufficient' do
+      short_result = generator.send(:generate_combined_sentence, 1000)
+      conjunctions = generator.coordinating_conjunctions.concat(generator.subordinate_conjunctions)
+      expect(short_result.scan(/,/).count).to be >= 1
+      expect(short_result.scan(/#{Regexp.union(conjunctions)}/).count).to be >= 1
+    end
+
+    it 'returns single sentence when length is sufficient' do
+      long_result = generator.send(:generate_combined_sentence, 1)
+      expect(long_result.scan(sentence_regex).count).to eq(1)
+    end
+
+    it 'properly capitalizes and terminates combined sentences' do
+      result = generator.send(:generate_combined_sentence)
+      expect(result).to match(sentence_regex)
+    end
   end
 
-  it 'generates sentence at requested length' do
-    result = generator.send(:generate_combined_sentence, 50)
-    expect(result.length).to be >= 50
-  end
+  describe "#use_extended_punctuation" do
+    it "raises an error if use_extended_punctuation is set to an invalid value" do
+      expect { generator.use_extended_punctuation = "invalid" }.to raise_error(ArgumentError)
+    end
 
-  it 'combines sentences when length is insufficient' do
-    short_result = generator.send(:generate_combined_sentence, 1000)
-    expect(short_result.scan(/,/).count).to be >= 1
-    expect(short_result).to include(" and ")
-  end
+    it "returns a sentence with extended punctuation if use_extended_punctuation is true" do
+      generator.use_extended_punctuation = true
+      result = [generator.paragraph(10)]
+      10.times do
+        result << generator.paragraph(10)
+      end
+      result = result.join("\n\n")
+      expect(result).to match(/[()"']/)
+    end
 
-  it 'returns single sentence when length is sufficient' do
-    long_result = generator.send(:generate_combined_sentence, 1)
-    expect(long_result.scan(sentence_regex).count).to eq(1)
+    it "returns a sentence without extended punctuation if use_extended_punctuation is false" do
+      generator.use_extended_punctuation = false
+      result = [generator.paragraph(10)]
+      10.times do
+        result << generator.paragraph(10)
+      end
+      result = result.join("\n\n")
+      expect(result).not_to match(/[()"']/)
+    end
   end
-
-  it 'properly capitalizes and terminates combined sentences' do
-    result = generator.send(:generate_combined_sentence)
-    expect(result).to match(sentence_regex)
-  end
-end
 end

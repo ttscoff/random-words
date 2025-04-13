@@ -1,10 +1,4 @@
-all
-either
-few
-many
-several
-some
-these
-those
-three
-two
+las
+los
+unos
+unas

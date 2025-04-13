@@ -1,12 +1,11 @@
 # frozen_string_literal: true
 
 module RandomWords
+  # Array helpers for RandomWords
+  # This module extends the Array class with additional methods for manipulating arrays.
   class ::Array
     # Split a terminators array into terminators and
     # extended punctuation based on a line without a comma
-    # @param terminators [Array<String>] An array of
-    #   terminator strings
-    #
     # @return [Array<Array<String>>]
     #   An array containing two arrays: the first for terminators
     #   and the second for extended punctuation
@@ -26,20 +25,6 @@ module RandomWords
       terminators.delete_if { |line| line[1].empty? }
       extended_punctuation.delete_if { |line| line[1].empty? }
       [terminators, extended_punctuation]
-    end
-
-    # Returns a random word from the array.
-    #
-    # @return [String] A random word.
-    def random_word
-      sample
-    end
-
-    # Returns a random word from the array.
-    #
-    # @return [String] A random word.
-    def random_word!
-      sample!
     end
   end
 end

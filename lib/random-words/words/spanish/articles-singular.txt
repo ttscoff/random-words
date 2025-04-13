@@ -1,10 +1,4 @@
-a
-an
-the
-each
-every
-neither
-any
-one
-this
-that
+el
+la
+un
+una

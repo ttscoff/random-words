@@ -93,9 +93,6 @@ module RandomWords
           nums[key] = nums[key].split(" ").map(&:strip) if nums[key].is_a?(String)
         end
         nums
-      rescue Psych::DisallowedClass => e
-        warn "YAML disallowed class error in #{path}: #{e.message}"
-        {}
       rescue Psych::SyntaxError => e
         warn "YAML syntax error in #{path}: #{e.message}"
         {}

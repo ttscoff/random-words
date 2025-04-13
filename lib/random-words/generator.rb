@@ -35,7 +35,7 @@ module RandomWords
 
     # Initialize the generator with a source and options
     # @param source [Symbol] The source of the words (e.g., :english)
-    # @param _options [Hash] Options for the generator (e.g., length, paragraph_length)
+    # @param options [Hash] Options for the generator (e.g., length, paragraph_length)
     # @example
     #   generator = RandomWords::Generator.new(:english, sentence_length: :medium, paragraph_length: 5)
     #   generator.source = :french
@@ -62,13 +62,8 @@ module RandomWords
       @subordinate_conjunctions = @config.dictionary[:subordinate_conjunctions]
       @numbers = @config.dictionary[:numbers]
       @sources = @config.sources
+      @terminators = @config.dictionary[:terminators]
 
-      if @use_extended_punctuation
-        @terminators.concat(@config.dictionary[:extended_punctuation])
-      else
-        @terminators = @config.dictionary[:terminators]
-      end
-      @extended_punctuation = @config.dictionary[:extended_punctuation]
       @all_words = @config.dictionary[:all_words]
 
       @options = {
@@ -80,6 +75,10 @@ module RandomWords
       @sentence_length = @options[:sentence_length]
       @paragraph_length = @options[:paragraph_length]
       @use_extended_punctuation = @options[:use_extended_punctuation]
+
+      if @use_extended_punctuation
+        @terminators.concat(@config.dictionary[:extended_punctuation])
+      end
       lengths
     end
 
@@ -146,7 +145,7 @@ module RandomWords
     # @!visibility private
     def test_random
       RandomWords.testing = true
-      RandomWords.use_extended_punctuation = true
+      @use_extended_punctuation = true
       res = []
       res << random_noun
       res << random_verb
@@ -181,6 +180,8 @@ module RandomWords
     end
 
     def use_extended_punctuation=(use_extended_punctuation)
+      raise ArgumentError, 'use_extended_punctuation must be a boolean' unless [true, false].include?(use_extended_punctuation)
+
       @use_extended_punctuation = use_extended_punctuation
       @terminators.concat(@config.dictionary[:extended_punctuation]) if use_extended_punctuation
     end
@@ -504,7 +505,7 @@ module RandomWords
     end
 
     # Generate a random article for a noun
-    # @param noun [String] The noun for which to generate an article
+    # @param word [String] The noun for which to generate an article
     # @return [String] A randomly selected article for the given noun
     # This method checks if the noun is plural and selects an appropriate article.
     # If the noun starts with a vowel, it uses 'an' instead of 'a'.
