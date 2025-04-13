@@ -389,7 +389,7 @@ module RandomWords
       end
 
       # Join all parts into a single sentence
-      sentence_components.join(' ').strip.compress
+      sentence_components.join(" #{roll(50) ? random_coordinating_conjunction : random_subordinate_conjunction} ").strip.compress
     end
 
     # Convert a length symbol to a specific length value

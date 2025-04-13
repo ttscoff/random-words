@@ -1,7 +1,7 @@
 # RandomWords
 <!--README-->
 
-[![RubyGems.org](https://img.shields.io/gem/v/snibbets)](https://rubygems.org/gems/snibbets)
+[![RubyGems.org](https://img.shields.io/gem/v/random-words)](https://rubygems.org/gems/random-words)
 
 A random text (Lorem Ipsum) generator.
 
@@ -108,6 +108,12 @@ and using the library you can include
 initializing, or use `@rw.use_extended_punctuation = true`
 to set it after initializing.
 
+Repeating words or terminators more than once in the config
+files increases their likelihood of being used. In the
+default terminator.txt files, the period, question mark, and
+exclamation point are repeated multiple times to make them
+the most likely to be used.
+
 
 ##### Language Configuration
 
@@ -123,9 +129,13 @@ triggers: [english]
 
 A default configuration file will be created when running `--create-dictionary` with the CLI.
 
-- `name`: The name of the dictionary, which should be the same as the directory name in most cases
+- `name`: The name of the dictionary
+
+    This should be the same as the directory name in most cases
 - `description`: Just used for display when running `--list-dictionaries`
-- `triggers`: An array of triggers that can be used to trigger the language. For example, the `bacon` language has the triggers `[bacon, meat, carnivore]`, so you can use `randw -S meat` on the command line (or with the library).
+- `triggers`: An array of triggers that can be used to trigger the language.
+
+    For example, the `bacon` language has the triggers `[bacon, meat, carnivore]`, so you can use `randw -S meat` on the command line (or with the library).
 
 > RandomWords loosely uses English rules for sentence construction, so non-English languages will likely generate even more nonsensical strings.
 
