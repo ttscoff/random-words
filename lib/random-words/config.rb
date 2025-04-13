@@ -34,6 +34,9 @@ module RandomWords
     # Source directory for languages
     attr_reader :source_dir
 
+    # Initialize the config with the given language
+    # @param lang [Symbol] The language to use
+    # @raise [RuntimeError] if no dictionary is found for the given language
     def initialize(lang)
       @lang = lang.to_s
       FileUtils.mkdir_p(config_dir) unless File.directory?(config_dir)
@@ -48,10 +51,15 @@ module RandomWords
 
     end
 
+    # The user configuration directory path
+    # @return [String] The path to the config directory
     def config_dir
       @config_dir ||= File.expand_path(File.join(Dir.home, '.config', 'random-words'))
     end
 
+    # Tests if a uer dictionary exists
+    # @return [Boolean] true if the user dictionary exists, false otherwise
+    # @raise [RuntimeError] if the user dictionary is incomplete
     def user_dictionary_exist?
       if user_lang_dir
         raise "User dictionary for #{@lang} is incomplete. Please run create_user_dictionary." unless all_parts_of_speech?(user_lang_dir, @lang)
@@ -62,10 +70,16 @@ module RandomWords
       end
     end
 
+    # The user language directory path
+    # @return [String] The path to the user language directory
     def user_lang_dir
       File.join(config_dir, 'words', @lang) if File.exist?(File.join(config_dir, 'words', @lang))
     end
 
+    # The builtin language directory path
+    # @param lang [String] The language to use
+    # @param basedir [String] The base directory to use
+    # @return [String, nil] The path to the builtin language directory or nil if not found
     def builtin_lang_dir(lang = nil, basedir: nil)
       lang ||= @lang
       basedir ||= __dir__
@@ -76,6 +90,10 @@ module RandomWords
       nil
     end
 
+    # Check if all parts of speech files exist in the given directory
+    # @param dir [String] The directory to check
+    # @param lang [String] The language to check
+    # @return [Boolean] true if all parts of speech files exist, false otherwise
     def all_parts_of_speech?(dir, lang = nil)
       lang ||= @lang
       dir ||= @source_dir
@@ -96,6 +114,9 @@ module RandomWords
       exists
     end
 
+    # Create a user dictionary for the given language
+    # @param lang [String] The language to create the dictionary for
+    # @return [Symbol, nil] The language symbol if successful, nil otherwise
     def create_user_dictionary(lang = nil)
       return lang.to_sym if File.directory?(File.join(config_dir, 'words', lang)) && all_parts_of_speech?(File.join(config_dir, 'words', lang), lang)
 
@@ -112,6 +133,14 @@ module RandomWords
         end
       end
 
+      # Copy numbers.yml file from the builtin directory
+      source_file = File.join(builtin_lang_dir('english'), 'numbers.yml')
+      target_file = File.join(lang_dir, 'numbers.yml')
+      unless File.exist?(target_file)
+        FileUtils.cp(source_file, target_file)
+        warn "Created numbers.yml"
+      end
+
       # Create the config.yml file if it doesn't exist
       target_file = File.join(lang_dir, "config.yml")
 
@@ -125,6 +154,8 @@ module RandomWords
         warn "Created #{target_file}"
       end
 
+
+
       if all_parts_of_speech?(lang_dir, lang) || (RandomWords.testing && !RandomWords.tested.include?('create_user_dictionary'))
         RandomWords.tested << 'create_user_dictionary'
         warn "Created #{lang} in #{lang_dir}"
@@ -135,6 +166,8 @@ module RandomWords
       end
     end
 
+    # List all sources available, builtin and custom
+    # @return [Hash] A hash of source names and their corresponding RandomWords::Source objects
     def sources
       return @sources if @sources
 

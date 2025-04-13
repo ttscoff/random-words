@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 module RandomWords
+  # A class representing a source of words for the RandomWords library.
   class Source
     attr_reader :name, :names, :config, :dictionary, :description
 
@@ -17,7 +18,7 @@ module RandomWords
       @description = @config['description'] || 'No description available'
       @dictionary = from_files
       @dictionary[:all_words] = @dictionary.values.flatten.uniq
-      @dictionary[:terminators] = from_file("terminators").map { |t| t.split(",").map(&:strip) }
+      @dictionary[:terminators], @dictionary[:extended_punctuation] = from_file("terminators").split_terminators
     rescue StandardError
       @name = name.to_sym
       @config = {}
@@ -25,7 +26,7 @@ module RandomWords
       @description = 'No description available'
       @dictionary = from_files
       @dictionary[:all_words] = @dictionary.values.flatten.uniq
-      @dictionary[:terminators] = from_file("terminators").map { |t| t.split(",").map(&:strip) }
+      @dictionary[:terminators], @dictionary[:extended_punctuation] = from_file("terminators").split_terminators
     end
 
     # def to_sym

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Hash helpers for RandomWords
 class ::Hash
   # Turn all keys into symbols
   def symbolize_keys

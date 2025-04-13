@@ -10,7 +10,11 @@ module RandomWords
     # @return [Array<String>] arrays of elements of speech
     attr_reader :nouns, :verbs, :passive_verbs, :adverbs, :adjectives, :articles, :clauses, :subordinate_conjunctions,
                   :terminators, :numbers, :plural_nouns, :plural_verbs, :plural_articles, :prepositions, :coordinating_conjunctions,
-                  :all_words
+                  :all_words, :extended_punctuation
+
+    # Whether to use extended punctuation
+    # @return [Boolean] true if extended punctuation is used, false otherwise
+    attr_reader :use_extended_punctuation
 
     # @return [Integer] Number of sentences in paragraphs
     attr_reader :paragraph_length
@@ -21,7 +25,7 @@ module RandomWords
     # @return [Symbol] Dictionary in use
     attr_reader :source
 
-    # @return [Array] List of available sources
+    # @return [Hash<String, RandomWords::Source>] List of available sources
     attr_reader :sources
 
     # Define the default sentence parts
@@ -58,19 +62,32 @@ module RandomWords
       @subordinate_conjunctions = @config.dictionary[:subordinate_conjunctions]
       @numbers = @config.dictionary[:numbers]
       @sources = @config.sources
-      @terminators = @config.dictionary[:terminators]
+
+      if @use_extended_punctuation
+        @terminators.concat(@config.dictionary[:extended_punctuation])
+      else
+        @terminators = @config.dictionary[:terminators]
+      end
+      @extended_punctuation = @config.dictionary[:extended_punctuation]
       @all_words = @config.dictionary[:all_words]
 
       @options = {
         sentence_length: :medium,
-        paragraph_length: 5
+        paragraph_length: 5,
+        use_extended_punctuation: false
       }
       @options.merge!(options) if options.is_a?(Hash)
       @sentence_length = @options[:sentence_length]
       @paragraph_length = @options[:paragraph_length]
+      @use_extended_punctuation = @options[:use_extended_punctuation]
       lengths
     end
 
+    # Shortcut for RandomWords::Config.create_user_dictionary
+    # @param title [String] The title of the user dictionary
+    # @return [Symbol] The symbolized name of the dictionary
+    # @example
+    #   create_dictionary('my_custom_dictionary')
     def create_dictionary(title)
       @config.create_user_dictionary(title)
     end
@@ -129,6 +146,7 @@ module RandomWords
     # @!visibility private
     def test_random
       RandomWords.testing = true
+      RandomWords.use_extended_punctuation = true
       res = []
       res << random_noun
       res << random_verb
@@ -160,6 +178,11 @@ module RandomWords
     # Define a new source dictionary and re-initialize
     def source=(new_source)
       initialize(new_source)
+    end
+
+    def use_extended_punctuation=(use_extended_punctuation)
+      @use_extended_punctuation = use_extended_punctuation
+      @terminators.concat(@config.dictionary[:extended_punctuation]) if use_extended_punctuation
     end
 
     # Refactored lengths and lengths= methods
@@ -209,7 +232,7 @@ module RandomWords
     def characters(min, max = nil, whole_words: true, whitespace: true, dead_switch: 0)
       result = ''
       max ||= min
-      raise ArgumentError, 'Infinite loop detected' if dead_switch > 20
+      raise ArgumentError, 'Infinite loop detected' if dead_switch > 40
 
       whole_words = false if dead_switch > 15
 
@@ -260,17 +283,17 @@ module RandomWords
     def generate_combined_sentence(length = nil)
       length ||= define_length(@sentence_length)
       sentence = generate_sentence
-      return sentence.to_sent(random_terminator) if sentence.length > length
+      return sentence.to_sent(random_terminator).fix_caps(terminators) if sentence.length > length
 
       while sentence.length < length
         # Generate a random number of sentences to combine
         new_sentence = generate_sentence(length / 2)
 
         # Combine the sentences with random conjunctions
-        sentence = "#{sentence.strip.no_term}, #{random_conjunction} #{new_sentence}"
+        sentence = "#{sentence.strip.no_term}, #{random_coordinating_conjunction} #{new_sentence}"
       end
 
-      sentence.to_sent(random_terminator)
+      sentence.to_sent(random_terminator).fix_caps(terminators)
     end
 
     # Generate a random paragraph
@@ -289,9 +312,23 @@ module RandomWords
 
     private
 
-    # Handle overflow when the new result exceeds the maximum length
+    # Struct for overflow configuration
+    # @!visibility private
     OverflowConfig = Struct.new(:new_result, :result, :min, :max, :whole_words, :whitespace, :dead_switch)
 
+    # Handle overflow when the new result exceeds the maximum length
+    # @param config [OverflowConfig] The configuration for handling overflow
+    # @return [String] The modified result after handling overflow
+    # This method checks if the new result exceeds the maximum length.
+    # If it does, it tries to add a random word of the required length.
+    # If the new result is still too long, it generates a new string with the specified length.
+    # If the new result is shorter than the minimum length, it generates a new string with the minimum length.
+    # @example
+    #   handle_overflow(config) # Handles overflow for the given configuration
+    # @see OverflowConfig
+    # @see #characters
+    # @see #words_of_length
+    # @see #nouns_of_length
     def handle_overflow(config)
       space = config.whitespace ? ' ' : ''
       needed = config.max - config.result.compress.length
@@ -383,6 +420,12 @@ module RandomWords
       nouns.select { |word| word.length == length }
     end
 
+    # Get a list of words matching a specific length
+    # @param length [Integer] The desired length of the words
+    # @return [Array] An array of words with the specified length
+    # @example
+    #  words_of_length(5) # Returns an array of words with a length of 5 characters
+    # @see #nouns_of_length
     def words_of_length(length)
       all_words.select { |word| word.length == length }
     end
@@ -392,7 +435,7 @@ module RandomWords
     # @example
     #  random_conjunction # Returns a random conjunction
     def random_conjunction
-      %w[and or but].sample
+      coordinating_conjunctions.sample
     end
 
     # Generate a random number with a plural noun
@@ -472,9 +515,9 @@ module RandomWords
       # puts [word, article].inspect
       article = 'an' if RandomWords.testing && !RandomWords.tested.include?('random_article_for_word')
       RandomWords.tested << 'random_article_for_word' if RandomWords.testing
-      if word.start_with?(/[aeiou]/i) && article =~ /^an?$/
-        article = 'an' if article == 'a'
-      elsif article == 'an'
+      if word.start_with?(/[aeiou]/i) && article =~ /^an?$/i
+        article = 'an'
+      elsif article =~ /^an$/i
         article = 'a'
       end
       article
@@ -548,7 +591,7 @@ module RandomWords
                   else
                     noun = random_noun
                     adjective = random_adjective
-                    "#{random_article_for_word(noun)} #{adjective} #{noun} #{random_adverb} #{random_verb}"
+                    "#{random_article_for_word(adjective)} #{adjective} #{noun} #{random_adverb} #{random_verb}"
                   end
       tail = roll(50) ? " #{random_prepositional_phrase}" : ""
       tail += roll(10) ? ", #{random_clause}" : ""

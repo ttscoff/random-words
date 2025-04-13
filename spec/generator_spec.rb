@@ -2,9 +2,9 @@
 
 RSpec.describe RandomWords::Generator do
   subject(:generator) { described_class.new }
-  subject(:opening_regex) {"[A-Z#{described_class.new.terminators.map { |t| t[0] }.join}]"}
-  subject(:closing_regex) {"[#{described_class.new.terminators.map { |t| t[1] }.join}]"}
-  subject(:sentence_regex) { Regexp.new("#{opening_regex}.*?#{closing_regex}") }
+  subject(:opening_regex) {"[A-Z#{Regexp.escape(described_class.new.terminators.map { |t| t[0].split("").first }.delete_if(&:nil?).sort.uniq.join)}]"}
+  subject(:closing_regex) {"[#{Regexp.escape(described_class.new.terminators.map { |t| t[1].split("").last }.delete_if(&:nil?).sort.uniq.join)}]"}
+  subject(:sentence_regex) { Regexp.new("^#{opening_regex}.*?#{closing_regex}$") }
 
   describe '#initialize' do
     it 'creates a new generator with default values' do

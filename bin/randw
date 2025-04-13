@@ -9,6 +9,7 @@ module RandomWords
     def initialize(source = :english)
       # Create an instance of the generator
       @sentence_generator = RandomWords::Generator.new(source)
+      @sentence_generator.use_extended_punctuation = true
       @colors = {
         text: :yellow,
         counter: :boldcyan,
@@ -84,7 +85,7 @@ module RandomWords
 
       header_1('Random Combined Sentences:')
       @sources.count.times do |i|
-        @sentence_generator.source = @sources[i]
+        @sentence_generator.source = @sources[i - 1]
         @sentence_generator.sentence_length = :medium
         @sentence_generator.paragraph_length = number_of_sentences
         @sentence_generator.sentences(number_of_sentences)
@@ -113,7 +114,12 @@ module RandomWords
 
     # Generate and print specified number of words
     def random_words
-      number_of_words = [5, 10, 20, 50, 100]
+      number_of_words = []
+      @sources.count.times do |i|
+        puts i
+        number_of_words << (i * i) * 5 + 10
+      end
+
       header_1("#{number_of_words} Random Words")
       @sources.each_with_index do |source, index|
         header_2("#{number_of_words[index]} Random Words")
@@ -184,7 +190,8 @@ end
   method: nil,
   debug: false,
   whitespace: true,
-  separator: ' '
+  separator: ' ',
+  use_extended_punctuation: false
 }
 
 def transform_source(source)
@@ -272,8 +279,12 @@ OptionParser.new do |opts|
     @options[:separator] = separator
   end
 
-  opts.on('-n', '--no-whitespace', 'Specify whether to remove whitespace in generated text (characters only)') do
-    @options[:whitespace] = false
+  opts.on('--[no-]extended', 'Specify whether to use extended punctuation in generated text') do |value|
+    @options[:use_extended_punctuation] = value
+  end
+
+  opts.on('-n', '--[no-]whitespace', 'Specify whether to remove whitespace in generated text (characters only)') do |value|
+    @options[:whitespace] = value
   end
 
   opts.separator 'Dictionaries:'
@@ -329,6 +340,7 @@ end
 @rw = RandomWords::Generator.new(@options[:source])
 @rw.sentence_length = @options[:length] || :medium
 @rw.paragraph_length = @options[:paragraph_length] || 3
+@rw.use_extended_punctuation = @options[:use_extended_punctuation] || false
 @options[:count] = @options[:count].to_i
 
 case @options[:method]

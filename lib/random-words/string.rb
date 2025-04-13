@@ -40,7 +40,7 @@ class ::String
   def capitalize
     letters = split('')
     string = []
-    while letters[0] =~ /[:word:]/
+    while letters[0] !~ /[[:word:]]/
       string << letters.shift
     end
     string << letters.shift.upcase
@@ -48,12 +48,27 @@ class ::String
     string.join("")
   end
 
+  # Capitalize the first letter of each sentence in a string.
+  # Scans for all known terminators followed by a space and capitalizes the next letter.
+  # @param terminators [Array<String>] An array of beginning and ending punctuation marks.
+  # @return [String] The string with the first letter of each sentence capitalized.
+  # @example
+  #   "hello world. this is a test.".fix_caps([[".", "."]]) # => "Hello world. This is a test."
+  #
+  def fix_caps(terminators)
+    terminator_ends = terminators.map { |t| t[1].split("").last }
+    terminator_regex = Regexp.new("[#{Regexp.escape(terminator_ends.join)}]")
+    split(/(?<=#{terminator_regex}) ./).map do |sentence|
+      sentence.capitalize
+    end.join(" ")
+  end
+
   # Remove duplicate commas
   # @return [String] The string with duplicate commas removed.
   # @example
   #  "Hello, , World!".remove_duplicate_commas # => "Hello, World!"
   def dedup_commas
-    gsub(/(, +)+/, ',').gsub(/,/, ', ')
+    gsub(/(, *)+/, ',').gsub(/,/, ', ')
   end
 
   # Generate a sentence with capitalization and terminator
@@ -85,7 +100,7 @@ class ::String
   #   "Hello World".terminate(["", "."]) # => "Hello World."
   #
   def terminate(terminator)
-    sub(/^[a-z0-9]*/, terminator[0]).sub(/[^a-z0-9]*$/i, terminator[1])
+    sub(/^/, terminator[0]).sub(/[^a-zA-Z0-9]*$/, terminator[1])
   end
 
   # Remove any punctuation mark from the end of a string.

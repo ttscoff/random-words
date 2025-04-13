@@ -14,6 +14,14 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+# This module extends the Integer class with methods to convert numbers
+# into their word representations. It provides methods for converting
+# numbers to words in various languages, including English.
+#
+# @example
+#   1.to_word # => "one"
+#   126620.to_word # => "one hundred twenty six thousand six hundred twenty"
+#
 class Integer
   # Turn a number into the word representation of that number.
   #  1.to_word      # => "one"
@@ -32,6 +40,7 @@ class Integer
 
   protected
 
+  # Convert a number to its word representation for the hundreds place.
   def hundred_to_word(place = 0, numbers)
     if self.zero?
       ''
@@ -51,6 +60,11 @@ class Integer
     end
   end
 
+  # Append the appropriate place value to a word based on its position.
+  # @param word [String] The word representation of the number.
+  # @param place [Integer] The place value (e.g., hundreds, thousands).
+  # @param numbers [Hash] A hash containing number words.
+  # @return [String] The word with the appropriate place value appended.
   def append_place(word, place, numbers)
     places = numbers[:places]
     if place > 2
@@ -60,6 +74,12 @@ class Integer
     end
   end
 
+  # Convert a number to its word representation for the tens place.
+  # This is a special case for numbers 20-99.
+  # @param numbers [Hash] A hash containing number words.
+  # @return [String] The word representation of the number.
+  # @example
+  #   45.tens_place_to_word(numbers) # => "forty five"
   def tens_place_to_word(numbers)
     if self > 19
       (tens, ones) = [self/10, self%10]
@@ -70,6 +90,12 @@ class Integer
     end
   end
 
+  # Convert a number to its word representation for the teens place.
+  # This is a special case for numbers 10-19.
+  # @param numbers [Hash] A hash containing number words.
+  # @return [String] The word representation of the number.
+  # @example
+  #   12.teen_to_word(numbers) # => "twelve"
   def teen_to_word(numbers)
     if self < 10
       self.digit_to_word(numbers)
@@ -80,6 +106,12 @@ class Integer
     end
   end
 
+  # Convert a number to its word representation for the digits place.
+  # This is a special case for numbers 0-9.
+  # @param numbers [Hash] A hash containing number words.
+  # @return [String] The word representation of the number.
+  # @example
+  #   5.digit_to_word(numbers) # => "five"
   def digit_to_word(numbers)
     if self.zero?
       ''
