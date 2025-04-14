@@ -63,7 +63,7 @@ module RandomWords
       @numbers = @config.dictionary[:numbers]
       @sources = @config.sources
       @terminators = @config.dictionary[:terminators]
-
+      @names = [@config.dictionary[:first_names], @config.dictionary[:last_names]]
       @all_words = @config.dictionary[:all_words]
 
       @options = {
@@ -71,6 +71,7 @@ module RandomWords
         paragraph_length: 5,
         use_extended_punctuation: false
       }
+
       @options.merge!(options) if options.is_a?(Hash)
       @sentence_length = @options[:sentence_length]
       @paragraph_length = @options[:paragraph_length]
@@ -309,6 +310,36 @@ module RandomWords
         sentences << generate_combined_sentence
       end
       sentences.join(' ').strip.compress
+    end
+
+    def name
+      random_name
+    end
+
+    def code_lang
+      code_langs = %i[python ruby swift javascript css rust go java]
+      code_langs[Random.rand(code_langs.count)]
+    end
+
+    # Return random code snippet
+    def code_snippet(lang = nil)
+      code_snippets = {
+        python: %(def hello_world():\n    print("Hello, World!")),
+        ruby: %(def hello_world\n  puts "Hello, World!"\nend),
+        swift: %(func helloWorld() {\n    print(\"Hello, World!\")\n}),
+        javascript: %(function helloWorld() {\n    console.log(\"Hello, World!\");\n}),
+        css: %(body {\n    background-color: #f0f0f0;\n    font-family: Arial, sans-serif;\n}\nh1 {\n    color: #333;\n}),
+        rust: %(fn main() {\n    println!("Hello, World!");\n}),
+        go: %(package main\nimport \"fmt\"\nfunc main() {\n    fmt.Println(\"Hello, World!\")\n}),
+        java: %(public class HelloWorld {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n})
+      }
+      lang ||= code_lang
+      code_snippets[lang.to_sym]
+    end
+
+    def markdown(settings = {})
+      input = RandomWords::LoremMarkdown.new(settings).output
+      RandomWords::HTML2Markdown.new(input)
     end
 
     private
@@ -575,6 +606,12 @@ module RandomWords
     # @return [Array] A randomly selected terminator pair
     def random_terminator
       terminators.sample
+    end
+
+    def random_name
+      first_name = @names[0].sample
+      last_name = @names[1].sample
+      "#{first_name} #{last_name}"
     end
 
     # Generate a random main clause

@@ -19,6 +19,7 @@ module RandomWords
       @dictionary = from_files
       @dictionary[:all_words] = @dictionary.values.flatten.uniq
       @dictionary[:terminators], @dictionary[:extended_punctuation] = from_file("terminators").split_terminators
+      @dictionary[:first_names], @dictionary[:last_names] = from_file("names").split_names
     rescue StandardError
       @name = name.to_sym
       @config = {}
@@ -27,6 +28,7 @@ module RandomWords
       @dictionary = from_files
       @dictionary[:all_words] = @dictionary.values.flatten.uniq
       @dictionary[:terminators], @dictionary[:extended_punctuation] = from_file("terminators").split_terminators
+      @dictionary[:first_names], @dictionary[:last_names] = from_file("names").split_names
     end
 
     # def to_sym

@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     random-words (1.0.6)
+      nokogiri (~> 1.12)
 
 GEM
   remote: https://rubygems.org/
@@ -16,6 +17,8 @@ GEM
     language_server-protocol (3.17.0.4)
     lint_roller (1.1.0)
     multi_json (1.15.0)
+    nokogiri (1.18.1-arm64-darwin)
+      racc (~> 1.4)
     parallel (1.26.3)
     parse_gemspec (1.0.0)
     parse_gemspec-cli (1.0.0)

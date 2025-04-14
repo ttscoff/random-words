@@ -26,5 +26,23 @@ module RandomWords
       extended_punctuation.delete_if { |line| line[1].empty? }
       [terminators, extended_punctuation]
     end
+
+    def split_names
+      first_names = []
+      last_names = []
+      first_names_ended = false
+      each do |line|
+        if line.strip =~ /^[\w-]+$/ && !first_names_ended
+          first_names << line
+        elsif first_names_ended
+          last_names << line
+        else
+          first_names_ended = true
+        end
+      end
+      first_names.delete_if(&:empty?)
+      last_names.delete_if(&:empty?)
+      [first_names, last_names]
+    end
   end
 end

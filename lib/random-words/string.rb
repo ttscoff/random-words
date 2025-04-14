@@ -50,6 +50,19 @@ module RandomWords
       string.join("")
     end
 
+    def downcase_first
+      return self if empty?
+
+      letters = split('')
+      string = []
+      while letters[0] !~ /[[:word:]]/
+        string << letters.shift
+      end
+      string << letters.shift.downcase
+      string.concat(letters)
+      string.join("")
+    end
+
     # Capitalize the first letter of each sentence in a string.
     # Scans for all known terminators followed by a space and capitalizes the next letter.
     # @param terminators [Array<Array>] An array of beginning and ending punctuation mark arrays.
@@ -115,6 +128,77 @@ module RandomWords
     # @return [String] The string with the last punctuation mark removed.
     def no_term
       sub(/[.!?;,-]*$/, '')
+    end
+
+    # Indent every line in a string with a specified string.
+    # @param [String] string The string to indent with.
+    # @return [String] The indented string.
+    def indent(string)
+      gsub(/^/, string)
+    end
+
+    def cap_first
+      # Capitalizes the first letter of a string.
+      self[0] = self[0].upcase
+      self
+    end
+
+    def term(char = '.')
+      # Adds a specified character to the end of a string.
+      sub(/[.?!,;]?$/, "#{char}")
+    end
+
+    def no_term
+      # Removes the last character from a string.
+      sub(/[.?!,;]$/, '')
+    end
+
+    def compress_newlines
+      # Removes extra newlines from the output.
+      gsub(/\n{2,}/, "\n\n").strip
+    end
+
+    def compress_newlines!
+      # Removes extra newlines from the output.
+      replace compress_newlines
+    end
+
+    def preserve_spaces
+      # Preserves spaces in the output.
+      gsub(/ +/, '%%')
+    end
+
+    def restore_spaces
+      # Restores spaces in the output.
+      gsub(/%%/, ' ')
+    end
+
+    def trueish?
+      to_s =~ /^[ty1]/i
+    end
+
+    def to_source
+      sources = RandomWords::Generator.new.sources
+      sources.each do |k, source|
+        return k if self =~ Regexp.union(source.names.map(&:to_s))
+      end
+      :latin
+    end
+
+    def to_length
+      case self
+      when /^s/
+        :short
+      when /^m/
+        :medium
+      when /^l/
+        :long
+      when /^v/
+        :very_long
+      else
+        :medium
+      end
+
     end
   end
 end
