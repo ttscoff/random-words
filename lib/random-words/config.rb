@@ -179,7 +179,7 @@ module RandomWords
       @config ||= base_config
     end
 
-    private
+    # private
 
     # The user configuration directory path
     # @return [String] The path to the config directory
@@ -187,6 +187,16 @@ module RandomWords
       @config_dir ||= File.expand_path(File.join(Dir.home, '.config', 'random-words'))
     end
 
+    # Set the user configuration directory path
+    # @param dir [String] The path to the config directory
+    # @return [String] The path to the config directory
+    def config_dir=(dir)
+      @config_dir = File.expand_path(dir)
+    end
+
+    # Convert a config file's options to regular config
+    # @param configuration [Hash] The configuration hash
+    # @return [Hash] The converted configuration hash
     def handle_config(configuration)
       {
         source: configuration[:source].to_source || :latin,
@@ -227,7 +237,7 @@ module RandomWords
       FileUtils.mkdir_p(config_dir) unless File.directory?(config_dir)
       config = {
         "source" => "latin",
-        "sentence_length" => "medium",
+        "length" => "medium",
         "paragraph_length" => 5,
       }
       File.write(config_file, config.to_yaml)

@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+require 'tmpdir'
+require 'fileutils'
 
 RSpec.describe RandomWords::Config do
   describe '#builtin_lang_dir' do
@@ -125,6 +127,91 @@ RSpec.describe RandomWords::Config do
     context 'when directory does not exist' do
       it 'returns false for non-existent directory' do
         expect(config.all_parts_of_speech?('/nonexistent/dir')).to be false
+      end
+    end
+  end
+
+  describe "#configuration" do
+    let(:config) { described_class.new(:english) }
+    let(:test_config_dir) { File.join(Dir.tmpdir, 'random-words-test') }
+    let(:config_file) { File.join(test_config_dir, 'config.yml') }
+
+    before do
+      config.config_dir = test_config_dir
+      FileUtils.mkdir_p(test_config_dir)
+    end
+
+    after do
+      FileUtils.rm_rf(test_config_dir)
+    end
+
+    context 'when config file exists' do
+      before do
+        File.write(config_file, {
+          source: 'latin',
+          length: 'short',
+          paragraph_length: 3
+        }.to_yaml)
+      end
+
+      it 'returns configuration from file' do
+        result = config.config
+        expect(result).to eq({
+          source: :latin,
+          sentence_length: :short,
+          paragraph_length: 3
+        })
+      end
+    end
+
+    context 'when config file does not exist' do
+      it 'creates default config file' do
+        result = config.config
+        expect(result).to eq({
+          source: :latin,
+          sentence_length: :medium,
+          paragraph_length: 5
+        })
+        expect(File.exist?(config_file)).to be true
+      end
+    end
+  end
+
+  describe "#config_file" do
+    let(:config) { described_class.new(:english) }
+    let(:test_config_dir) { File.join(Dir.tmpdir, 'random-words-test') }
+    let(:config_file_path) { File.join(test_config_dir, 'config.yml') }
+
+    before do
+      config.config_dir = test_config_dir
+      FileUtils.mkdir_p(test_config_dir)
+    end
+
+    after do
+      FileUtils.rm_rf(test_config_dir)
+    end
+
+    context 'when config file exists' do
+      before do
+        File.write(config_file_path, { source: 'latin' }.to_yaml)
+      end
+
+      it 'returns path to existing config file' do
+        expect(config.config_file).to eq(config_file_path)
+      end
+    end
+
+    context 'when config file does not exist' do
+      it 'creates default config file and returns path' do
+        expect(config.config_file).to eq(config_file_path)
+        expect(File.exist?(config_file_path)).to be true
+
+        content = YAML.load_file(config_file_path)
+        expect(content).to include(
+          'source' => 'latin',
+          'length' => 'medium',
+          'paragraph_length' => 5
+        )
       end
     end
   end

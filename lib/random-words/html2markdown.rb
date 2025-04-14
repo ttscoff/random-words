@@ -1,5 +1,17 @@
+# frozen_string_literal: true
+
+require 'uri'
+require 'nokogiri'
+require_relative 'table-cleanup'
+
 module RandomWords
+  # Convert HTML to Markdown
   class HTML2Markdown
+    attr_reader :markdown
+
+    # Initialize the HTML2Markdown converter
+    # @param str [String] The HTML string to convert
+    # @param baseurl [String] The base URL for resolving relative links
     def initialize(str, baseurl = nil)
       @links = []
       @baseuri = (baseurl ? URI.parse(baseurl) : nil)
@@ -8,6 +20,11 @@ module RandomWords
       @markdown = output_for(Nokogiri::HTML(str, baseurl).root).gsub(/\n\n\n+/, "\n\n\n")
     end
 
+    # Convert the HTML to Markdown
+    # @return [String] The converted Markdown string
+    # @example
+    #   converter = HTML2Markdown.new('<p>Hello world</p>')
+    #   puts converter.to_s
     def to_s
       i = 0
       @markdown = TableCleanup.new(@markdown).clean
@@ -17,12 +34,16 @@ module RandomWords
       }.join("\n")
     end
 
+    # Recursively convert child nodes
+    # @param node [Nokogiri::XML::Node] The parent node
     def output_for_children(node)
       node.children.map do |el|
         output_for(el)
       end.join
     end
 
+    # Add a link to the list of links
+    # @param link [Hash] The link to add
     def add_link(link)
       if @baseuri
         begin
@@ -44,6 +65,9 @@ module RandomWords
       @links.length
     end
 
+    # Wrap a string to 74 characters
+    # @param str [String] The string to wrap
+    # @return [String] The wrapped string
     def wrap(str)
       return str if str =~ /\n/
 
@@ -60,6 +84,9 @@ module RandomWords
       out.join("\n")
     end
 
+    # Convert a node to Markdown
+    # @param node [Nokogiri::XML::Node] The node to convert
+    # @return [String] The converted Markdown string
     def output_for(node)
       case node.name
       when 'head', 'style', 'script'

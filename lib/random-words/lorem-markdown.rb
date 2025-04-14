@@ -10,8 +10,7 @@ module RandomWords
     attr_accessor :generator
 
     # Generates random Lorem Ipsum text.
-    #
-    # @param [Integer] count The number of words to generate.
+    # @param options [Hash] Options for generating Lorem Ipsum text.
     # @return [String] A string of random Lorem Ipsum text.
     def initialize(options = {})
       @added = {
@@ -117,6 +116,10 @@ module RandomWords
       Random.rand(0..odds).zero?
     end
 
+    # Generates a list of items.
+    # @param [Integer] count The number of items to generate.
+    # @param [Symbol] type The type of list to generate (:ul, :ol, :dl).
+    # @return [String] The generated list.
     def list(count, type)
       ul = "\n\n<#{type}>\n"
 
@@ -144,6 +147,10 @@ module RandomWords
       ul + "</#{type}>\n\n"
     end
 
+    # Generates a blockquote.
+    # @param [Integer] count The number of items to generate.
+    # @param [Boolean] nested Whether the blockquote is nested.
+    # @return [String] The generated blockquote.
     def blockquote(count, nested = false)
       if count > 1 && !nested
         level1 = Random.rand(1..count - 1).to_i
@@ -167,6 +174,9 @@ module RandomWords
       "#{quote}#{cite}</blockquote>#{newline}"
     end
 
+    # Generates a header.
+    # @param [Integer] level The level of the header (1-6).
+    # @return [String] The generated header.
     def header(level)
       level = 6 if level > 6
       pre = level > 1 ? "\n\n" : ''
@@ -175,6 +185,9 @@ module RandomWords
       h + "</h#{level}>\n\n"
     end
 
+    # Injects headers in the output. Number injected depends on overall length
+    # of the input.
+    # @return [String] The output with injected headers.
     def inject_headers
       count = if @options[:grafs] == 1
                 1
@@ -211,6 +224,8 @@ module RandomWords
       compress_newlines
     end
 
+    # Generates a random table. Length is determined by @options[:length]
+    # @return [String] The generated table.
     def table
       items = { short: 2, medium: 2, long: 4, very_long: 6 }[@options[:length]]
       # Generates a random table.
@@ -231,6 +246,8 @@ module RandomWords
       table
     end
 
+    # Generates a random code block
+    # @return [String] The generated code block.
     def code
       lang = @generator.code_lang
       code = "\n\n<pre lang=\"#{lang}\"><code>\n"
@@ -246,11 +263,15 @@ module RandomWords
       "#{code.strip}</code>"
     end
 
+    # Generates a random emphasis tag
+    # @param [String] tag The tag to use for emphasis.
     def emphasis(tag)
       @added[tag] = true
       "<#{tag}>#{fragment(1, 4)}</#{tag}>"
     end
 
+    # Generates a random link
+    # @return [String] The generated link.
     def link
       @added[:link] = true
       path = "/#{path_string(4, 8)}/#{path_string(4, 8)}"
@@ -259,6 +280,9 @@ module RandomWords
                                                                                               8).cap_first}</a>"
     end
 
+    # Injects a block of text into the output.
+    # @param [Integer] count The number of blocks to inject.
+    # @param [Proc] block The block whose result to inject.
     def inject_block(count, block)
       grafs = @output.split(/\n\n/)
 
@@ -286,6 +310,10 @@ module RandomWords
       compress_newlines
     end
 
+    # Injects inline text into the output.
+    # @param [String] text The text to inject into.
+    # @param [Proc] block The block whose result to inject.
+    # @param [Integer] max The maximum number of times to inject the block.
     def inject_inline(text, block, max = nil)
       max ||= { short: 1, medium: 2, long: 3, very_long: 4 }[@options[:length]]
 
@@ -306,9 +334,18 @@ module RandomWords
       out.join(' ').term
     end
 
+    # Generates a paragraph of Lorem Ipsum text.
+    # The `words` method generates a specified number of words.
+    # @param [Integer] count The number of paragraphs to generate.
+    # @param [Boolean] em Whether to include emphasis tags.
+    # @param [Boolean] strong Whether to include strong tags.
+    # @param [Boolean] links Whether to include links.
+    # @param [Boolean] code Whether to include code tags.
+    # @param [Boolean] mark Whether to include mark tags.
+    # @param [Array] force An array of tags to force.
+    # @return [String] The generated paragraph.
     def paragraph(count, em: false, strong: false, links: false, code: false, mark: false, force: [])
-      # Generates a paragraph of Lorem Ipsum text.
-      # The `words` method generates a specified number of words.
+
       output = ''
       s = { short: 2, medium: 4, long: 6, very_long: 8 }[@options[:length]]
       count.times do
@@ -337,18 +374,24 @@ module RandomWords
       @output.gsub!(%r{(</(h\d|div|blockquote|dl|ul|ol)>)\s*}, "\\1\n\n")
     end
 
+    # Compresses newlines in the output.
+    # This method removes extra newlines from the output.
     def compress_newlines
       @output.compress_newlines!
     end
 
+    # Generates a random fragment of text.
+    # The `words` method generates a specified number of words.
+    # @param [Integer] min The minimum number of words to generate.
+    # @param [Integer] max The maximum number of words to generate.
+    # @return [String] The generated fragment.
     def fragment(min, max)
-      # Generates a random fragment of text.
       @generator.words(Random.rand(min..max)).no_term.downcase_first
     end
 
+    # Generates a random string of characters.
+    # The `characters` method generates a specified number of characters.
     def path_string(min, max)
-      # Generates a random string of characters.
-      # The `characters` method generates a specified number of characters.
       @generator.characters(min, max, whole_words: false, whitespace: false).downcase
     end
   end

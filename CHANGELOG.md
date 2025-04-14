@@ -1,3 +1,16 @@
+### 1.0.6
+
+2025-04-14 08:45
+
+#### NEW
+
+- Add dirtywords
+- Markdown generator with table cleanup
+
+#### FIXED
+
+- Better use of conjunctions
+
 ### 1.0.5
 
 2025-04-13 08:36

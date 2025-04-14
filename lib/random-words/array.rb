@@ -27,6 +27,9 @@ module RandomWords
       [terminators, extended_punctuation]
     end
 
+    # Split a names list into first and last names
+    # Splits the names at blank line into two arrays: first names and last names.
+    # @return [Array<Array<String>, Array<String>>]
     def split_names
       first_names = []
       last_names = []

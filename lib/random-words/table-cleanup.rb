@@ -159,7 +159,7 @@ module RandomWords
       ((?<align>\|?(?:[:-]+\|)+[:-]*)\s*\n)?
       (?<rows>(?:\|?(?:.*?\|)+.*?(?:\n|\Z))+))/
 
-      @content.gsub!(/(\|?(?:.+?\|)+)\n\|\n/) do
+      @content = @content.gsub(/(\|?(?:.+?\|)+)\n\|\n/) do
         m = Regexp.last_match
         cells = parse_cells(m[1]).count
         "#{m[1]}\n#{'|' * cells}\n"

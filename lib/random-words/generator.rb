@@ -312,16 +312,22 @@ module RandomWords
       sentences.join(' ').strip.compress
     end
 
+    # Generate a random name
+    # @return [String] A randomly generated name
     def name
       random_name
     end
 
+    # Generate a random code language
+    # @return [Symbol] A randomly selected code language
     def code_lang
       code_langs = %i[python ruby swift javascript css rust go java]
       code_langs[Random.rand(code_langs.count)]
     end
 
     # Return random code snippet
+    # @param lang [Symbol] The language of the code snippet
+    # @return [String] A randomly generated code snippet
     def code_snippet(lang = nil)
       code_snippets = {
         python: %(def hello_world():\n    print("Hello, World!")),
@@ -337,9 +343,19 @@ module RandomWords
       code_snippets[lang.to_sym]
     end
 
+    # Generate random markdown
+    # @param settings [Hash] Settings for generating markdown
+    # @return [String] A randomly generated markdown string
     def markdown(settings = {})
       input = RandomWords::LoremMarkdown.new(settings).output
       RandomWords::HTML2Markdown.new(input)
+    end
+
+    # Generate random HTML
+    # @param settings [Hash] Settings for generating HTML
+    # @return [String] A randomly generated HTML string
+    def html(settings = {})
+      RandomWords::LoremMarkdown.new(settings).output
     end
 
     private

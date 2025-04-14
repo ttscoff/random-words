@@ -3,7 +3,6 @@
 
 require 'fileutils'
 require 'yaml'
-require 'nokogiri'
 
 require_relative 'random-words/version'
 require_relative 'random-words/string'
@@ -15,7 +14,6 @@ require_relative 'random-words/generator'
 require_relative 'random-words/number-to-word'
 require_relative 'random-words/lorem-markdown.rb'
 require_relative 'random-words/html2markdown.rb'
-require_relative 'random-words/table-cleanup.rb'
 
 # Main module for RandomWords
 module RandomWords
@@ -24,7 +22,8 @@ module RandomWords
     # @!visibility private
     attr_accessor :testing, :tested
 
-
+    # @!visibility private
+    # Initialize the RandomWords module
     def initialize!(testing = false)
       @testing ||= testing
       @tested ||= []
