@@ -1,0 +1,4 @@
+---
+name: foulmouth
+description: Naughty words
+triggers: [foulmouth, swear, curse]

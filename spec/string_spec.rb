@@ -127,4 +127,155 @@ RSpec.describe String do
       expect(str.capitalize).to eq('')
     end
   end
+
+  describe '.downcase_first' do
+    it 'downcases the first letter of a string' do
+      str = 'Hello World'
+      expect(str.downcase_first).to eq('hello World')
+    end
+
+    it 'handles strings that are already downcased' do
+      str = 'hello world'
+      expect(str.downcase_first).to eq('hello world')
+    end
+
+    it 'handles strings with leading punctuation' do
+      str = '"Hello world"'
+      expect(str.downcase_first).to eq('"hello world"')
+    end
+
+    it 'handles strings with mixed case, only downcasing the first letter' do
+      str = 'HElLo WoRlD'
+      expect(str.downcase_first).to eq('hElLo WoRlD')
+    end
+
+    it 'handles empty strings' do
+      str = ''
+      expect(str.downcase_first).to eq('')
+    end
+  end
+
+  describe ".to_source" do
+    before do
+      allow(RandomWords::Generator).to receive(:new).and_return(double(sources: {
+        latin: double(names: [:latin]),
+        greek: double(names: [:greek, :hellenic], name: :greek),
+        norse: double(names: [:norse, :viking], name: :norse)
+      }))
+    end
+
+    it 'matches source by name prefix' do
+      expect('gre'.to_source).to eq(:greek)
+      expect('nor'.to_source).to eq(:norse)
+      expect('vik'.to_source).to eq(:norse)
+    end
+
+    it 'is case insensitive' do
+      expect('GREEK'.to_source).to eq(:greek)
+      expect('Norse'.to_source).to eq(:norse)
+    end
+
+    it 'returns :latin when no match found' do
+      expect('invalid'.to_source).to eq(:latin)
+      expect('xyz'.to_source).to eq(:latin)
+    end
+  end
+
+  describe '.trueish?' do
+    it 'returns true for strings starting with t' do
+      expect('true'.trueish?).to be_truthy
+      expect('TRUE'.trueish?).to be_truthy
+      expect('test'.trueish?).to be_truthy
+    end
+
+    it 'returns true for strings starting with y' do
+      expect('yes'.trueish?).to be_truthy
+      expect('YES'.trueish?).to be_truthy
+      expect('yellow'.trueish?).to be_truthy
+    end
+
+    it 'returns true for strings starting with 1' do
+      expect('1'.trueish?).to be_truthy
+      expect('123'.trueish?).to be_truthy
+      expect('1test'.trueish?).to be_truthy
+    end
+
+    it 'returns false for other strings' do
+      expect('false'.trueish?).to be_falsey
+      expect('no'.trueish?).to be_falsey
+      expect('0'.trueish?).to be_falsey
+      expect(''.trueish?).to be_falsey
+    end
+  end
+
+  describe '.to_length' do
+    it 'returns :short for strings starting with s' do
+      expect('short'.to_length).to eq(:short)
+      expect('small'.to_length).to eq(:short)
+      expect('S'.to_length).to eq(:short)
+    end
+
+    it 'returns :medium for strings starting with m' do
+      expect('medium'.to_length).to eq(:medium)
+      expect('middle'.to_length).to eq(:medium)
+      expect('m'.to_length).to eq(:medium)
+    end
+
+    it 'returns :long for strings starting with l' do
+      expect('long'.to_length).to eq(:long)
+      expect('large'.to_length).to eq(:long)
+      expect('l'.to_length).to eq(:long)
+    end
+
+    it 'returns :very_long for strings starting with v' do
+      expect('very'.to_length).to eq(:very_long)
+      expect('vast'.to_length).to eq(:very_long)
+      expect('v'.to_length).to eq(:very_long)
+    end
+
+    it 'returns :medium as default for other strings' do
+      expect('other'.to_length).to eq(:medium)
+      expect('test'.to_length).to eq(:medium)
+      expect(''.to_length).to eq(:medium)
+    end
+  end
+
+  describe '.no_term' do
+    it 'removes periods from end of string' do
+      str = 'Hello World.'
+      expect(str.no_term).to eq('Hello World')
+    end
+
+    it 'removes exclamation marks from end of string' do
+      str = 'Hello World!'
+      expect(str.no_term).to eq('Hello World')
+    end
+
+    it 'preserves punctuation in middle of string' do
+      str = 'Hello, World!'
+      expect(str.no_term).to eq('Hello, World')
+    end
+
+    it 'handles multiple punctuation marks at end' do
+      str = 'Hello World...!!!'
+      expect(str.no_term).to eq('Hello World')
+    end
+  end
+
+  describe '.indent' do
+    it 'indents each line with specified string' do
+      str = "Hello\nWorld"
+      expect(str.indent('  ')).to eq("  Hello\n  World")
+    end
+
+    it 'handles single line strings' do
+      str = 'Hello'
+      expect(str.indent('  ')).to eq('  Hello')
+    end
+
+    it 'handles empty strings' do
+      str = ''
+      expect(str.indent('  ')).to eq('  ')
+    end
+  end
 end

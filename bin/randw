@@ -182,6 +182,8 @@ module RandomWords
   end
 end
 
+# Default options for the script
+
 @options = {
   source: :latin,
   length: :medium,
@@ -194,46 +196,16 @@ end
   use_extended_punctuation: false
 }
 
-def transform_source(source)
-  case source
-  when /^(lat|lor)/i
-    :latin
-  when /^(eng|en)/i
-    :english
-  when /^(bac|mea)/i
-    :bacon
-  when /^veg/
-    :veggie
-  when /^(cor|prod)/i
-    :corporate
-  else
-    source
-  end
-end
-
 OptionParser.new do |opts|
   opts.banner = 'Usage: randw [options]'
 
-  opts.separator 'Options:'
+  opts.separator 'OPTIONS:'
 
-  opts.on('-S', '--source [SOURCE]', 'Specify the source language (default: latin)') do |source|
-    @rw = RandomWords::Generator.new(:latin)
-    new_source = nil
-    @rw.sources.each do |k, v|
-      v.names.each do |name|
-        next unless name.to_s =~ /^#{source}/i
-
-        new_source = v.name
-        break
-      end
-
-      break if new_source
-    end
-    new_source ||= transform_source(source).to_sym
-    @options[:source] = new_source
+  opts.on('-S', '--source SOURCE', 'Specify the source language (default: latin)') do |source|
+    @options[:source] = source.to_source
   end
 
-  opts.on('-l', '--length [short|medium|long|very_long]', 'Specify the length of the sentence') do |length|
+  opts.on('-l', '--length LENGTH', 'Specify the length of the sentence [short|medium|long|very_long]') do |length|
     @options[:length] = case length
                         when /^s/
                           :short
@@ -246,48 +218,63 @@ OptionParser.new do |opts|
                         end
   end
 
-  opts.on('--graf-length [NUMBER]', 'Specify the number of sentences in a paragraph') do |length|
+  opts.on('--graf-length NUMBER', 'Specify the number of sentences in a paragraph') do |length|
     @options[:paragraph_length] = length.to_i
-  end
-
-  opts.on('-s', '--sentences [NUMBER]', 'Generate random sentences') do |number|
-    @options[:method] = :sentences
-    @options[:count] = number.to_i
-  end
-
-  opts.on('-p', '--paragraphs [NUMBER]', 'Generate random paragraphs') do |number|
-    @options[:method] = :paragraphs
-    @options[:count] = number
-  end
-
-  opts.on('-w', '--words [NUMBER]', 'Generate random words') do |number|
-    @options[:method] = :words
-    @options[:count] = number
-  end
-
-  opts.on('-c', '--characters [NUMBER]', 'Generate random characters') do |number|
-    @options[:method] = :characters
-    @options[:count] = number
-  end
-
-  opts.on('--password', 'Generate a random password') do
-    @options[:method] = :password
-    @options[:count] = 20
-  end
-
-  opts.on('--separator [CHAR]', 'Specify the separator character for the password') do |separator|
-    @options[:separator] = separator
   end
 
   opts.on('--[no-]extended', 'Specify whether to use extended punctuation in generated text') do |value|
     @options[:use_extended_punctuation] = value
   end
 
+  opts.separator 'GENERATORS:'
+
+  opts.on('-s', '--sentences [NUMBER]', 'Generate NUMBER of random sentences (default: 3)') do |number|
+    @options[:method] = :sentences
+    @options[:count] = number&.to_i || 3
+  end
+
+
+  opts.on('-p', '--paragraphs [NUMBER]', 'Generate NUMBER of random paragraphs (default: 3)') do |number|
+    @options[:method] = :paragraphs
+    @options[:count] = number&.to_i || 3
+  end
+
+  opts.on('-w', '--words [NUMBER]', 'Generate NUMBER of random words (default: 10)') do |number|
+    @options[:method] = :words
+    @options[:count] = number&.to_i || 10
+  end
+
+  opts.on('-c', '--characters [NUMBER]', 'Generate random characters of length (default: 100)') do |number|
+    @options[:method] = :characters
+    @options[:count] = number&.to_i || 100
+  end
+
+  opts.on('-m', '--markdown [SETTINGS]', 'Generate random markdown text, comma separated string like "latin,10,all"') do |settings|
+    @options[:method] = :markdown
+    @options[:markdown_settings] = settings || 'latin,10,all'
+  end
+
+  opts.on('-H', '--html [SETTINGS]', 'Generate random html text, comma separated string like "latin,10,all"') do |settings|
+    @options[:method] = :html
+    @options[:markdown_settings] = settings || 'latin,10,all'
+  end
+
+  opts.on('--password [LENGTH]', 'Generate a random password of LENGTH (default: 20)') do |len|
+    @options[:method] = :password
+    @options[:count] = len&.to_i || 20
+  end
+
+  opts.separator 'PASSWORD OPTIONS:'
+
+  opts.on('--separator CHAR', 'Specify the separator character for the password (default: " ")') do |separator|
+    @options[:separator] = separator
+  end
+
   opts.on('-n', '--[no-]whitespace', 'Specify whether to remove whitespace in generated text (characters only)') do |value|
     @options[:whitespace] = value
   end
 
-  opts.separator 'Dictionaries:'
+  opts.separator 'DICTIONARIES:'
 
   opts.on('--list-dictionaries', 'List available dictionaries') do
     @rw = RandomWords::Generator.new(:latin)
@@ -305,6 +292,8 @@ OptionParser.new do |opts|
     @rw.create_dictionary(name)
     Process.exit 0
   end
+
+  opts.separator 'OTHER OPTIONS:'
 
   opts.on('-d', '--debug', 'Enable debug mode, displays sentence/word/character counts') do
     @options[:debug] = true
@@ -335,6 +324,79 @@ def debug(msg)
   # puts message
   # puts RandomWords::Terminal.new.colorize_text('-' * length, :boldblack)
   warn RandomWords::Terminal.new.colorize_text(" [#{msg}]", :cyan)
+end
+
+def markdown_settings(settings)
+  base_config = RandomWords::Config.new(:latin).config
+
+  defaults = {
+    source: base_config[:source].is_a?(String) ? base_config[:source].to_source : base_config[:source],
+    grafs: 10,
+    sentences: base_config[:paragraph_length],
+    length: base_config[:sentence_length],
+    decorate: true,
+    link: false,
+    ul: false,
+    ol: false,
+    dl: false,
+    bq: false,
+    code: false,
+    mark: false,
+    headers: false,
+    table: false
+  }
+  sources = []
+  RandomWords::Generator.new(:latin).sources.each { |k, v| sources.concat(v.names.map(&:to_s)) }
+
+  markdown_options = defaults.dup
+  settings = settings.split(%r{[,/.\|]}).map(&:strip)
+  settings.each do |setting|
+    case setting
+    when /^a(ll)?/
+      new_options = {
+        decorate: true,
+        link: true,
+        ul: true,
+        ol: true,
+        dl: true,
+        bq: true,
+        code: true,
+        mark: true,
+        headers: true,
+        image: true,
+        table: true
+      }
+      markdown_options.merge!(new_options)
+    when Regexp.union(sources)
+      markdown_options[:source] = setting.to_source
+    when /^\d+$/
+      markdown_options[:grafs] = setting.to_i
+    when /^dec/
+      markdown_options[:decorate] = true
+    when /^link/
+      markdown_options[:link] = true
+    when /^ul/
+      markdown_options[:ul] = true
+    when /^ol/
+      markdown_options[:ol] = true
+    when /^dl/
+      markdown_options[:dl] = true
+    when /^bq/
+      markdown_options[:bq] = true
+    when /^co/
+      markdown_options[:code] = true
+    when /^ma/
+      markdown_options[:mark] = true
+    when /^h/
+      markdown_options[:headers] = true
+    when /^t(a|bl)/
+      markdown_options[:table] = true
+    when /^[smlv]/
+      markdown_options[:length] = setting.to_length
+    end
+  end
+
+  markdown_options
 end
 
 @rw = RandomWords::Generator.new(@options[:source])
@@ -382,6 +444,13 @@ when :characters
   c = @rw.characters(@options[:count], whitespace: @options[:whitespace])
   print c
   debug "#{c.split(/ /).count}w, #{c.length}c"
+when :markdown, :html
+  settings = markdown_settings(@options[:markdown_settings])
+  @rw.source = settings[:source]
+  @rw.sentence_length = settings[:length] || :medium
+  @rw.paragraph_length = settings[:sentences] || 5
+  @rw.use_extended_punctuation = settings[:use_extended_punctuation] || false
+  puts @rw.html(settings)
 when :password
   p = @rw.characters(20, whitespace: @options[:whitespace])
 

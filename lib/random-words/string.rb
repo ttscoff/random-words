@@ -50,6 +50,21 @@ module RandomWords
       string.join("")
     end
 
+    # Downcase the first letter of a string, respecting punctuation.
+    # @return [String] The string with the first letter downcased.
+    def downcase_first
+      return self if empty?
+
+      letters = split('')
+      string = []
+      while letters[0] !~ /[[:word:]]/
+        string << letters.shift
+      end
+      string << letters.shift.downcase
+      string.concat(letters)
+      string.join("")
+    end
+
     # Capitalize the first letter of each sentence in a string.
     # Scans for all known terminators followed by a space and capitalizes the next letter.
     # @param terminators [Array<Array>] An array of beginning and ending punctuation mark arrays.
@@ -114,7 +129,102 @@ module RandomWords
     # Remove any punctuation mark from the end of a string.
     # @return [String] The string with the last punctuation mark removed.
     def no_term
-      sub(/[.!?;,-]*$/, '')
+      sub(/[.!?;,:-]+$/, '')
+    end
+
+    # Indent every line in a string with a specified string.
+    # @param [String] string The string to indent with.
+    # @return [String] The indented string.
+    def indent(string)
+      gsub(/^/, string)
+    end
+
+    # Capitalize the first letter of a string.
+    # @return [String] The string with the first letter capitalized.
+    def cap_first
+      # Capitalizes the first letter of a string.
+      self[0] = self[0].upcase
+      self
+    end
+
+    # Add a specified character to the end of a string, avoiding repeated punctuation.
+    # @param [String] char The character to add (default: '.').
+    # @return [String] The string with the specified character at the end.
+    def term(char = '.')
+      # Adds a specified character to the end of a string.
+      sub(/[.?!,;]?$/, "#{char}")
+    end
+
+    # Remove extra newlines from the output.
+    # @return [String] The string with extra newlines removed.
+    def compress_newlines
+      # Removes extra newlines from the output.
+      gsub(/\n{2,}/, "\n\n").strip
+    end
+
+    # Compress newlines in the output, destructive.
+    # @see #compress_newlines
+    # @return [String] The string with newlines compressed.
+    def compress_newlines!
+      # Removes extra newlines from the output.
+      replace compress_newlines
+    end
+
+    # Preserve spaces in the output by replacing multiple spaces with %%.
+    # @return [String] The string with spaces preserved.
+    def preserve_spaces
+      # Preserves spaces in the output.
+      gsub(/ +/, '%%')
+    end
+
+    # Restore spaces in the output by replacing %% with spaces.
+    # @return [String] The string with spaces restored.
+    def restore_spaces
+      # Restores spaces in the output.
+      gsub(/%%/, ' ')
+    end
+
+    # Check if the string is trueish (starts with 't', 'y', or '1').
+    # @return [Boolean] true if the string is trueish, false otherwise.
+    def trueish?
+      to_s =~ /^[ty1]/i
+    end
+
+    # Convert the string to a source symbol based on its name.
+    # @return [Symbol] The symbolized name of the source.
+    def to_source
+      new_source = nil
+      sources = RandomWords::Generator.new.sources
+
+      sources.each do |k, v|
+        v.names.each do |name|
+          next unless name.to_s =~ /^#{self}/i
+
+          new_source = v.name
+          break
+        end
+        break if new_source
+      end
+
+      new_source || :latin
+    end
+
+    # Convert the string to a length symbol based on its name.
+    # @return [Symbol] The symbolized length of the string.
+    def to_length
+      case self
+      when /^s/i
+        :short
+      when /^m/i
+        :medium
+      when /^l/i
+        :long
+      when /^v/i
+        :very_long
+      else
+        :medium
+      end
+
     end
   end
 end

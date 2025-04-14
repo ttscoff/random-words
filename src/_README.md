@@ -1,7 +1,7 @@
 # RandomWords
 <!--README-->
 
-[![RubyGems.org](https://img.shields.io/gem/v/snibbets)](https://rubygems.org/gems/snibbets)
+[![RubyGems.org](https://img.shields.io/gem/v/random-words)](https://rubygems.org/gems/random-words)
 
 A random text (Lorem Ipsum) generator.
 
@@ -21,26 +21,67 @@ The gem installs a binary `randw`. It can generate random characters, sentences,
 
 ```console
 Usage: randw [options]
-Options:
+OPTIONS:
     -S, --source [SOURCE]            Specify the source language (default: latin)
     -l [short|medium|long|very_long],
         --length                     Specify the length of the sentence
         --graf-length [NUMBER]       Specify the number of sentences in a paragraph
     -s, --sentences [NUMBER]         Generate random sentences
+GENERATORS:
     -p, --paragraphs [NUMBER]        Generate random paragraphs
     -w, --words [NUMBER]             Generate random words
     -c, --characters [NUMBER]        Generate random characters
+    -m, --markdown SETTINGS          Generate random markdown text, comma separated string like "latin,10,all"
         --password                   Generate a random password
+PASSWORD OPTIONS:
         --separator [CHAR]           Specify the separator character for the password
-    -n, --no-whitespace              Specify whether to remove whitespace in generated text (characters only)
-Dictionaries:
+        --[no-]extended              Specify whether to use extended punctuation in generated text
+    -n, --[no-]whitespace            Specify whether to remove whitespace in generated text (characters only)
+DICTIONARIES:
         --list-dictionaries          List available dictionaries
         --create-dictionary [NAME]   Create a new dictionary
+OTHER OPTIONS:
     -d, --debug                      Enable debug mode, displays sentence/word/character counts
     -h, --help                       Display this help message
     -v, --version                    Display the version
     -t, --test                       Run the full debug test
 ```
+
+#### Generating Markdown text
+
+The `--markdown` flag takes a SETTINGS argument. This is a
+comma- or slash-separated string that determines the
+elements to include.
+
+First, the source language (defaults to latin), then the
+length of paragraphs and tables: e.g. `english/medium`. You
+can add any digits to determine how many paragraps are
+generated (default 5), e.g. `corporate/medium/10`.
+
+Then you can add individual elements, or use `/all` to
+trigger all elements. The elements available are:
+
+| trigger | element                   |
+| :------ | :------------------------ |
+| dec     | add em and strong         |
+| link    | add links                 |
+| ul      | add unordered lists       |
+| ol      | add ordered lists         |
+| dl      | add definition lists      |
+| bq      | add block quotes          |
+| code    | add code spans and blocks |
+| mark    | add ==highlights==        |
+| headers | add headlines             |
+| image   | add images                |
+| table   | add tables                |
+
+The number of elements inserted depends on the length you specify.
+
+Example commands:
+
+    $ randw -m "latin/10/ol/dl/table"
+    $ randw -m "english/5/all"
+
 
 #### Creating A New Dictionary
 
@@ -108,6 +149,12 @@ and using the library you can include
 initializing, or use `@rw.use_extended_punctuation = true`
 to set it after initializing.
 
+Repeating words or terminators more than once in the config
+files increases their likelihood of being used. In the
+default terminator.txt files, the period, question mark, and
+exclamation point are repeated multiple times to make them
+the most likely to be used.
+
 
 ##### Language Configuration
 
@@ -123,9 +170,13 @@ triggers: [english]
 
 A default configuration file will be created when running `--create-dictionary` with the CLI.
 
-- `name`: The name of the dictionary, which should be the same as the directory name in most cases
+- `name`: The name of the dictionary
+
+    This should be the same as the directory name in most cases
 - `description`: Just used for display when running `--list-dictionaries`
-- `triggers`: An array of triggers that can be used to trigger the language. For example, the `bacon` language has the triggers `[bacon, meat, carnivore]`, so you can use `randw -S meat` on the command line (or with the library).
+- `triggers`: An array of triggers that can be used to trigger the language.
+
+    For example, the `bacon` language has the triggers `[bacon, meat, carnivore]`, so you can use `randw -S meat` on the command line (or with the library).
 
 > RandomWords loosely uses English rules for sentence construction, so non-English languages will likely generate even more nonsensical strings.
 

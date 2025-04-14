@@ -51,12 +51,6 @@ module RandomWords
 
     end
 
-    # The user configuration directory path
-    # @return [String] The path to the config directory
-    def config_dir
-      @config_dir ||= File.expand_path(File.join(Dir.home, '.config', 'random-words'))
-    end
-
     # Tests if a uer dictionary exists
     # @return [Boolean] true if the user dictionary exists, false otherwise
     # @raise [RuntimeError] if the user dictionary is incomplete
@@ -178,6 +172,77 @@ module RandomWords
         @sources[name] = RandomWords::Source.new(name, dir)
       end
       @sources
+    end
+
+    # The base configuration
+    def config
+      @config ||= base_config
+    end
+
+    # private
+
+    # The user configuration directory path
+    # @return [String] The path to the config directory
+    def config_dir
+      @config_dir ||= File.expand_path(File.join(Dir.home, '.config', 'random-words'))
+    end
+
+    # Set the user configuration directory path
+    # @param dir [String] The path to the config directory
+    # @return [String] The path to the config directory
+    def config_dir=(dir)
+      @config_dir = File.expand_path(dir)
+    end
+
+    # Convert a config file's options to regular config
+    # @param configuration [Hash] The configuration hash
+    # @return [Hash] The converted configuration hash
+    def handle_config(configuration)
+      {
+        source: configuration[:source].to_source || :latin,
+        sentence_length: configuration[:length].to_length || :medium,
+        paragraph_length: configuration[:paragraph_length].to_i || 5,
+      }
+    end
+
+    # Return base configuration
+    # @return [Hash] The base configuration
+    def base_config
+      config_file = File.join(config_dir, 'config.yml')
+      if File.exist?(config_file)
+        config = YAML.load_file(config_file).symbolize_keys
+        return handle_config(config)
+      end
+      # If the config file doesn't exist, create it
+      # and return the default configuration
+      create_base_config(config_file)
+      config = YAML.load_file(config_file).symbolize_keys
+      handle_config(config)
+    end
+
+    # Look for a config.yml file in the config directory
+    # @return [String, nil] The path to the config.yml file or nil if not found
+    def config_file
+      config_file = File.join(config_dir, 'config.yml')
+      return config_file if File.exist?(config_file)
+
+      create_base_config(config_file)
+      config_file
+    end
+
+    # Create a base config.yml file if it doesn't exist
+    # @param config_file [String] The path to the config.yml file
+    # @return [String] The path to the config.yml file
+    def create_base_config(config_file)
+      FileUtils.mkdir_p(config_dir) unless File.directory?(config_dir)
+      config = {
+        "source" => "latin",
+        "length" => "medium",
+        "paragraph_length" => 5,
+      }
+      File.write(config_file, config.to_yaml)
+      warn "Created #{config_file}"
+      config_file
     end
   end
 end
