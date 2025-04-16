@@ -333,7 +333,7 @@ def markdown_settings(settings)
     grafs: 10,
     sentences: base_config[:paragraph_length],
     length: base_config[:sentence_length],
-    decorate: true,
+    decorate: false,
     link: false,
     ul: false,
     ol: false,

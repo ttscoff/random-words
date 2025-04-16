@@ -628,7 +628,7 @@ module RandomWords
     def random_name
       return @names[2].sample if (@names[0].empty? || @names[1].empty?) && !@names[2].empty?
 
-      return @names[2].sample if !@names[2].empty? && roll(30)
+      return @names[2].sample if !@names[2].empty? && roll(60)
 
       first_name = @names[0].sample
       middle_initial = roll(20) ? " #{('A'..'Z').to_a.sample}" : ''
