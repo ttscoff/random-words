@@ -36,26 +36,32 @@ module RandomWords
       full_names = []
       first_names_ended = false
       last_names_ended = false
-      each do |line|
-        if line =~ /\w +\w/
-          first_names_ended = true
-          last_names_ended = true
-        end
 
-        if line.strip =~ /^[\w\-'’"“”]+$/ && !first_names_ended
-          first_names << line
-        elsif first_names_ended
-          if line.strip =~ /^[\w\-'’"“”]+$/ && !last_names_ended
-            last_names << line
-          elsif last_names_ended
-            full_names << line
-          else
-            last_names_ended = true
-          end
+      sections = [[]]
+      idx = 0
+      each do |line|
+        if line.strip.empty? || line !~ /^[[:word:]]/i
+          idx += 1
+          sections[idx] = []
         else
-          first_names_ended = true
+          sections[idx] << line.strip
         end
       end
+
+      if sections.length == 1
+        first_names = []
+        last_names = []
+        full_names = sections[0]
+      elsif sections.length == 2
+        first_names = sections[0]
+        last_names = sections[1]
+        full_names = []
+      else
+        first_names = sections[0]
+        last_names = sections[1]
+        full_names = sections[2]
+      end
+
       first_names.delete_if(&:empty?)
       last_names.delete_if(&:empty?)
       full_names.delete_if(&:empty?)
