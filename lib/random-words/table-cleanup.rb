@@ -125,7 +125,7 @@ module RandomWords
       @alignment.zip(@widths).each do |align, width|
         @string << ':' if align == :left
         width = @max_cell_width - 2 if width >= @max_cell_width
-        @string << '-' * (width + (align == :center ? 2 : 1))
+        @string << ('-' * (width + (align == :center ? 2 : 1)))
         @string << ':' if align == :right
         @string << '|'
       end
@@ -189,7 +189,7 @@ module RandomWords
           end
         end
 
-        lines = t['table'].split(/\n/)
+        lines = t['table'].split("\n")
         lines.delete_if(&:alignment?)
 
         lines.each do |row|

@@ -9,8 +9,8 @@ module RandomWords
   class Generator
     # @return [Array<String>] arrays of elements of speech
     attr_reader :nouns, :verbs, :passive_verbs, :adverbs, :adjectives, :articles, :clauses, :subordinate_conjunctions,
-                  :terminators, :numbers, :plural_nouns, :plural_verbs, :plural_articles, :prepositions, :coordinating_conjunctions,
-                  :all_words, :extended_punctuation
+                :terminators, :numbers, :plural_nouns, :plural_verbs, :plural_articles, :prepositions, :coordinating_conjunctions,
+                :all_words, :extended_punctuation
 
     # Whether to use extended punctuation
     # @return [Boolean] true if extended punctuation is used, false otherwise
@@ -63,7 +63,7 @@ module RandomWords
       @numbers = @config.dictionary[:numbers]
       @sources = @config.sources
       @terminators = @config.dictionary[:terminators]
-      @names = [@config.dictionary[:first_names], @config.dictionary[:last_names]]
+      @names = [@config.dictionary[:first_names], @config.dictionary[:last_names], @config.dictionary[:full_names]]
       @all_words = @config.dictionary[:all_words]
 
       @options = {
@@ -77,9 +77,7 @@ module RandomWords
       @paragraph_length = @options[:paragraph_length]
       @use_extended_punctuation = @options[:use_extended_punctuation]
 
-      if @use_extended_punctuation
-        @terminators.concat(@config.dictionary[:extended_punctuation])
-      end
+      @terminators.concat(@config.dictionary[:extended_punctuation]) if @use_extended_punctuation
       lengths
     end
 
@@ -325,6 +323,7 @@ module RandomWords
       code_langs[Random.rand(code_langs.count)]
     end
 
+    # rubocop:disable Layout/LineLength
     # Return random code snippet
     # @param lang [Symbol] The language of the code snippet
     # @return [String] A randomly generated code snippet
@@ -332,16 +331,17 @@ module RandomWords
       code_snippets = {
         python: %(def hello_world():\n    print("Hello, World!")),
         ruby: %(def hello_world\n  puts "Hello, World!"\nend),
-        swift: %(func helloWorld() {\n    print(\"Hello, World!\")\n}),
-        javascript: %(function helloWorld() {\n    console.log(\"Hello, World!\");\n}),
+        swift: %(func helloWorld() {\n    print("Hello, World!")\n}),
+        javascript: %(function helloWorld() {\n    console.log("Hello, World!");\n}),
         css: %(body {\n    background-color: #f0f0f0;\n    font-family: Arial, sans-serif;\n}\nh1 {\n    color: #333;\n}),
         rust: %(fn main() {\n    println!("Hello, World!");\n}),
-        go: %(package main\nimport \"fmt\"\nfunc main() {\n    fmt.Println(\"Hello, World!\")\n}),
+        go: %(package main\nimport "fmt"\nfunc main() {\n    fmt.Println("Hello, World!")\n}),
         java: %(public class HelloWorld {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n})
       }
       lang ||= code_lang
       code_snippets[lang.to_sym]
     end
+    # rubocop:enable Layout/LineLength
 
     # Generate random markdown
     # @param settings [Hash] Settings for generating markdown
@@ -391,7 +391,7 @@ module RandomWords
         return characters(config.min, config.max, whole_words: config.whole_words, whitespace: config.whitespace,
                                                   dead_switch: config.dead_switch + 1)
       end
-      puts "made it"
+      puts 'made it'
       truncated = config.new_result.compress[0...config.max]
       truncated.compress.length == config.max ? truncated.compress : nil
     end
@@ -424,13 +424,14 @@ module RandomWords
         sentence_components.concat(additional_clauses)
         sentence_components.map!(&:strip)
         break if sentence_components.join(' ').length >= length
+
         conjunction = if roll(50) || (RandomWords.testing && !RandomWords.tested.include?('subordinate_conjunction'))
-          RandomWords.tested << 'subordinate_conjunction' if RandomWords.testing
-          random_subordinate_conjunction.strip
-        else
-          RandomWords.tested << 'coordinating_conjunction' if RandomWords.testing
-          random_coordinating_conjunction.strip
-        end
+                        RandomWords.tested << 'subordinate_conjunction' if RandomWords.testing
+                        random_subordinate_conjunction.strip
+                      else
+                        RandomWords.tested << 'coordinating_conjunction' if RandomWords.testing
+                        random_coordinating_conjunction.strip
+                      end
         # sentence_components.unshift(conjunction.capitalize) # Place conjunction at the start
         sentence_components << conjunction unless conjunction.empty?
       end
@@ -625,9 +626,14 @@ module RandomWords
     end
 
     def random_name
+      return @names[2].sample if (@names[0].empty? || @names[1].empty?) && !@names[2].empty?
+
+      return @names[2].sample if !@names[2].empty? && roll(30)
+
       first_name = @names[0].sample
+      middle_initial = roll(20) ? " #{('A'..'Z').to_a.sample}" : ''
       last_name = @names[1].sample
-      "#{first_name} #{last_name}"
+      "#{first_name}#{middle_initial} #{last_name}"
     end
 
     # Generate a random main clause
@@ -639,7 +645,6 @@ module RandomWords
     # @example
     #   generate_main_clause # Returns a random main clause
     def generate_main_clause
-
       beginning = if roll(20)
                     "#{random_number_with_plural} #{random_adverb} #{random_plural_verb}"
                   else
@@ -647,8 +652,8 @@ module RandomWords
                     adjective = random_adjective
                     "#{random_article_for_word(adjective)} #{adjective} #{noun} #{random_adverb} #{random_verb}"
                   end
-      tail = roll(50) ? " #{random_prepositional_phrase}" : ""
-      tail += roll(10) ? ", #{random_clause}" : ""
+      tail = roll(50) ? " #{random_prepositional_phrase}" : ''
+      tail += roll(10) ? ", #{random_clause}" : ''
       "#{beginning.strip.sub(/,?$/, ', ')}#{tail}"
     end
 

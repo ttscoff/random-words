@@ -48,7 +48,6 @@ module RandomWords
       rw_source = RandomWords::Source.new(@lang, @source_dir)
 
       @dictionary = rw_source.dictionary
-
     end
 
     # Tests if a uer dictionary exists
@@ -56,7 +55,9 @@ module RandomWords
     # @raise [RuntimeError] if the user dictionary is incomplete
     def user_dictionary_exist?
       if user_lang_dir
-        raise "User dictionary for #{@lang} is incomplete. Please run create_user_dictionary." unless all_parts_of_speech?(user_lang_dir, @lang)
+        raise "User dictionary for #{@lang} is incomplete. Please run create_user_dictionary." unless all_parts_of_speech?(
+          user_lang_dir, @lang
+        )
 
         true
       else
@@ -93,11 +94,11 @@ module RandomWords
       dir ||= @source_dir
       exists = true
       SPEECH_PARTS.each do |part|
-        unless File.exist?(File.join(dir, "#{part}.txt"))
-          warn "Missing #{File.join(dir, "#{part}.txt")} for #{lang}"
-          exists = false
-          break
-        end
+        next if File.exist?(File.join(dir, "#{part}.txt"))
+
+        warn "Missing #{File.join(dir, "#{part}.txt")} for #{lang}"
+        exists = false
+        break
       end
       CONFIG_FILES.each do |file|
         unless File.exist?(File.join(dir, "#{file}.yml"))
@@ -112,7 +113,8 @@ module RandomWords
     # @param lang [String] The language to create the dictionary for
     # @return [Symbol, nil] The language symbol if successful, nil otherwise
     def create_user_dictionary(lang = nil)
-      return lang.to_sym if File.directory?(File.join(config_dir, 'words', lang)) && all_parts_of_speech?(File.join(config_dir, 'words', lang), lang)
+      return lang.to_sym if File.directory?(File.join(config_dir, 'words',
+                                                      lang)) && all_parts_of_speech?(File.join(config_dir, 'words', lang), lang)
 
       lang_dir = File.join(config_dir, 'words', lang)
 
@@ -132,27 +134,29 @@ module RandomWords
       target_file = File.join(lang_dir, 'numbers.yml')
       unless File.exist?(target_file)
         FileUtils.cp(source_file, target_file)
-        warn "Created numbers.yml"
+        warn 'Created numbers.yml'
       end
 
       # Create the config.yml file if it doesn't exist
-      target_file = File.join(lang_dir, "config.yml")
+      target_file = File.join(lang_dir, 'config.yml')
 
       unless File.exist?(target_file)
         config = {
-          "name" => lang,
-          "triggers" => [lang],
-          "description" => "User dictionary for #{lang}",
+          'name' => lang,
+          'triggers' => [lang],
+          'description' => "User dictionary for #{lang}"
         }
         File.write(target_file, config.to_yaml)
         warn "Created #{target_file}"
       end
 
-      if all_parts_of_speech?(lang_dir, lang) || (RandomWords.testing && !RandomWords.tested.include?('create_user_dictionary'))
-        RandomWords.tested << 'create_user_dictionary'
-        warn "Created #{lang} in #{lang_dir}"
-        lang.to_sym
+      unless all_parts_of_speech?(lang_dir, lang) || (RandomWords.testing && !RandomWords.tested.include?('create_user_dictionary'))
+        return
       end
+
+      RandomWords.tested << 'create_user_dictionary'
+      warn "Created #{lang} in #{lang_dir}"
+      lang.to_sym
     end
 
     # List all sources available, builtin and custom
@@ -161,13 +165,15 @@ module RandomWords
       return @sources if @sources
 
       @sources = {}
-      Dir[File.join(__dir__, "words", "*")].each do |dir|
+      Dir[File.join(__dir__, 'words', '*')].each do |dir|
         next unless File.directory?(dir)
+
         name = File.basename(dir)
         @sources[name] = RandomWords::Source.new(name, dir)
       end
-      Dir[File.join(config_dir, "words", "*")].each do |dir|
+      Dir[File.join(config_dir, 'words', '*')].each do |dir|
         next unless File.directory?(dir)
+
         name = File.basename(dir)
         @sources[name] = RandomWords::Source.new(name, dir)
       end
@@ -201,7 +207,7 @@ module RandomWords
       {
         source: configuration[:source].to_source || :latin,
         sentence_length: configuration[:length].to_length || :medium,
-        paragraph_length: configuration[:paragraph_length].to_i || 5,
+        paragraph_length: configuration[:paragraph_length].to_i || 5
       }
     end
 
@@ -236,9 +242,9 @@ module RandomWords
     def create_base_config(config_file)
       FileUtils.mkdir_p(config_dir) unless File.directory?(config_dir)
       config = {
-        "source" => "latin",
-        "length" => "medium",
-        "paragraph_length" => 5,
+        'source' => 'latin',
+        'length' => 'medium',
+        'paragraph_length' => 5
       }
       File.write(config_file, config.to_yaml)
       warn "Created #{config_file}"

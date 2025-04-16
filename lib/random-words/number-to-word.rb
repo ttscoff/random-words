@@ -35,14 +35,13 @@ module RandomWords
       tmp = self / 1000
       final = (self % 1000).hundred_to_word(2, numbers)
       place = 3 # special-case the tens and below
-      until tmp.zero? do
-        final = (tmp%1000).hundred_to_word(place, numbers) + ' ' + final
+      until tmp.zero?
+        final = (tmp % 1000).hundred_to_word(place, numbers) + ' ' + final
         place += 1
-        tmp = tmp / 1000
+        tmp /= 1000
       end
-      final == '' ? 'zero' : final.sub(/\s+$/,'')
+      final == '' ? 'zero' : final.sub(/\s+$/, '')
     end
-
 
     # For testing edge cases
     def additional_tests(numbers)
@@ -56,20 +55,22 @@ module RandomWords
 
     # Convert a number to its word representation for the hundreds place.
     def hundred_to_word(place = 0, numbers)
-      if self.zero?
+      if zero?
         ''
       elsif self < 10
-        self.append_place(self.digit_to_word(numbers), place, numbers)
+        append_place(digit_to_word(numbers), place, numbers)
       elsif self < 20
-        self.append_place(self.teen_to_word(numbers), place, numbers)
+        append_place(teen_to_word(numbers), place, numbers)
       elsif self < 100
-        self.append_place(self.tens_place_to_word(numbers), place, numbers)
+        append_place(tens_place_to_word(numbers), place, numbers)
       else
-        (hundreds,tens) = [self / 100, self % 100]
+        hundreds = self / 100
+        tens = self % 100
         if tens.zero?
-          self.append_place(hundreds.digit_to_word(numbers) + " #{numbers[:places][2]}", place, numbers)
+          append_place(hundreds.digit_to_word(numbers) + " #{numbers[:places][2]}", place, numbers)
         else
-          self.append_place(hundreds.digit_to_word(numbers) + " #{numbers[:places][2]} " + tens.tens_place_to_word(numbers), place, numbers)
+          append_place(hundreds.digit_to_word(numbers) + " #{numbers[:places][2]} " + tens.tens_place_to_word(numbers), place,
+                       numbers)
         end
       end
     end
@@ -96,11 +97,12 @@ module RandomWords
     #   45.tens_place_to_word(numbers) # => "forty five"
     def tens_place_to_word(numbers)
       if self > 19
-        (tens, ones) = [self/10, self%10]
-        ten = numbers[:tens][tens-2]
-        ten+(ones.zero? ? '' : ' ' + ones.digit_to_word(numbers))
+        tens = self / 10
+        ones = self % 10
+        ten = numbers[:tens][tens - 2]
+        ten + (ones.zero? ? '' : ' ' + ones.digit_to_word(numbers))
       else
-        self.teen_to_word(numbers)
+        teen_to_word(numbers)
       end
     end
 
@@ -112,11 +114,11 @@ module RandomWords
     #   12.teen_to_word(numbers) # => "twelve"
     def teen_to_word(numbers)
       if self < 10
-        self.digit_to_word(numbers)
+        digit_to_word(numbers)
       elsif self < 20
-        numbers[:teens][self-10]
+        numbers[:teens][self - 10]
       else
-        self.tens_place_to_word(numbers)
+        tens_place_to_word(numbers)
       end
     end
 
@@ -127,7 +129,7 @@ module RandomWords
     # @example
     #   5.digit_to_word(numbers) # => "five"
     def digit_to_word(numbers)
-      if self.zero?
+      if zero?
         ''
       else
         numbers[:digits][self]

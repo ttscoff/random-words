@@ -2,8 +2,16 @@
 
 RSpec.describe RandomWords::Generator do
   subject(:generator) { described_class.new }
-  subject(:opening_regex) {"[A-Z#{Regexp.escape(described_class.new.terminators.map { |t| t[0].split("").first }.delete_if(&:nil?).sort.uniq.join)}]"}
-  subject(:closing_regex) {"[#{Regexp.escape(described_class.new.terminators.map { |t| t[1].split("").last }.delete_if(&:nil?).sort.uniq.join)}]"}
+  subject(:opening_regex) do
+    "[A-Z#{Regexp.escape(described_class.new.terminators.map do |t|
+      t[0].chars.first
+    end.delete_if(&:nil?).sort.uniq.join)}]"
+  end
+  subject(:closing_regex) do
+    "[#{Regexp.escape(described_class.new.terminators.map do |t|
+      t[1].chars.last
+    end.delete_if(&:nil?).sort.uniq.join)}]"
+  end
   subject(:sentence_regex) { Regexp.new("^#{opening_regex}.*?#{closing_regex}$") }
 
   describe '#initialize' do
@@ -18,7 +26,7 @@ RSpec.describe RandomWords::Generator do
     end
 
     it 'initializes with use_extended_punctuation set to true' do
-      expect(described_class.new(:english, {use_extended_punctuation: true}).use_extended_punctuation).to be true
+      expect(described_class.new(:english, { use_extended_punctuation: true }).use_extended_punctuation).to be true
     end
   end
 
@@ -33,7 +41,7 @@ RSpec.describe RandomWords::Generator do
     it 'returns specified number of words' do
       [1, 5, 10].each do |count|
         result = generator.words(count)
-        expect(result.split(' ').length).to eq(count)
+        expect(result.split.length).to eq(count)
         expect(result).to be_a(String)
         expect(result).not_to be_empty
       end
@@ -147,18 +155,18 @@ RSpec.describe RandomWords::Generator do
       expect(generator.sentence_length).to eq(:very_long)
     end
 
-    it "raises an error for invalid sentence length" do
+    it 'raises an error for invalid sentence length' do
       expect { generator.sentence_length = :invalid }.to raise_error(ArgumentError)
     end
   end
 
   describe '#paragraph_length=' do
-    it "updates the paragraph length" do
+    it 'updates the paragraph length' do
       generator.paragraph_length = 3
       expect(generator.paragraph_length).to eq(3)
     end
 
-    it "raises an error for invalid paragraph length" do
+    it 'raises an error for invalid paragraph length' do
       expect { generator.paragraph_length = -1 }.to raise_error(ArgumentError)
     end
   end
@@ -185,7 +193,7 @@ RSpec.describe RandomWords::Generator do
     it 'combines sentences when length is insufficient' do
       short_result = generator.send(:generate_combined_sentence, 1000)
       conjunctions = generator.coordinating_conjunctions.concat(generator.subordinate_conjunctions)
-      expect(short_result.scan(/,/).count).to be >= 1
+      expect(short_result.scan(',').count).to be >= 1
       expect(short_result.scan(/#{Regexp.union(conjunctions)}/).count).to be >= 1
     end
 
@@ -200,12 +208,12 @@ RSpec.describe RandomWords::Generator do
     end
   end
 
-  describe "#use_extended_punctuation" do
-    it "raises an error if use_extended_punctuation is set to an invalid value" do
-      expect { generator.use_extended_punctuation = "invalid" }.to raise_error(ArgumentError)
+  describe '#use_extended_punctuation' do
+    it 'raises an error if use_extended_punctuation is set to an invalid value' do
+      expect { generator.use_extended_punctuation = 'invalid' }.to raise_error(ArgumentError)
     end
 
-    it "returns a sentence with extended punctuation if use_extended_punctuation is true" do
+    it 'returns a sentence with extended punctuation if use_extended_punctuation is true' do
       generator.use_extended_punctuation = true
       result = [generator.paragraph(10)]
       10.times do
@@ -215,7 +223,7 @@ RSpec.describe RandomWords::Generator do
       expect(result).to match(/[()"']/)
     end
 
-    it "returns a sentence without extended punctuation if use_extended_punctuation is false" do
+    it 'returns a sentence without extended punctuation if use_extended_punctuation is false' do
       generator.use_extended_punctuation = false
       result = [generator.paragraph(10)]
       10.times do

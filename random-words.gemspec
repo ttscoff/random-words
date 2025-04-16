@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email = 'me@brettterpstra.com'
 
   spec.summary = 'Random words generator'
-  spec.description = 'Generate random text (lorem ipsum) from a variety of sources. Can be used to generate random words, sentences, or paragraphs.'
+  spec.description = 'Generate random text (lorem ipsum) from a variety of sources.'
   spec.homepage = 'https://github.com/ttscoff/random-words'
   spec.license = 'MIT'
   spec.required_ruby_version = '>= 2.6.0'

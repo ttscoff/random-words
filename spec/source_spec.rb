@@ -9,9 +9,9 @@ RSpec.describe RandomWords::Source do
     end
   end
 
-  describe "#initialize" do
+  describe '#initialize' do
     it 'fails to load config file' do
-      expect(described_class.new(:english, "invalid_path").config).to be_empty
+      expect(described_class.new(:english, 'invalid_path').config).to be_empty
     end
   end
 
@@ -29,25 +29,25 @@ RSpec.describe RandomWords::Source do
     end
 
     after do
-      File.delete(temp_yaml_file) if File.exist?(temp_yaml_file)
+      FileUtils.rm_f(temp_yaml_file)
     end
 
     it 'loads and parses yaml file into hash with array values' do
       result = source.send(:from_yaml, 'test')
-      expect(result).to eq({ one: ['first', 'second'], two: ['third', 'fourth'] })
+      expect(result).to eq({ one: %w[first second], two: %w[third fourth] })
     end
 
     it 'returns empty hash when file does not exist' do
-      expect(source.send(:from_yaml, "nonexistent")).to eq({})
+      expect(source.send(:from_yaml, 'nonexistent')).to eq({})
     end
 
     context 'with invalid YAML' do
       before do
-        File.write(temp_yaml_file, "invalid: yaml: content")
+        File.write(temp_yaml_file, 'invalid: yaml: content')
       end
 
       it 'returns empty hash on YAML syntax error' do
-        expect(source.send(:from_yaml, "test")).to eq({})
+        expect(source.send(:from_yaml, 'test')).to eq({})
       end
     end
   end

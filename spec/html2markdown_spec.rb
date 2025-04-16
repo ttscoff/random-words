@@ -4,8 +4,8 @@
 
 RSpec.describe RandomWords::HTML2Markdown do
   let(:html) { '<p>Hello world</p>' }
-  let(:source) { File.read("spec/fixtures/sample.html") }
-  let(:baseurl) { "http://example.com" }
+  let(:source) { File.read('spec/fixtures/sample.html') }
+  let(:baseurl) { 'http://example.com' }
   let(:converter) { described_class.new(html, baseurl) }
 
   describe '#initialize' do
@@ -64,12 +64,12 @@ RSpec.describe RandomWords::HTML2Markdown do
 
   describe '#add_link' do
     it 'adds link to collection' do
-      link = {href: 'http://example.com', title: 'Example'}
+      link = { href: 'http://example.com', title: 'Example' }
       expect(converter.add_link(link)).to eq(1)
     end
 
     it 'returns existing link index if duplicate' do
-      link = {href: 'http://example.com', title: 'Example'}
+      link = { href: 'http://example.com', title: 'Example' }
       converter.add_link(link)
       expect(converter.add_link(link)).to eq(1)
     end
@@ -77,7 +77,7 @@ RSpec.describe RandomWords::HTML2Markdown do
 
   describe '#wrap' do
     it 'wraps text at 74 characters' do
-      long_text = "A" * 100
+      long_text = 'A' * 100
       expect(converter.wrap(long_text)).to include("\n")
     end
   end

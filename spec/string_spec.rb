@@ -44,31 +44,31 @@ RSpec.describe String do
   describe '.terminate' do
     it 'terminates a string with a random punctuation mark' do
       str = 'Hello World'
-      expect(str.terminate(["(", ")"])).to match(/\(Hello World\)$/)
+      expect(str.terminate(['(', ')'])).to match(/\(Hello World\)$/)
     end
   end
 
   describe '.to_sent' do
     it 'converts a string to a sentence format' do
       str = 'hello World'
-      expect(str.to_sent(["", "."])).to eq('Hello World.')
+      expect(str.to_sent(['', '.'])).to eq('Hello World.')
     end
   end
 
   describe '.fix_caps' do
     it 'capitalizes the first letter of each sentence' do
       str = 'hello world. this is a test.'
-      expect(str.fix_caps([["", "."]])).to eq('Hello world. This is a test.')
+      expect(str.fix_caps([['', '.']])).to eq('Hello world. This is a test.')
     end
 
     it 'handles strings with no sentences' do
       str = 'hello world'
-      expect(str.fix_caps([["", "."]])).to eq('Hello world')
+      expect(str.fix_caps([['', '.']])).to eq('Hello world')
     end
 
     it 'handles empty strings' do
       str = ''
-      expect(str.fix_caps([["", "."]])).to eq('')
+      expect(str.fix_caps([['', '.']])).to eq('')
     end
   end
 
@@ -155,13 +155,13 @@ RSpec.describe String do
     end
   end
 
-  describe ".to_source" do
+  describe '.to_source' do
     before do
       allow(RandomWords::Generator).to receive(:new).and_return(double(sources: {
-        latin: double(names: [:latin]),
-        greek: double(names: [:greek, :hellenic], name: :greek),
-        norse: double(names: [:norse, :viking], name: :norse)
-      }))
+                                                                         latin: double(names: [:latin]),
+                                                                         greek: double(names: %i[greek hellenic], name: :greek),
+                                                                         norse: double(names: %i[norse viking], name: :norse)
+                                                                       }))
     end
 
     it 'matches source by name prefix' do

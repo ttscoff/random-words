@@ -33,19 +33,33 @@ module RandomWords
     def split_names
       first_names = []
       last_names = []
+      full_names = []
       first_names_ended = false
+      last_names_ended = false
       each do |line|
-        if line.strip =~ /^[\w-]+$/ && !first_names_ended
+        if line =~ /\w +\w/
+          first_names_ended = true
+          last_names_ended = true
+        end
+
+        if line.strip =~ /^[\w\-'’"“”]+$/ && !first_names_ended
           first_names << line
         elsif first_names_ended
-          last_names << line
+          if line.strip =~ /^[\w\-'’"“”]+$/ && !last_names_ended
+            last_names << line
+          elsif last_names_ended
+            full_names << line
+          else
+            last_names_ended = true
+          end
         else
           first_names_ended = true
         end
       end
       first_names.delete_if(&:empty?)
       last_names.delete_if(&:empty?)
-      [first_names, last_names]
+      full_names.delete_if(&:empty?)
+      [first_names, last_names, full_names]
     end
   end
 end

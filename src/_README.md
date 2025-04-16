@@ -129,6 +129,32 @@ verbs-plural.txt
 verbs-singular.txt
 ```
 
+##### Language Configuration
+
+The `config.yml` file in a language directory is a simple
+YAML configuration. It contains the keys:
+
+```yaml
+---
+name: english
+description: English words
+triggers: [english]
+```
+
+A default configuration file will be created when running `--create-dictionary` with the CLI.
+
+- `name`: The name of the dictionary
+
+    This should be the same as the directory name in most cases
+- `description`: Just used for display when running `--list-dictionaries`
+- `triggers`: An array of triggers that can be used to trigger the language.
+
+    For example, the `bacon` language has the triggers `[bacon, meat, carnivore]`, so you can use `randw -S meat` on the command line (or with the library).
+
+
+
+##### Terminators
+
 The `terminators.txt` file contains pairs of punctuation,
 separated by commas, one per line. If a sentene terminator
 doesn't have opening punctuation, start the line with a
@@ -155,30 +181,19 @@ default terminator.txt files, the period, question mark, and
 exclamation point are repeated multiple times to make them
 the most likely to be used.
 
+##### Names
 
-##### Language Configuration
+The `names.txt` file is just used when creating block quotes
+in Markdown or HTML output. Sections are split by blank
+lines: first names, last names, and optionally full names.
+If the first line contains characters other than letters,
+single quotes, and dashes, it will be assumed that you've
+skipped straight to full names and those will be used
+instead of generating random combinations.
 
-The `config.yml` file in a language directory is a simple
-YAML configuration. It contains the keys:
+#### Language Notes
 
-```yaml
----
-name: english
-description: English words
-triggers: [english]
-```
-
-A default configuration file will be created when running `--create-dictionary` with the CLI.
-
-- `name`: The name of the dictionary
-
-    This should be the same as the directory name in most cases
-- `description`: Just used for display when running `--list-dictionaries`
-- `triggers`: An array of triggers that can be used to trigger the language.
-
-    For example, the `bacon` language has the triggers `[bacon, meat, carnivore]`, so you can use `randw -S meat` on the command line (or with the library).
-
-> RandomWords loosely uses English rules for sentence construction, so non-English languages will likely generate even more nonsensical strings.
+RandomWords loosely uses English rules for sentence construction, so non-English languages will likely generate even more nonsensical strings.
 
 If you create a fun dictionary, please let me know (or make a PR) and I'll gladly include (most) new dictionaries in the main distribution.
 

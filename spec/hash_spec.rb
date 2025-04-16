@@ -8,7 +8,7 @@ RSpec.describe Hash do
     end
 
     it 'handles nested hashes' do
-      hash = { "user" => { 'name' => 'John', 'age' => 30 } }
+      hash = { 'user' => { 'name' => 'John', 'age' => 30 } }
       expect(hash.symbolize_keys).to eq({ user: { name: 'John', age: 30 } })
     end
   end
@@ -21,7 +21,7 @@ RSpec.describe Hash do
 
     it 'handles nested hashes' do
       hash = { user: { name: 'John', age: 30 } }
-      expect(hash.stringify_keys).to eq({ "user" => { 'name' => 'John', 'age' => 30 } })
+      expect(hash.stringify_keys).to eq({ 'user' => { 'name' => 'John', 'age' => 30 } })
     end
   end
 end
