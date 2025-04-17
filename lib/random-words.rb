@@ -12,8 +12,8 @@ require_relative 'random-words/source'
 require_relative 'random-words/config'
 require_relative 'random-words/generator'
 require_relative 'random-words/number-to-word'
-require_relative 'random-words/lorem-markdown.rb'
-require_relative 'random-words/html2markdown.rb'
+require_relative 'random-words/lorem-markdown'
+require_relative 'random-words/html2markdown'
 
 # Main module for RandomWords
 module RandomWords

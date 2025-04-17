@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
+
 module RandomWords
   # String extensions for RandomWords
   # This module extends the String class with additional methods for cleaning,
@@ -42,12 +43,10 @@ module RandomWords
 
       letters = split('')
       string = []
-      while letters[0] !~ /[[:word:]]/
-        string << letters.shift
-      end
+      string << letters.shift while letters[0] !~ /[[:word:]]/
       string << letters.shift.upcase
       string.concat(letters)
-      string.join("")
+      string.join('')
     end
 
     # Downcase the first letter of a string, respecting punctuation.
@@ -57,12 +56,10 @@ module RandomWords
 
       letters = split('')
       string = []
-      while letters[0] !~ /[[:word:]]/
-        string << letters.shift
-      end
+      string << letters.shift while letters[0] !~ /[[:word:]]/
       string << letters.shift.downcase
       string.concat(letters)
-      string.join("")
+      string.join('')
     end
 
     # Capitalize the first letter of each sentence in a string.
@@ -75,7 +72,7 @@ module RandomWords
     def fix_caps(terminators)
       return self if empty?
 
-      terminator_ends = terminators.map { |t| t[1].split("").last }.delete_if(&:empty?)
+      terminator_ends = terminators.map { |t| t[1].split('').last }.delete_if(&:empty?)
       return capitalize if terminator_ends.empty?
 
       terminator_regex = Regexp.new("[#{Regexp.escape(terminator_ends.join)}]")
@@ -83,7 +80,7 @@ module RandomWords
 
       split(/(?<=#{terminator_regex}) /).map do |sentence|
         sentence.capitalize
-      end.join(" ")
+      end.join(' ')
     end
 
     # Remove duplicate commas
@@ -91,7 +88,7 @@ module RandomWords
     # @example
     #  "Hello, , World!".remove_duplicate_commas # => "Hello, World!"
     def dedup_commas
-      gsub(/(, *)+/, ',').gsub(/,/, ', ')
+      gsub(/(, *)+/, ',').gsub(',', ', ')
     end
 
     # Generate a sentence with capitalization and terminator
@@ -128,8 +125,17 @@ module RandomWords
 
     # Remove any punctuation mark from the end of a string.
     # @return [String] The string with the last punctuation mark removed.
-    def no_term
-      sub(/[.!?;,:-]+$/, '')
+    def no_term(terminators)
+      str = dup
+      leading = terminators.map { |t| t[0] }.delete_if(&:empty?).join
+      trailing = terminators.map { |t| t[1] }.delete_if(&:empty?).join
+      return self if leading.empty? && trailing.empty?
+
+      str.sub!(/^[#{Regexp.escape(leading)}]/, '') unless leading.empty?
+
+      str.sub!(/[#{Regexp.escape(trailing)}]+$/, '') unless trailing.empty?
+
+      str
     end
 
     # Indent every line in a string with a specified string.
@@ -181,7 +187,7 @@ module RandomWords
     # @return [String] The string with spaces restored.
     def restore_spaces
       # Restores spaces in the output.
-      gsub(/%%/, ' ')
+      gsub('%%', ' ')
     end
 
     # Check if the string is trueish (starts with 't', 'y', or '1').
@@ -196,7 +202,7 @@ module RandomWords
       new_source = nil
       sources = RandomWords::Generator.new.sources
 
-      sources.each do |k, v|
+      sources.each do |_k, v|
         v.names.each do |name|
           next unless name.to_s =~ /^#{self}/i
 
@@ -224,7 +230,6 @@ module RandomWords
       else
         :medium
       end
-
     end
   end
 end

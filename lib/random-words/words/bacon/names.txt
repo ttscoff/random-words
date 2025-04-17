@@ -1,74 +1,54 @@
-John
-Jane
-Mary
-Michael
-Sarah
-David
-Emily
-James
-Jessica
-Robert
-Linda
-William
-Patricia
-Brett
-Ashley
-Matthew
-Jennifer
-Yasmin
+Bacon
+Hammy
+Sizzles
+Porky
+Banger
+Chops
+Salami
+Meatball
 
-Smith
-Johnson
-Williams
-Brown
-Jones
-Garcia
-Miller
-Davis
-Rodriguez
-Martinez
-Hernandez
-Lopez
-Gonzalez
-Wilson
-Anderson
-Taylor
-Thomas
-Moore
-Jackson
-Martin
-Lee
-Perez
-Thompson
-White
-Harris
-Sanchez
-Clark
-Ramirez
-Lewis
-Robinson
-Walker
-Young
-Allen
-King
-Wright
-Scott
-Torres
-Nguyen
-Hill
-Flores
-Green
-Adams
-Nelson
-Baker
-Hall
-Rivera
-Campbell
-Mitchell
-Carter
-Roberts
-Gomez
-Phillips
-Evans
-Turner
-Diaz
+Baconbottom
+Porkbelly
+Hamfist
+Sizzlesticks
+Meatwhacker
+Chopson
+Wurstler
+Grillmaster
+Steakhouse
+Sausageface
+McSizzlefest
+McBaconFace
+
+Sir Loin
+Winnie the Ham
+Bacon McSizzle
+Charlie Chorizo
+Daisy McPorkbelly
+Elijah Eggplant
+Fiona Fryingpan
+Gus McGrill
+Hannah Hamhock
+Iggy McBaconbits
+Jasper Jerky
+Kylie McMeatball
+Lola Loin
+Marty McRib
+Nina Nacho
+Olive McSausage
+Penny Porkchop
+Quincy Quiche
+Randy Ribeye
+Sally Sausage
+Tina T-Bone
+Ursula Umami
+Vicky Veggiebacon
+Wally Wurst
+Xander X-tra Bacon
+Yvonne Yummy
+Zachary Zesty
+Benny Brisket
+Chad Cheeseburger
+Lenny Lard
+Maddie Meatloaf
+Ricky Rumpsteak

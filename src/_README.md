@@ -17,25 +17,38 @@ you use [Homebrew](https://brew.sh).
 
 ### CLI
 
-The gem installs a binary `randw`. It can generate random characters, sentences, paragraphs, and passwords.
+The gem installs a binary `randw`. It can generate random
+characters, sentences, paragraphs, markdown, html,  and
+passwords.
 
 ```console
 Usage: randw [options]
 OPTIONS:
-    -S, --source [SOURCE]            Specify the source language (default: latin)
-    -l [short|medium|long|very_long],
-        --length                     Specify the length of the sentence
-        --graf-length [NUMBER]       Specify the number of sentences in a paragraph
-    -s, --sentences [NUMBER]         Generate random sentences
-GENERATORS:
-    -p, --paragraphs [NUMBER]        Generate random paragraphs
-    -w, --words [NUMBER]             Generate random words
-    -c, --characters [NUMBER]        Generate random characters
-    -m, --markdown SETTINGS          Generate random markdown text, comma separated string like "latin,10,all"
-        --password                   Generate a random password
-PASSWORD OPTIONS:
-        --separator [CHAR]           Specify the separator character for the password
+    -S, --source SOURCE              Specify the source language (default: latin)
+    -l, --length LENGTH              Specify the length of the sentence [short|medium|long|very_long]
+        --graf-length NUMBER         Specify the number of sentences in a paragraph
         --[no-]extended              Specify whether to use extended punctuation in generated text
+GENERATORS:
+    -s, --sentences [NUMBER]         Generate NUMBER of random sentences (default: 3)
+    -p, --paragraphs [NUMBER]        Generate NUMBER of random paragraphs (default: 3)
+    -w, --words [NUMBER]             Generate NUMBER of random words (default: 10)
+    -c, --characters [NUMBER]        Generate random characters of length (default: 100)
+    -m, --markdown [SETTINGS]        Generate random markdown text, comma separated string like "latin,10,all"
+                                     dec: add em and strong
+                                     link: add links
+                                     ul: add unordered lists
+                                     ol: add ordered lists
+                                     dl: add definition lists
+                                     bq: add block quotes
+                                     code: add code spans and block
+                                     mark: add ==highlights==
+                                     headers: add headlines
+                                     image: add images
+                                     table: add tables
+    -H, --html [SETTINGS]            Generate random html text, comma separated string like "latin,10,all"
+        --password [LENGTH]          Generate a random password of LENGTH (default: 20)
+PASSWORD OPTIONS:
+        --separator CHAR             Specify the separator character for the password (default: " ")
     -n, --[no-]whitespace            Specify whether to remove whitespace in generated text (characters only)
 DICTIONARIES:
         --list-dictionaries          List available dictionaries
@@ -79,9 +92,23 @@ The number of elements inserted depends on the length you specify.
 
 Example commands:
 
-    $ randw -m "latin/10/ol/dl/table"
-    $ randw -m "english/5/all"
+```console
+$ randw -m "latin/1/short/ol"
 
+Illa brevis muros potior arcesso, apud multae octo centum nonaginta octo nodum! Haec ruosus misericordia mox contendo, apud nullus fors.
+
+
+1. Hoc cognatus opus facile complor latus discendo
+2. Aliqua apparens census quod nego
+3. Nullus salvus dux apud habeo spectabilis
+4. Quaedam sensus regnum cura gaudeo ornatus faeneo mox
+
+$ randw -m "english,5,all"
+
+# Any shiny napkin effectively picks
+
+Neither sudden lake exceedingly works, outside a clarity even if which is a source of _an_ strength even if which holds _one subtle horse_ the future. Any lovable tank remarkabl...
+```
 
 #### Creating A New Dictionary
 
@@ -119,9 +146,11 @@ clauses.txt
 config.yml
 conjunctions-coordinating.txt
 conjunctions-subordinate.txt
+names.txt
 nouns-plural.txt
 nouns-singular.txt
 numbers.txt
+phrases.txt
 prepositions.txt
 terminators.txt
 verbs-passive.txt
@@ -129,8 +158,34 @@ verbs-plural.txt
 verbs-singular.txt
 ```
 
+##### Language Configuration
+
+The `config.yml` file in a language directory is a simple
+YAML configuration. It contains the keys:
+
+```yaml
+---
+name: english
+description: English words
+triggers: [english]
+```
+
+A default configuration file will be created when running `--create-dictionary` with the CLI.
+
+- `name`: The name of the dictionary
+
+    This should be the same as the directory name in most cases
+- `description`: Just used for display when running `--list-dictionaries`
+- `triggers`: An array of triggers that can be used to trigger the language.
+
+    For example, the `bacon` language has the triggers `[bacon, meat, carnivore]`, so you can use `randw -S meat` on the command line (or with the library).
+
+
+
+##### Terminators
+
 The `terminators.txt` file contains pairs of punctuation,
-separated by commas, one per line. If a sentene terminator
+separated by commas, one per line. If a sentence terminator
 doesn't have opening punctuation, start the line with a
 comma. More than one character can be used in either side of
 the pair. For example, to create a double quoted sentence
@@ -155,30 +210,19 @@ default terminator.txt files, the period, question mark, and
 exclamation point are repeated multiple times to make them
 the most likely to be used.
 
+##### Names
 
-##### Language Configuration
+The `names.txt` file is just used when creating block quotes
+in Markdown or HTML output. Sections are split by blank
+lines: first names, last names, and optionally full names.
+If the first line contains characters other than letters,
+single quotes, and dashes, it will be assumed that you've
+skipped straight to full names and those will be used
+instead of generating random combinations.
 
-The `config.yml` file in a language directory is a simple
-YAML configuration. It contains the keys:
+#### Language Notes
 
-```yaml
----
-name: english
-description: English words
-triggers: [english]
-```
-
-A default configuration file will be created when running `--create-dictionary` with the CLI.
-
-- `name`: The name of the dictionary
-
-    This should be the same as the directory name in most cases
-- `description`: Just used for display when running `--list-dictionaries`
-- `triggers`: An array of triggers that can be used to trigger the language.
-
-    For example, the `bacon` language has the triggers `[bacon, meat, carnivore]`, so you can use `randw -S meat` on the command line (or with the library).
-
-> RandomWords loosely uses English rules for sentence construction, so non-English languages will likely generate even more nonsensical strings.
+RandomWords loosely uses English rules for sentence construction, so non-English languages will likely generate even more nonsensical strings.
 
 If you create a fun dictionary, please let me know (or make a PR) and I'll gladly include (most) new dictionaries in the main distribution.
 

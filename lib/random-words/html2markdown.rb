@@ -80,7 +80,7 @@ module RandomWords
           line = []
         end
       end
-      out << line.join(' ') + (str[-1..-1] =~ /[ \t\n]/ ? str[-1..-1] : '')
+      out << (line.join(' ') + (str[-1..-1] =~ /[ \t\n]/ ? str[-1..-1] : ''))
       out.join("\n")
     end
 
@@ -101,12 +101,12 @@ module RandomWords
         @section_level -= 1
         o
       when /h(\d+)/
-        "\n\n" + ('#' * (::Regexp.last_match(1).to_i + @section_level) + ' ' + output_for_children(node)) + "\n\n"
+        "\n\n" + (('#' * (::Regexp.last_match(1).to_i + @section_level)) + ' ' + output_for_children(node)) + "\n\n"
       when /mark/
         "==#{output_for_children(node)}=="
       when 'blockquote'
         @section_level += 1
-        o = "\n\n> #{output_for_children(node).lstrip.gsub(/\n/, "\n> ")}\n\n".gsub(/> \n(> \n)+/, "> \n")
+        o = "\n\n> #{output_for_children(node).lstrip.gsub("\n", "\n> ")}\n\n".gsub(/> \n(> \n)+/, "> \n")
         @section_level -= 1
         o
       when 'cite'
@@ -130,7 +130,7 @@ module RandomWords
           @in_pre = false
           node.text.strip
         else
-          "`#{output_for_children(node).gsub(/\n/, ' ')}`"
+          "`#{output_for_children(node).gsub("\n", ' ')}`"
         end
       when 'pre'
         @in_pre = true
@@ -185,7 +185,7 @@ module RandomWords
           %w[th td].include?(c.name)
         end.map do |c|
           output_for(c)
-        end.join.gsub(/\|\|/, '|') + header
+        end.join.gsub('||', '|') + header
       when 'th', 'td'
         "| #{output_for_children(node)} |"
       when 'text'
@@ -193,7 +193,7 @@ module RandomWords
         if (c = node.content.force_encoding(@encoding)) =~ /\S/
           c.gsub!(/\n\n+/, '<$PreserveDouble$>')
           c.gsub!(/\s+/, ' ')
-          c.gsub(/<\$PreserveDouble\$>/, "\n\n")
+          c.gsub('<$PreserveDouble$>', "\n\n")
         else
           c
         end

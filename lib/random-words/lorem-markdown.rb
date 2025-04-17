@@ -41,9 +41,9 @@ module RandomWords
       @options = defaults.merge(options)
 
       @generator = RandomWords::Generator.new(@options[:source], {
-        sentence_length: @options[:length],
-        paragraph_length: @options[:sentences]
-       })
+                                                sentence_length: @options[:length],
+                                                paragraph_length: @options[:sentences]
+                                              })
 
       @output = ''
       strong = @options[:decorate]
@@ -163,13 +163,13 @@ module RandomWords
       newline = nested ? '' : "\n\n"
       quote = "#{newline}<blockquote>\n"
       quote += paragraph(level1,
-                        em: @options[:decorate],
-                        strong: @options[:decorate],
-                        links: @options[:link],
-                        code: @options[:code],
-                        mark: @options[:mark]).gsub(
-                          /\n+/, "\n"
-                        )
+                         em: @options[:decorate],
+                         strong: @options[:decorate],
+                         links: @options[:link],
+                         code: @options[:code],
+                         mark: @options[:mark]).gsub(
+                           /\n+/, "\n"
+                         )
       quote += blockquote(level2, true).strip if level2.positive?
       "#{quote}#{cite}</blockquote>#{newline}"
     end
@@ -200,7 +200,7 @@ module RandomWords
               else
                 6
               end
-      grafs = @output.split(/\n\n/).reverse
+      grafs = @output.split("\n\n").reverse
 
       @output = header(1)
       @output += "#{grafs.slice!(-1)}\n\n"
@@ -284,13 +284,13 @@ module RandomWords
     # @param [Integer] count The number of blocks to inject.
     # @param [Proc] block The block whose result to inject.
     def inject_block(count, block)
-      grafs = @output.split(/\n\n/)
+      grafs = @output.split("\n\n")
 
-      if grafs.length < 2
-        len = 1
-      else
-        len = Random.rand(1..grafs.length / 2).to_i
-      end
+      len = if grafs.length < 2
+              1
+            else
+              Random.rand(1..grafs.length / 2).to_i
+            end
 
       @output = "#{grafs.slice!(0, len).join("\n\n")}\n\n"
 
@@ -345,7 +345,6 @@ module RandomWords
     # @param [Array] force An array of tags to force.
     # @return [String] The generated paragraph.
     def paragraph(count, em: false, strong: false, links: false, code: false, mark: false, force: [])
-
       output = ''
       s = { short: 2, medium: 4, long: 6, very_long: 8 }[@options[:length]]
       count.times do
@@ -386,7 +385,7 @@ module RandomWords
     # @param [Integer] max The maximum number of words to generate.
     # @return [String] The generated fragment.
     def fragment(min, max)
-      @generator.words(Random.rand(min..max)).no_term.downcase_first
+      @generator.words(Random.rand(min..max)).no_term(generator.terminators).downcase_first
     end
 
     # Generates a random string of characters.

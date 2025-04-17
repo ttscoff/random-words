@@ -1,15 +1,40 @@
+### 1.0.7
+
+2025-04-17 04:10
+
+#### NEW
+
+- Add common phrases
+
+#### IMPROVED
+
+- 99.48% test coverage
+- README updates
+- #no_term removes leading punctuation
+
+#### FIXED
+
+- Generator#markdown method not returning String
+
 ### 1.0.6
 
-2025-04-14 08:45
+2025-04-16 08:21
 
 #### NEW
 
 - Add dirtywords
 - Markdown generator with table cleanup
 
+#### IMPROVED
+
+- Allow full names in name config file
+- More appropriate names per language
+
 #### FIXED
 
 - Better use of conjunctions
+- Names.txt splitting
+- Decorate was on by default in Markdown/HTML output
 
 ### 1.0.5
 

@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'tmpdir'
 require 'fileutils'
 
@@ -30,7 +31,7 @@ RSpec.describe RandomWords::Config do
     let(:test_dir) { File.join(config.config_dir, 'words', test_lang) }
 
     after do
-      FileUtils.rm_rf(test_dir) if File.exist?(test_dir)
+      FileUtils.rm_rf(test_dir)
     end
 
     context 'when creating new dictionary' do
@@ -55,7 +56,7 @@ RSpec.describe RandomWords::Config do
 
         expect(config_content['name']).to eq(test_lang)
         expect(config_content['triggers']).to eq([test_lang])
-        expect(config_content["description"]).to eq("User dictionary for #{test_lang}")
+        expect(config_content['description']).to eq("User dictionary for #{test_lang}")
       end
     end
   end
@@ -70,7 +71,7 @@ RSpec.describe RandomWords::Config do
     end
 
     after do
-      FileUtils.rm_rf(test_dir) if File.exist?(test_dir)
+      FileUtils.rm_rf(test_dir)
     end
 
     it 'returns a hash of RandomWords::Source objects' do
@@ -92,7 +93,7 @@ RSpec.describe RandomWords::Config do
     end
   end
 
-  describe "#all_parts_of_speech?" do
+  describe '#all_parts_of_speech?' do
     let(:config) { described_class.new(:english) }
     let(:test_lang) { 'testlang' }
     let(:test_dir) { File.join(config.config_dir, 'words', test_lang) }
@@ -102,7 +103,7 @@ RSpec.describe RandomWords::Config do
     end
 
     after do
-      FileUtils.rm_rf(test_dir) if File.exist?(test_dir)
+      FileUtils.rm_rf(test_dir)
     end
 
     context 'when all required files exist' do
@@ -131,7 +132,7 @@ RSpec.describe RandomWords::Config do
     end
   end
 
-  describe "#configuration" do
+  describe '#configuration' do
     let(:config) { described_class.new(:english) }
     let(:test_config_dir) { File.join(Dir.tmpdir, 'random-words-test') }
     let(:config_file) { File.join(test_config_dir, 'config.yml') }
@@ -157,10 +158,10 @@ RSpec.describe RandomWords::Config do
       it 'returns configuration from file' do
         result = config.config
         expect(result).to eq({
-          source: :latin,
-          sentence_length: :short,
-          paragraph_length: 3
-        })
+                               source: :latin,
+                               sentence_length: :short,
+                               paragraph_length: 3
+                             })
       end
     end
 
@@ -168,16 +169,16 @@ RSpec.describe RandomWords::Config do
       it 'creates default config file' do
         result = config.config
         expect(result).to eq({
-          source: :latin,
-          sentence_length: :medium,
-          paragraph_length: 5
-        })
+                               source: :latin,
+                               sentence_length: :medium,
+                               paragraph_length: 5
+                             })
         expect(File.exist?(config_file)).to be true
       end
     end
   end
 
-  describe "#config_file" do
+  describe '#config_file' do
     let(:config) { described_class.new(:english) }
     let(:test_config_dir) { File.join(Dir.tmpdir, 'random-words-test') }
     let(:config_file_path) { File.join(test_config_dir, 'config.yml') }

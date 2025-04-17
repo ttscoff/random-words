@@ -4,8 +4,8 @@ RSpec.describe Integer do
   let(:english_numbers) do
     {
       digits: [nil, 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'],
-      teens: ['ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'],
-      tens: ['twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'],
+      teens: %w[ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen],
+      tens: %w[twenty thirty forty fifty sixty seventy eighty ninety],
       places: [nil, nil, 'hundred', 'thousand', 'million', 'billion', 'trillion']
     }
   end
@@ -38,7 +38,7 @@ RSpec.describe Integer do
     it 'converts thousands' do
       expect(1000.to_word(english_numbers)).to eq('one thousand')
       expect(4521.to_word(english_numbers)).to eq('four thousand five hundred twenty one')
-      expect(126620.to_word(english_numbers)).to eq('one hundred twenty six thousand six hundred twenty')
+      expect(126_620.to_word(english_numbers)).to eq('one hundred twenty six thousand six hundred twenty')
     end
 
     it 'converts zero' do
@@ -46,8 +46,8 @@ RSpec.describe Integer do
     end
   end
 
-  describe "#additional_tests" do
-    it "tests edge cases" do
+  describe '#additional_tests' do
+    it 'tests edge cases' do
       expect(21.additional_tests(english_numbers)).to be true
       expect(9.additional_tests(english_numbers)).to be true
       expect(0.additional_tests(english_numbers)).to be true

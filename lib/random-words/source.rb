@@ -18,8 +18,8 @@ module RandomWords
       @description = @config['description'] || 'No description available'
       @dictionary = from_files
       @dictionary[:all_words] = @dictionary.values.flatten.uniq
-      @dictionary[:terminators], @dictionary[:extended_punctuation] = from_file("terminators").split_terminators
-      @dictionary[:first_names], @dictionary[:last_names] = from_file("names").split_names
+      @dictionary[:terminators], @dictionary[:extended_punctuation] = from_file('terminators').split_terminators
+      @dictionary[:first_names], @dictionary[:last_names], @dictionary[:full_names] = from_file('names').split_names
     rescue StandardError
       @name = name.to_sym
       @config = {}
@@ -27,8 +27,8 @@ module RandomWords
       @description = 'No description available'
       @dictionary = from_files
       @dictionary[:all_words] = @dictionary.values.flatten.uniq
-      @dictionary[:terminators], @dictionary[:extended_punctuation] = from_file("terminators").split_terminators
-      @dictionary[:first_names], @dictionary[:last_names] = from_file("names").split_names
+      @dictionary[:terminators], @dictionary[:extended_punctuation] = from_file('terminators').split_terminators
+      @dictionary[:first_names], @dictionary[:last_names], @dictionary[:full_names] = from_file('names').split_names
     end
 
     # def to_sym
@@ -62,7 +62,8 @@ module RandomWords
         clauses: from_file('clauses'),
         coordinating_conjunctions: from_file('conjunctions-coordinating'),
         subordinate_conjunctions: from_file('conjunctions-subordinate'),
-        numbers: from_yaml('numbers')
+        numbers: from_yaml('numbers'),
+        phrases: from_file('phrases')
       }
     end
 
@@ -77,7 +78,7 @@ module RandomWords
       filename = "#{filename.sub(/\.txt$/, '')}.txt"
       path = File.join(@path, filename)
 
-      File.read(path).split("\n").map(&:strip) # Changed from split_lines to split("\n")
+      File.read(path).strip.split("\n").map(&:strip) # Changed from split_lines to split("\n")
     rescue Errno::ENOENT
       warn "File not found: #{path}"
       []
@@ -89,17 +90,17 @@ module RandomWords
     def from_yaml(filename)
       path = File.join(@path, "#{filename}.yml")
       return {} unless File.exist?(path)
+
       begin
         nums = YAML.safe_load(File.read(path), aliases: true).symbolize_keys
         nums.keys.each do |key|
-          nums[key] = nums[key].split(" ").map(&:strip) if nums[key].is_a?(String)
+          nums[key] = nums[key].split(' ').map(&:strip) if nums[key].is_a?(String)
         end
         nums
       rescue Psych::SyntaxError => e
         warn "YAML syntax error in #{path}: #{e.message}"
         {}
       end
-
     end
   end
 end
