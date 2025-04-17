@@ -1,3 +1,21 @@
+### 1.0.7
+
+2025-04-17 04:10
+
+#### NEW
+
+- Add common phrases
+
+#### IMPROVED
+
+- 99.48% test coverage
+- README updates
+- #no_term removes leading punctuation
+
+#### FIXED
+
+- Generator#markdown method not returning String
+
 ### 1.0.6
 
 2025-04-16 08:21
