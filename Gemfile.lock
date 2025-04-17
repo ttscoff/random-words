@@ -1,20 +1,8 @@
 PATH
   remote: .
   specs:
-<<<<<<< HEAD
-<<<<<<< HEAD
-    random-words (1.0.5)
-||||||| 307e2d8
-    random-words (1.0.6)
-=======
-    random-words (1.0.6)
-||||||| f422a9f
-    random-words (1.0.6)
-=======
-    random-words (1.0.7)
->>>>>>> release/1.0.7
+    random-words (1.0.8)
       nokogiri (~> 1.12)
->>>>>>> release/1.0.6
 
 GEM
   remote: https://rubygems.org/
