@@ -125,8 +125,17 @@ module RandomWords
 
     # Remove any punctuation mark from the end of a string.
     # @return [String] The string with the last punctuation mark removed.
-    def no_term
-      sub(/[.!?;,:-]+$/, '')
+    def no_term(terminators)
+      str = dup
+      leading = terminators.map { |t| t[0] }.delete_if(&:empty?).join
+      trailing = terminators.map { |t| t[1] }.delete_if(&:empty?).join
+      return self if leading.empty? && trailing.empty?
+
+      str.sub!(/^[#{Regexp.escape(leading)}]/, '') unless leading.empty?
+
+      str.sub!(/[#{Regexp.escape(trailing)}]+$/, '') unless trailing.empty?
+
+      str
     end
 
     # Indent every line in a string with a specified string.

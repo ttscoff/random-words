@@ -13,17 +13,17 @@ RSpec.describe String do
   describe '.no_term' do
     it 'removes punctuation from the end of a string' do
       str = 'Hello World!'
-      expect(str.no_term).to eq('Hello World')
+      expect(str.no_term(random_words.terminators)).to eq('Hello World')
     end
 
     it 'handles strings with no punctuation' do
       str = 'Hello World'
-      expect(str.no_term).to eq('Hello World')
+      expect(str.no_term(random_words.terminators)).to eq('Hello World')
     end
 
     it 'handles empty strings' do
       str = ''
-      expect(str.no_term).to eq('')
+      expect(str.no_term(random_words.terminators)).to eq('')
     end
   end
 
@@ -243,22 +243,22 @@ RSpec.describe String do
   describe '.no_term' do
     it 'removes periods from end of string' do
       str = 'Hello World.'
-      expect(str.no_term).to eq('Hello World')
+      expect(str.no_term(random_words.terminators)).to eq('Hello World')
     end
 
     it 'removes exclamation marks from end of string' do
       str = 'Hello World!'
-      expect(str.no_term).to eq('Hello World')
+      expect(str.no_term(random_words.terminators)).to eq('Hello World')
     end
 
     it 'preserves punctuation in middle of string' do
       str = 'Hello, World!'
-      expect(str.no_term).to eq('Hello, World')
+      expect(str.no_term(random_words.terminators)).to eq('Hello, World')
     end
 
     it 'handles multiple punctuation marks at end' do
       str = 'Hello World...!!!'
-      expect(str.no_term).to eq('Hello World')
+      expect(str.no_term(random_words.terminators)).to eq('Hello World')
     end
   end
 

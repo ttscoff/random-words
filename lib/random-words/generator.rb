@@ -10,7 +10,7 @@ module RandomWords
     # @return [Array<String>] arrays of elements of speech
     attr_reader :nouns, :verbs, :passive_verbs, :adverbs, :adjectives, :articles, :clauses, :subordinate_conjunctions,
                 :terminators, :numbers, :plural_nouns, :plural_verbs, :plural_articles, :prepositions, :coordinating_conjunctions,
-                :all_words, :extended_punctuation
+                :all_words, :extended_punctuation, :phrases, :names
 
     # Whether to use extended punctuation
     # @return [Boolean] true if extended punctuation is used, false otherwise
@@ -31,7 +31,7 @@ module RandomWords
     # Define the default sentence parts
     # These parts will be used to generate random sentences and character strings
     SENTENCE_PARTS = %w[random_article random_adjective random_noun random_adverb random_verb random_adjective
-                        random_verb random_adverb].freeze
+                        random_verb random_adverb random_phrase].freeze
 
     # Initialize the generator with a source and options
     # @param source [Symbol] The source of the words (e.g., :english)
@@ -64,6 +64,7 @@ module RandomWords
       @sources = @config.sources
       @terminators = @config.dictionary[:terminators]
       @names = [@config.dictionary[:first_names], @config.dictionary[:last_names], @config.dictionary[:full_names]]
+      @phrases = @config.dictionary[:phrases]
       @all_words = @config.dictionary[:all_words]
 
       @options = {
@@ -160,6 +161,7 @@ module RandomWords
       res << random_subordinate_conjunction
       res << random_coordinating_conjunction
       res << random_number_with_plural
+      res << random_phrase
       res << random_conjunction
       res << random_passive_verb
       res << random_plural_noun
@@ -290,7 +292,7 @@ module RandomWords
         new_sentence = generate_sentence(length / 2)
 
         # Combine the sentences with random conjunctions
-        sentence = "#{sentence.strip.no_term}, #{random_coordinating_conjunction} #{new_sentence}"
+        sentence = "#{sentence.strip.no_term(terminators)}, #{random_coordinating_conjunction} #{new_sentence.no_term(terminators)}"
       end
 
       sentence.to_sent(random_terminator).fix_caps(terminators)
@@ -410,7 +412,7 @@ module RandomWords
       sentence_components = []
 
       # Randomly decide if we include a plural noun with a number
-      sentence_components << random_number_with_plural if roll(10) # 10% chance to include a plural noun
+      # sentence_components << random_number_with_plural if roll(10) # 10% chance to include a plural noun
 
       # Construct main clause
       sentence_components << generate_main_clause
@@ -502,6 +504,12 @@ module RandomWords
         RandomWords.tested << 'random_plural_noun' if RandomWords.testing
         "#{number} #{random_plural_noun}"
       end
+    end
+
+    # Generate a random phrase
+    # @return [String] A randomly selected phrase
+    def random_phrase
+      phrases.sample
     end
 
     # Generate a random noun
@@ -645,7 +653,11 @@ module RandomWords
     # @example
     #   generate_main_clause # Returns a random main clause
     def generate_main_clause
-      beginning = if roll(20)
+      start_with_phrase = roll(20)
+      start_with_plural = roll(20)
+      beginning = if start_with_phrase
+                    random_phrase
+                  elsif start_with_plural
                     "#{random_number_with_plural} #{random_adverb} #{random_plural_verb}"
                   else
                     noun = random_noun

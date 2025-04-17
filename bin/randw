@@ -196,6 +196,20 @@ end
   use_extended_punctuation: false,
 }
 
+markdown_help = <<HELP
+                                     dec: add em and strong
+                                     link: add links
+                                     ul: add unordered lists
+                                     ol: add ordered lists
+                                     dl: add definition lists
+                                     bq: add block quotes
+                                     code: add code spans and block
+                                     mark: add ==highlights==
+                                     headers: add headlines
+                                     image: add images
+                                     table: add tables
+HELP
+
 OptionParser.new do |opts|
   opts.banner = "Usage: randw [options]"
 
@@ -248,12 +262,12 @@ OptionParser.new do |opts|
     @options[:count] = number&.to_i || 100
   end
 
-  opts.on("-m", "--markdown [SETTINGS]", 'Generate random markdown text, comma separated string like "latin,10,all"') do |settings|
+  opts.on("-m", "--markdown [SETTINGS]", "Generate random markdown text, comma separated string like \"latin,10,all\"\n#{markdown_help}") do |settings|
     @options[:method] = :markdown
     @options[:markdown_settings] = settings || "latin,10,all"
   end
 
-  opts.on("-H", "--html [SETTINGS]", 'Generate random html text, comma separated string like "latin,10,all"') do |settings|
+  opts.on("-H", "--html [SETTINGS]", "Generate random html text, comma separated string like \"latin,10,all\"") do |settings|
     @options[:method] = :html
     @options[:markdown_settings] = settings || "latin,10,all"
   end
@@ -371,28 +385,30 @@ def markdown_settings(settings)
       markdown_options[:source] = setting.to_source
     when /^\d+$/
       markdown_options[:grafs] = setting.to_i
-    when /^dec/
+    when 'dec', 'decorate'
       markdown_options[:decorate] = true
-    when /^link/
+    when 'link'
       markdown_options[:link] = true
-    when /^ul/
+    when 'ul'
       markdown_options[:ul] = true
-    when /^ol/
+    when 'ol'
       markdown_options[:ol] = true
-    when /^dl/
+    when 'dl'
       markdown_options[:dl] = true
-    when /^bq/
+    when 'bq', 'blockquote'
       markdown_options[:bq] = true
-    when /^co/
+    when 'code'
       markdown_options[:code] = true
-    when /^ma/
+    when 'mark'
       markdown_options[:mark] = true
-    when /^h/
+    when 'header', 'h'
       markdown_options[:headers] = true
-    when /^t(a|bl)/
+    when 'table', 't'
       markdown_options[:table] = true
-    when /^[smlv]/
+    when 'short', 's', 'medium', 'med', 'm', 'long', 'l', 'very_long', 'vl'
       markdown_options[:length] = setting.to_length
+    else
+      markdown_options[:source] = setting.to_source
     end
   end
 

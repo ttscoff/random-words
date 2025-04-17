@@ -62,7 +62,8 @@ module RandomWords
         clauses: from_file('clauses'),
         coordinating_conjunctions: from_file('conjunctions-coordinating'),
         subordinate_conjunctions: from_file('conjunctions-subordinate'),
-        numbers: from_yaml('numbers')
+        numbers: from_yaml('numbers'),
+        phrases: from_file('phrases')
       }
     end
 

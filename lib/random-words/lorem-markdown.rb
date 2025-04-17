@@ -385,7 +385,7 @@ module RandomWords
     # @param [Integer] max The maximum number of words to generate.
     # @return [String] The generated fragment.
     def fragment(min, max)
-      @generator.words(Random.rand(min..max)).no_term.downcase_first
+      @generator.words(Random.rand(min..max)).no_term(generator.terminators).downcase_first
     end
 
     # Generates a random string of characters.
