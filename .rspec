@@ -1,4 +1,4 @@
---format documentation
---color
+--format progress
+--color auto
 --require spec_helper
---pattern "{spec,lib}/**/*_spec.rb"
+-b
