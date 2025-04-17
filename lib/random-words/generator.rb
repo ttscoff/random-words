@@ -348,7 +348,7 @@ module RandomWords
     # @return [String] A randomly generated markdown string
     def markdown(settings = {})
       input = RandomWords::LoremMarkdown.new(settings).output
-      RandomWords::HTML2Markdown.new(input)
+      RandomWords::HTML2Markdown.new(input).markdown
     end
 
     # Generate random HTML

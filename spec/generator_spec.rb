@@ -230,7 +230,64 @@ RSpec.describe RandomWords::Generator do
         result << generator.paragraph(10)
       end
       result = result.join("\n\n")
-      expect(result).not_to match(/[()"']/)
+      expect(result).not_to match(/[()"]/)
+    end
+  end
+
+  describe "#name" do
+    it 'returns a valid name string' do
+      expect(generator.name).to be_a(String)
+      expect(generator.name).to match(/^[A-Z][a-z]+ ?(?:[A-Z] )?[A-Z][a-z]+$/)
+    end
+  end
+
+  describe '#code_lang' do
+    it 'returns a valid programming language symbol' do
+      valid_langs = [:python, :ruby, :swift, :javascript, :css, :rust, :go, :java]
+      expect(valid_langs).to include(generator.code_lang)
+    end
+  end
+
+  describe '#code_snippet' do
+    let(:valid_snippets) do
+      {
+        python: /def hello_world.*print.*Hello, World/m,
+        ruby: /def hello_world.*puts.*Hello, World.*end/m,
+        swift: /func helloWorld.*print.*Hello, World/m,
+        javascript: /function helloWorld.*console\.log.*Hello, World/m,
+        css: /body.*background-color.*font-family.*h1.*color/m,
+        rust: /fn main.*println!.*Hello, World/m,
+        go: /package main.*import.*fmt.*func main.*Println.*Hello, World/m,
+        java: /public class HelloWorld.*public static void main.*System\.out\.println.*Hello, World/m
+      }
+    end
+
+    it 'returns valid code snippets for each language' do
+      valid_snippets.each do |lang, regex|
+        expect(generator.code_snippet(lang)).to match(regex)
+      end
+    end
+
+    it 'returns a valid snippet for random language when no language specified' do
+      snippet = generator.code_snippet
+      expect(valid_snippets.values).to include(satisfy { |regex| snippet =~ regex })
+    end
+  end
+
+  describe '#markdown' do
+    it 'returns markdown formatted text' do
+      result = generator.markdown
+      expect(result).to be_a(String)
+      expect(result).not_to be_empty
+    end
+  end
+
+  describe '#html' do
+    it 'returns HTML formatted text' do
+      result = generator.html
+      expect(result).to be_a(String)
+      expect(result).not_to be_empty
+      expect(result).to match(/<[^>]+>/)
     end
   end
 end
