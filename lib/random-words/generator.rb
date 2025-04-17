@@ -393,7 +393,7 @@ module RandomWords
         return characters(config.min, config.max, whole_words: config.whole_words, whitespace: config.whitespace,
                                                   dead_switch: config.dead_switch + 1)
       end
-      puts 'made it'
+
       truncated = config.new_result.compress[0...config.max]
       truncated.compress.length == config.max ? truncated.compress : nil
     end

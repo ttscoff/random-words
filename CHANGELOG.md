@@ -1,3 +1,11 @@
+### 1.0.8
+
+2025-04-17 13:37
+
+#### FIXED
+
+- Remove stupid debugging output
+
 ### 1.0.7
 
 2025-04-17 04:10
