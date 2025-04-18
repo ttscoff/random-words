@@ -163,6 +163,7 @@ module RandomWords
       res << random_number_with_plural
       res << random_phrase
       res << random_conjunction
+      res << random_name
       res << random_passive_verb
       res << random_plural_noun
       res << random_plural_verb
@@ -655,10 +656,13 @@ module RandomWords
     def generate_main_clause
       start_with_phrase = roll(20)
       start_with_plural = roll(20)
+      start_with_name = roll(20)
       beginning = if start_with_phrase
                     random_phrase
                   elsif start_with_plural
                     "#{random_number_with_plural} #{random_adverb} #{random_plural_verb}"
+                  elsif start_with_name
+                    random_name
                   else
                     noun = random_noun
                     adjective = random_adjective

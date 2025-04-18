@@ -1,4 +1,4 @@
 ---
 name: spanish
 description: Spanish words
-triggers: [spanish,espanol]
+triggers: [spanish,espanol,español,espanola,espanoles]
