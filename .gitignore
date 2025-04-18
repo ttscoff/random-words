@@ -1,2 +1,3 @@
 *.bak
 .rspec_status
+Gemfile.lock
