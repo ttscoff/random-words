@@ -190,7 +190,7 @@ end
   paragraph_length: 3,
   count: 1,
   method: nil,
-  debug: false,
+  debug: 0,
   whitespace: true,
   separator: " "
 }
@@ -307,8 +307,9 @@ OptionParser.new do |opts|
 
   opts.separator "OTHER OPTIONS:"
 
-  opts.on("-d", "--debug", "Enable debug mode, displays sentence/word/character counts") do
+  opts.on("-d", "--debug [LEVEL]", "Enable debug mode, 1 displays sentence/word/character counts, 2 displays parts of speech (default 1)") do |level|
     @options[:debug] = true
+    @options[:debug_level] = level.to_i || 1
   end
 
   opts.on("-h", "--help", "Display this help message") do
@@ -418,7 +419,7 @@ def markdown_settings(settings)
   markdown_options
 end
 
-@rw = RandomWords::Generator.new(@options[:source], { debug: @options[:debug] })
+@rw = RandomWords::Generator.new(@options[:source], { debug: @options[:debug_level] > 1 })
 @rw.sentence_length = @options[:length] || :medium
 @rw.paragraph_length = @options[:paragraph_length] || 3
 @options[:use_extended_punctuation] = @options[:use_extended_punctuation] ? true : false

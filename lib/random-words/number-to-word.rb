@@ -51,7 +51,7 @@ module RandomWords
       true
     end
 
-    protected
+    # protected
 
     # Convert a number to its word representation for the hundreds place.
     def hundred_to_word(place = 0, numbers)
@@ -67,9 +67,9 @@ module RandomWords
         hundreds = self / 100
         tens = self % 100
         if tens.zero?
-          append_place(hundreds.digit_to_word(numbers) + " #{numbers[:places][2]}", place, numbers)
+          append_place(hundreds.digit_to_word(numbers) + " #{numbers[:places][2]} and ", place, numbers)
         else
-          append_place(hundreds.digit_to_word(numbers) + " #{numbers[:places][2]} " + tens.tens_place_to_word(numbers), place,
+          append_place(hundreds.digit_to_word(numbers) + " #{numbers[:places][2]} and " + tens.tens_place_to_word(numbers), place,
                        numbers)
         end
       end
