@@ -34,6 +34,9 @@ module RandomWords
     # Source directory for languages
     attr_reader :source_dir
 
+    # Base config
+    attr_reader :config
+
     # Initialize the config with the given language
     # @param lang [Symbol] The language to use
     # @raise [RuntimeError] if no dictionary is found for the given language
@@ -204,10 +207,12 @@ module RandomWords
     # @param configuration [Hash] The configuration hash
     # @return [Hash] The converted configuration hash
     def handle_config(configuration)
+      ext_punc = configuration[:extended_punctuation]
       {
         source: configuration[:source].to_source || :latin,
         sentence_length: configuration[:length].to_length || :medium,
-        paragraph_length: configuration[:paragraph_length].to_i || 5
+        paragraph_length: configuration[:paragraph_length].to_i || 5,
+        use_extended_punctuation: ext_punc && ext_punc.trueish? || false
       }
     end
 
@@ -244,7 +249,8 @@ module RandomWords
       config = {
         'source' => 'latin',
         'length' => 'medium',
-        'paragraph_length' => 5
+        'paragraph_length' => 5,
+        'extended_punctuation' => false
       }
       File.write(config_file, config.to_yaml)
       warn "Created #{config_file}"

@@ -35,14 +35,16 @@ module RandomWords
         code: false,
         mark: false,
         headers: false,
-        table: false
+        table: false,
+        extended: false
       }
 
       @options = defaults.merge(options)
 
       @generator = RandomWords::Generator.new(@options[:source], {
                                                 sentence_length: @options[:length],
-                                                paragraph_length: @options[:sentences]
+                                                paragraph_length: @options[:sentences],
+                                                use_extended_punctuation: @options[:extended]
                                               })
 
       @output = ''
@@ -107,9 +109,25 @@ module RandomWords
 
       ensure_block_newlines
       compress_newlines
+      convert_punctuation
     end
 
     private
+
+    # Convert non-ascii punctuation to Markdown equivalents.
+    # @param [String] text The text to convert.
+    # @return [String] The converted text.
+    def convert_punctuation
+      text = @output
+      text.gsub!(/“|”/, '"')
+      text.gsub!(/‘|’/, "'")
+      text.gsub!(/–/, '-')
+      text.gsub!(/—/, '--')
+      text.gsub!(/—/, '---')
+      text.gsub!(/•/, '*')
+      text.gsub!(/…/, '...')
+      @output = text
+    end
 
     # Rolls for zero with the specified odds.
     def roll(odds)
@@ -349,7 +367,6 @@ module RandomWords
       s = { short: 2, medium: 4, long: 6, very_long: 8 }[@options[:length]]
       count.times do
         p = @generator.sentences(s).join(' ')
-
         should_em = force.include?(:em) || (em && roll(1))
         should_strong = force.include?(:strong) || (strong && roll(1))
         should_code = force.include?(:code) || (code && roll(6))

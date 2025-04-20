@@ -192,8 +192,7 @@ end
   method: nil,
   debug: false,
   whitespace: true,
-  separator: " ",
-  use_extended_punctuation: false,
+  separator: " "
 }
 
 markdown_help = <<HELP
@@ -357,6 +356,7 @@ def markdown_settings(settings)
     mark: false,
     headers: false,
     table: false,
+    extended: false
   }
   sources = []
   RandomWords::Generator.new(:latin).sources.each { |k, v| sources.concat(v.names.map(&:to_s)) }
@@ -379,6 +379,7 @@ def markdown_settings(settings)
         headers: true,
         image: true,
         table: true,
+        extended: true
       }
       markdown_options.merge!(new_options)
     when Regexp.union(sources)
@@ -407,6 +408,8 @@ def markdown_settings(settings)
       markdown_options[:table] = true
     when 'short', 's', 'medium', 'med', 'm', 'long', 'l', 'very_long', 'vl'
       markdown_options[:length] = setting.to_length
+    when 'x', 'extended'
+      markdown_options[:extended] = true
     else
       markdown_options[:source] = setting.to_source
     end
@@ -418,7 +421,9 @@ end
 @rw = RandomWords::Generator.new(@options[:source])
 @rw.sentence_length = @options[:length] || :medium
 @rw.paragraph_length = @options[:paragraph_length] || 3
-@rw.use_extended_punctuation = @options[:use_extended_punctuation] || false
+@options[:use_extended_punctuation] = @options[:use_extended_punctuation] ? true : false
+@rw.use_extended_punctuation = @options[:use_extended_punctuation] ? true : @rw.config.config[:use_extended_punctuation]
+
 @options[:count] = @options[:count].to_i
 
 case @options[:method]
@@ -465,7 +470,10 @@ when :markdown, :html
   @rw.source = settings[:source]
   @rw.sentence_length = settings[:length] || :medium
   @rw.paragraph_length = settings[:sentences] || 5
-  @rw.use_extended_punctuation = settings[:use_extended_punctuation] || false
+
+  @rw.use_extended_punctuation = settings[:extended] ? true : @options[:use_extended_punctuation]
+  settings[:extended] = @rw.use_extended_punctuation
+
   if @options[:method] == :markdown
     puts @rw.markdown(settings)
   else

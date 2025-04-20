@@ -12,6 +12,9 @@ module RandomWords
                 :terminators, :numbers, :plural_nouns, :plural_verbs, :plural_articles, :prepositions, :coordinating_conjunctions,
                 :all_words, :extended_punctuation, :phrases, :names
 
+    # return [Hash] configuration
+    attr_reader :config
+
     # Whether to use extended punctuation
     # @return [Boolean] true if extended punctuation is used, false otherwise
     attr_reader :use_extended_punctuation
@@ -79,6 +82,7 @@ module RandomWords
       @use_extended_punctuation = @options[:use_extended_punctuation]
 
       @terminators.concat(@config.dictionary[:extended_punctuation]) if @use_extended_punctuation
+
       lengths
     end
 
@@ -158,6 +162,7 @@ module RandomWords
       res << random_article_for_word('bananas')
       res << random_plural_article
       res << random_clause
+      res << random_separator
       res << random_subordinate_conjunction
       res << random_coordinating_conjunction
       res << random_number_with_plural
@@ -593,6 +598,17 @@ module RandomWords
       clauses.sample
     end
 
+    # Generate a random set of separators
+    def random_separators
+      [',', ',', ',', ';', ':', ' —']
+    end
+
+    # Generate a random separator
+    # @return [String] A randomly selected separator
+    def random_separator
+      random_separators.sample
+    end
+
     # Generate a random subordinate conjunction
     # @return [String] A randomly selected subordinate conjunction
     def random_subordinate_conjunction
@@ -669,8 +685,9 @@ module RandomWords
                     "#{random_article_for_word(adjective)} #{adjective} #{noun} #{random_adverb} #{random_verb}"
                   end
       tail = roll(50) ? " #{random_prepositional_phrase}" : ''
-      tail += roll(10) ? ", #{random_clause}" : ''
-      "#{beginning.strip.sub(/,?$/, ', ')}#{tail}"
+      separator = random_separator
+      tail += roll(10) ? "#{separator} #{random_clause}" : ''
+      "#{beginning.strip.sub(/[#{Regexp.escape(separator)}]*$/, separator)}#{tail}"
     end
 
     # Simplified generate_additional_clauses

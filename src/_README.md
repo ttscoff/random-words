@@ -1,7 +1,7 @@
 # RandomWords
 <!--README-->
 
-[![RubyGems.org](https://img.shields.io/gem/v/random-words)](https://rubygems.org/gems/random-words)
+[![RubyGems.org](https://img.shields.io/gem/v/random-words)](https://rubygems.org/gems/random-words)[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A random text (Lorem Ipsum) generator.
 
@@ -212,13 +212,13 @@ the most likely to be used.
 
 ##### Names
 
-The `names.txt` file is just used when creating block quotes
-in Markdown or HTML output. Sections are split by blank
-lines: first names, last names, and optionally full names.
-If the first line contains characters other than letters,
-single quotes, and dashes, it will be assumed that you've
-skipped straight to full names and those will be used
-instead of generating random combinations.
+The `names.txt` file is just used when creating random
+names. Sections are split by blank lines: first names, last
+names, and optionally full names. If the first line contains
+characters other than letters, single quotes, and dashes, it
+will be assumed that you've skipped straight to full names
+and those will be used instead of generating random
+combinations.
 
 #### Language Notes
 
@@ -283,3 +283,7 @@ rw.paragraph_length
 rw.sentence_length
 ```
 <!--END README-->
+
+### License
+
+This project is licensed under the [MIT license](LICENSE).

@@ -72,20 +72,25 @@ RSpec.describe String do
     end
   end
 
-  describe '.dedup_commas' do
-    it 'removes duplicate commas' do
+  describe '.dedup_punctuation' do
+    it 'removes duplicate punctuation' do
       str = 'Hello,, World!'
-      expect(str.dedup_commas).to eq('Hello, World!')
+      expect(str.dedup_punctuation).to eq('Hello, World!')
     end
 
-    it 'handles strings with no commas' do
+    it 'handles strings with mixed punctuation' do
+      str = 'Hello,;, World!?!'
+      expect(str.dedup_punctuation).to eq('Hello, World!?!')
+    end
+
+    it 'handles strings with no punctuation' do
       str = 'Hello, , World'
-      expect(str.dedup_commas).to eq('Hello, World')
+      expect(str.dedup_punctuation).to eq('Hello, World')
     end
 
     it 'handles empty strings' do
       str = ''
-      expect(str.dedup_commas).to eq('')
+      expect(str.dedup_punctuation).to eq('')
     end
   end
 
