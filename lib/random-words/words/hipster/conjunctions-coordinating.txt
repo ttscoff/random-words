@@ -1,7 +1,7 @@
 and
 but
 or
-nor
+nor do
 for
 so
 yet

@@ -31,6 +31,10 @@ module RandomWords
     # @return [Hash<String, RandomWords::Source>] List of available sources
     attr_reader :sources
 
+    # Debug mode
+    # @return [Boolean] true if debug mode is enabled, false otherwise
+    attr_accessor :debug
+
     # Define the default sentence parts
     # These parts will be used to generate random sentences and character strings
     SENTENCE_PARTS = %w[random_article random_adjective random_noun random_adverb random_verb random_adjective
@@ -46,6 +50,7 @@ module RandomWords
     #   generator.sentence_length = :long
     #   generator.paragraph_length = 3
     def initialize(source = :english, options = {})
+      @debug = options[:debug] || false
       @tested = []
       @config = RandomWords::Config.new(source)
       @source = source
@@ -84,6 +89,13 @@ module RandomWords
       @terminators.concat(@config.dictionary[:extended_punctuation]) if @use_extended_punctuation
 
       lengths
+    end
+
+    # Display debug message
+    def debug(msg, color = :cyan)
+      return unless @debug
+
+      RandomWords::Terminal.new.colorize_text("[#{msg}]", color)
     end
 
     # Shortcut for RandomWords::Config.create_user_dictionary
@@ -431,17 +443,17 @@ module RandomWords
         additional_clauses = generate_additional_clauses
         sentence_components.concat(additional_clauses)
         sentence_components.map!(&:strip)
-        break if sentence_components.join(' ').length >= length
+        # break if sentence_components.join(' ').length >= length
 
-        conjunction = if roll(50) || (RandomWords.testing && !RandomWords.tested.include?('subordinate_conjunction'))
-                        RandomWords.tested << 'subordinate_conjunction' if RandomWords.testing
-                        random_subordinate_conjunction.strip
-                      else
-                        RandomWords.tested << 'coordinating_conjunction' if RandomWords.testing
-                        random_coordinating_conjunction.strip
-                      end
-        # sentence_components.unshift(conjunction.capitalize) # Place conjunction at the start
-        sentence_components << conjunction unless conjunction.empty?
+        # conjunction = if roll(50) || (RandomWords.testing && !RandomWords.tested.include?('subordinate_conjunction'))
+        #                 RandomWords.tested << 'subordinate_conjunction' if RandomWords.testing
+        #                 random_subordinate_conjunction.strip
+        #               else
+        #                 RandomWords.tested << 'coordinating_conjunction' if RandomWords.testing
+        #                 random_coordinating_conjunction.strip
+        #               end
+        # # sentence_components.unshift(conjunction.capitalize) # Place conjunction at the start
+        # sentence_components << conjunction unless conjunction.empty?
       end
 
       # Join all parts into a single sentence
@@ -492,7 +504,7 @@ module RandomWords
     # @example
     #  random_conjunction # Returns a random conjunction
     def random_conjunction
-      coordinating_conjunctions.sample
+      "#{debug("Plural Noun", :yellow)}#{coordinating_conjunctions.sample}"
     end
 
     # Generate a random number with a plural noun
@@ -502,68 +514,72 @@ module RandomWords
     #   random_number_with_plural # Returns a string like "three cats"
     def random_number_with_plural
       num = rand(1000)
-      number = num.to_word(@numbers)
+      number = if roll(50)
+                 num.to_word(@numbers)
+               else
+                 num.to_commas
+               end
       if num == 1 || (RandomWords.testing && !RandomWords.tested.include?('random_noun'))
         RandomWords.tested << 'random_noun' if RandomWords.testing
-        "#{number} #{random_noun}"
+        "#{debug("Random Noun w/#", :yellow)}#{number} #{random_noun}"
       else
         RandomWords.tested << 'random_plural_noun' if RandomWords.testing
-        "#{number} #{random_plural_noun}"
+        "#{debug("Plural Noun w/#", :yellow)}#{number} #{random_plural_noun}"
       end
     end
 
     # Generate a random phrase
     # @return [String] A randomly selected phrase
     def random_phrase
-      phrases.sample
+      "#{debug("Phrase", :yellow)}#{phrases.sample}"
     end
 
     # Generate a random noun
     # @return [String] A randomly selected noun
     def random_noun
-      nouns.sample
+      "#{debug("Noun", :yellow)}#{nouns.sample}"
     end
 
     # Generate a random plural noun
     # @return [String] A randomly selected plural noun
     def random_plural_noun
-      plural_nouns.sample
+      "#{debug("Plural Noun", :yellow)}#{plural_nouns.sample}"
     end
 
     # Generate a random verb
     # @return [String] A randomly selected verb
     def random_verb
-      verbs.sample
+      "#{debug("Verb", :yellow)}#{verbs.sample}"
     end
 
     # Generate a random plural verb
     # @return [String] A randomly selected plural verb
     def random_plural_verb
-      plural_verbs.sample
+      "#{debug("Plural Verb", :yellow)}#{plural_verbs.sample}"
     end
 
     # Generate a random passive verb
     # @return [String] A randomly selected passive verb
     def random_passive_verb
-      passive_verbs.sample
+      "#{debug("Passive Verb", :yellow)}#{passive_verbs.sample}"
     end
 
     # Generate a random adverb
     # @return [String] A randomly selected adverb
     def random_adverb
-      adverbs.sample
+      "#{debug("Adverb", :yellow)}#{adverbs.sample}"
     end
 
     # Generate a random adjective
     # @return [String] A randomly selected adjective
     def random_adjective
-      adjectives.sample
+      "#{debug("Adjective", :yellow)}#{adjectives.sample}"
     end
 
     # Generate a random article
     # @return [String] A randomly selected article
     def random_article
-      articles.sample
+      "#{debug("Article", :yellow)}#{articles.sample}"
     end
 
     # Generate a random article for a noun
@@ -589,13 +605,13 @@ module RandomWords
     # Generate a random plural article
     # @return [String] A randomly selected plural article
     def random_plural_article
-      plural_articles.sample
+      "#{debug("Plural Article", :yellow)}#{plural_articles.sample}"
     end
 
     # Generate a random clause
     # @return [String] A randomly selected clause
     def random_clause
-      clauses.sample
+      "#{debug("Clause", :yellow)}#{clauses.sample}"
     end
 
     # Generate a random set of separators
@@ -606,25 +622,25 @@ module RandomWords
     # Generate a random separator
     # @return [String] A randomly selected separator
     def random_separator
-      random_separators.sample
+      "#{debug("Separator", :yellow)}#{random_separators.sample}"
     end
 
     # Generate a random subordinate conjunction
     # @return [String] A randomly selected subordinate conjunction
     def random_subordinate_conjunction
-      subordinate_conjunctions.sample
+      "#{debug("Subordinate Conjunction", :yellow)}#{subordinate_conjunctions.sample}"
     end
 
     # Generate a random coordinating conjunction
     # @return [String] A randomly selected coordinating conjunction
     def random_coordinating_conjunction
-      coordinating_conjunctions.sample
+      "#{debug("Coordinating Conjunction", :yellow)}#{coordinating_conjunctions.sample}"
     end
 
     # Generate a random preposition
     # @return [String] A randomly selected preposition
     def random_preposition
-      prepositions.sample
+      "#{debug("Preposition", :yellow)}#{prepositions.sample}"
     end
 
     # Generate a random prepositional phrase
@@ -641,7 +657,7 @@ module RandomWords
                  "#{random_article_for_word(noun)} #{noun}"
                end
 
-      "#{preposition} #{phrase}"
+      "#{debug("Prepositional Phrase", :yellow)}#{preposition} #{phrase}"
     end
 
     # Generate a random terminator
@@ -670,15 +686,16 @@ module RandomWords
     # @example
     #   generate_main_clause # Returns a random main clause
     def generate_main_clause
-      start_with_phrase = roll(20)
-      start_with_plural = roll(20)
-      start_with_name = roll(20)
-      beginning = if start_with_phrase
+      beginning = case rand(10)
+                  when 0..1
                     random_phrase
-                  elsif start_with_plural
+                  when 2..3
                     "#{random_number_with_plural} #{random_adverb} #{random_plural_verb}"
-                  elsif start_with_name
+                  when 4..5
                     random_name
+                  when 6..7
+                    noun = random_noun
+                    "#{random_adverb}, #{random_article_for_word(noun)} #{noun} #{random_verb}"
                   else
                     noun = random_noun
                     adjective = random_adjective

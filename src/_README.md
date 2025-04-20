@@ -68,7 +68,7 @@ elements to include.
 
 First, the source language (defaults to latin), then the
 length of paragraphs and tables: e.g. `english/medium`. You
-can add any digits to determine how many paragraps are
+can add any digits to determine how many paragraphs are
 generated (default 5), e.g. `corporate/medium/10`.
 
 Then you can add individual elements, or use `/all` to
@@ -87,6 +87,7 @@ trigger all elements. The elements available are:
 | headers | add headlines             |
 | image   | add images                |
 | table   | add tables                |
+| x       | add extended punctuation  |
 
 The number of elements inserted depends on the length you specify.
 
