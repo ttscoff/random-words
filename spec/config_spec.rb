@@ -160,7 +160,8 @@ RSpec.describe RandomWords::Config do
         expect(result).to eq({
                                source: :latin,
                                sentence_length: :short,
-                               paragraph_length: 3
+                               paragraph_length: 3,
+                               use_extended_punctuation: false
                              })
       end
     end
@@ -171,7 +172,8 @@ RSpec.describe RandomWords::Config do
         expect(result).to eq({
                                source: :latin,
                                sentence_length: :medium,
-                               paragraph_length: 5
+                               paragraph_length: 5,
+                               use_extended_punctuation: false
                              })
         expect(File.exist?(config_file)).to be true
       end
@@ -211,7 +213,8 @@ RSpec.describe RandomWords::Config do
         expect(content).to include(
           'source' => 'latin',
           'length' => 'medium',
-          'paragraph_length' => 5
+          'paragraph_length' => 5,
+          'extended_punctuation' => false
         )
       end
     end

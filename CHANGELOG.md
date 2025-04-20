@@ -1,3 +1,19 @@
+### 1.0.9
+
+2025-04-20 06:34
+
+#### NEW
+
+- Random punctuation between clauses
+
+#### IMPROVED
+
+- Add espanol as a trigger for spanish (with tilde)
+
+#### FIXED
+
+- Better handling of extended puntuation arguments
+
 ### 1.0.8
 
 2025-04-17 13:37

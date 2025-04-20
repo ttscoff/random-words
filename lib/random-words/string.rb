@@ -86,16 +86,16 @@ module RandomWords
     # Remove duplicate commas
     # @return [String] The string with duplicate commas removed.
     # @example
-    #  "Hello, , World!".remove_duplicate_commas # => "Hello, World!"
-    def dedup_commas
-      gsub(/(, *)+/, ',').gsub(',', ', ')
+    #  "Hello, , World!".dedup_punctuation # => "Hello, World!"
+    def dedup_punctuation
+      gsub(/([,.;:—] ?)+/, '\1').gsub(/([,;:—])/, '\1')
     end
 
     # Generate a sentence with capitalization and terminator
     # @param terminator [Array<String>] An array of beginning and ending punctuation marks.
     # @return [String] The string with a random punctuation mark at the end.
     def to_sent(terminator)
-      capitalize.compress.capitalize_i.dedup_commas.terminate(terminator)
+      capitalize.compress.capitalize_i.dedup_punctuation.terminate(terminator)
     end
 
     # Split a string by newlines, clean each line, and remove empty lines.
