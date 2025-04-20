@@ -18,7 +18,7 @@ you use [Homebrew](https://brew.sh).
 ### CLI
 
 The gem installs a binary `randw`. It can generate random
-characters, sentences, paragraphs, markdown, html,  and
+characters, sentences, paragraphs, markdown, html, and
 passwords.
 
 ```console
@@ -168,6 +168,7 @@ YAML configuration. It contains the keys:
 name: english
 description: English words
 triggers: [english]
+extended_punctuation: false
 ```
 
 A default configuration file will be created when running `--create-dictionary` with the CLI.
@@ -178,8 +179,11 @@ A default configuration file will be created when running `--create-dictionary` 
 - `description`: Just used for display when running `--list-dictionaries`
 - `triggers`: An array of triggers that can be used to trigger the language.
 
-    For example, the `bacon` language has the triggers `[bacon, meat, carnivore]`, so you can use `randw -S meat` on the command line (or with the library).
-
+    For example, the `bacon` language has the triggers
+    `[bacon, meat, carnivore]`, so you can use `randw -S
+    meat` on the command line (or with the library).
+- `extended_punctuation`: Whether to include extended
+  punctuation like parenthesis, quotes, and ellipsis.
 
 
 ##### Terminators
@@ -233,8 +237,11 @@ If you create a fun dictionary, please let me know (or make a PR) and I'll gladl
 ```ruby
 require 'random-words'
 
-# Argument defines source dictionary (latin, english, corporate, bacon)
+# Argument defines source dictionary (latin, english, corporate, bacon, etc.)
 rw = RandomWords::Generator.new(:corporate)
+
+rw.sources # List all available dictionaries
+
 # Change source dictionary and re-init
 rw.source = :bacon
 
