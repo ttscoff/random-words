@@ -92,10 +92,10 @@ module RandomWords
     end
 
     # Display debug message
-    def debug(msg, color = :cyan)
+    def debug(msg)
       return unless @debug
 
-      RandomWords::Terminal.new.colorize_text("[#{msg}]", color)
+      "%#{msg}%"
     end
 
     # Shortcut for RandomWords::Config.create_user_dictionary
@@ -303,7 +303,7 @@ module RandomWords
     def generate_combined_sentence(length = nil)
       length ||= define_length(@sentence_length)
       sentence = generate_sentence
-      return sentence.to_sent(random_terminator).fix_caps(terminators) if sentence.length > length
+      return sentence.to_sent(random_terminator).fix_caps(terminators).expand_debug if sentence.length > length
 
       while sentence.length < length
         # Generate a random number of sentences to combine
@@ -313,7 +313,7 @@ module RandomWords
         sentence = "#{sentence.strip.no_term(terminators)}, #{random_coordinating_conjunction} #{new_sentence.no_term(terminators)}"
       end
 
-      sentence.to_sent(random_terminator).fix_caps(terminators)
+      sentence.to_sent(random_terminator).fix_caps(terminators).expand_debug
     end
 
     # Generate a random paragraph
@@ -328,12 +328,6 @@ module RandomWords
         sentences << generate_combined_sentence
       end
       sentences.join(' ').strip.compress
-    end
-
-    # Generate a random name
-    # @return [String] A randomly generated name
-    def name
-      random_name
     end
 
     # Generate a random code language
@@ -457,7 +451,11 @@ module RandomWords
       end
 
       # Join all parts into a single sentence
-      sentence_components.join(" #{roll(50) ? random_coordinating_conjunction : random_subordinate_conjunction} ").strip.compress
+      output = sentence_components.shift
+      sentence_components.each do |part|
+        output << " #{roll(50) ? random_coordinating_conjunction : random_subordinate_conjunction} #{part}"
+      end
+      output.strip.compress
     end
 
     # Convert a length symbol to a specific length value
@@ -504,7 +502,7 @@ module RandomWords
     # @example
     #  random_conjunction # Returns a random conjunction
     def random_conjunction
-      "#{debug("Plural Noun", :yellow)}#{coordinating_conjunctions.sample}"
+      "#{debug('COC')}#{coordinating_conjunctions.sample}"
     end
 
     # Generate a random number with a plural noun
@@ -521,65 +519,65 @@ module RandomWords
                end
       if num == 1 || (RandomWords.testing && !RandomWords.tested.include?('random_noun'))
         RandomWords.tested << 'random_noun' if RandomWords.testing
-        "#{debug("Random Noun w/#", :yellow)}#{number} #{random_noun}"
+        "#{debug('NUM')}#{number} #{random_noun}"
       else
         RandomWords.tested << 'random_plural_noun' if RandomWords.testing
-        "#{debug("Plural Noun w/#", :yellow)}#{number} #{random_plural_noun}"
+        "#{debug('NUM')}#{number} #{random_plural_noun}"
       end
     end
 
     # Generate a random phrase
     # @return [String] A randomly selected phrase
     def random_phrase
-      "#{debug("Phrase", :yellow)}#{phrases.sample}"
+      "#{debug('PHR')}#{phrases.sample}"
     end
 
     # Generate a random noun
     # @return [String] A randomly selected noun
     def random_noun
-      "#{debug("Noun", :yellow)}#{nouns.sample}"
+      "#{debug('NOU')}#{nouns.sample}"
     end
 
     # Generate a random plural noun
     # @return [String] A randomly selected plural noun
     def random_plural_noun
-      "#{debug("Plural Noun", :yellow)}#{plural_nouns.sample}"
+      "#{debug('PLN')}#{plural_nouns.sample}"
     end
 
     # Generate a random verb
     # @return [String] A randomly selected verb
     def random_verb
-      "#{debug("Verb", :yellow)}#{verbs.sample}"
+      "#{debug('VER')}#{verbs.sample}"
     end
 
     # Generate a random plural verb
     # @return [String] A randomly selected plural verb
     def random_plural_verb
-      "#{debug("Plural Verb", :yellow)}#{plural_verbs.sample}"
+      "#{debug('PLV')}#{plural_verbs.sample}"
     end
 
     # Generate a random passive verb
     # @return [String] A randomly selected passive verb
     def random_passive_verb
-      "#{debug("Passive Verb", :yellow)}#{passive_verbs.sample}"
+      "#{debug('PAV')}#{passive_verbs.sample}"
     end
 
     # Generate a random adverb
     # @return [String] A randomly selected adverb
     def random_adverb
-      "#{debug("Adverb", :yellow)}#{adverbs.sample}"
+      "#{debug('ADV')}#{adverbs.sample}"
     end
 
     # Generate a random adjective
     # @return [String] A randomly selected adjective
     def random_adjective
-      "#{debug("Adjective", :yellow)}#{adjectives.sample}"
+      "#{debug('ADJ')}#{adjectives.sample}"
     end
 
     # Generate a random article
     # @return [String] A randomly selected article
     def random_article
-      "#{debug("Article", :yellow)}#{articles.sample}"
+      "#{debug('ART')}#{articles.rotate[0]}"
     end
 
     # Generate a random article for a noun
@@ -596,7 +594,7 @@ module RandomWords
       RandomWords.tested << 'random_article_for_word' if RandomWords.testing
       if word.start_with?(/[aeiou]/i) && article =~ /^an?$/i
         article = 'an'
-      elsif article =~ /^an$/i
+      elsif /^an$/i.match?(article)
         article = 'a'
       end
       article
@@ -605,13 +603,13 @@ module RandomWords
     # Generate a random plural article
     # @return [String] A randomly selected plural article
     def random_plural_article
-      "#{debug("Plural Article", :yellow)}#{plural_articles.sample}"
+      "#{debug('PLA')}#{plural_articles.rotate[0]}"
     end
 
     # Generate a random clause
     # @return [String] A randomly selected clause
     def random_clause
-      "#{debug("Clause", :yellow)}#{clauses.sample}"
+      "#{debug('CLA')}#{clauses.sample}"
     end
 
     # Generate a random set of separators
@@ -622,25 +620,25 @@ module RandomWords
     # Generate a random separator
     # @return [String] A randomly selected separator
     def random_separator
-      "#{debug("Separator", :yellow)}#{random_separators.sample}"
+      "#{debug('SEP')}#{random_separators.sample}"
     end
 
     # Generate a random subordinate conjunction
     # @return [String] A randomly selected subordinate conjunction
     def random_subordinate_conjunction
-      "#{debug("Subordinate Conjunction", :yellow)}#{subordinate_conjunctions.sample}"
+      "#{debug('SUC')}#{subordinate_conjunctions.rotate[0]}"
     end
 
     # Generate a random coordinating conjunction
     # @return [String] A randomly selected coordinating conjunction
     def random_coordinating_conjunction
-      "#{debug("Coordinating Conjunction", :yellow)}#{coordinating_conjunctions.sample}"
+      "#{debug('COC')}#{coordinating_conjunctions.rotate[0]}"
     end
 
     # Generate a random preposition
     # @return [String] A randomly selected preposition
     def random_preposition
-      "#{debug("Preposition", :yellow)}#{prepositions.sample}"
+      "#{debug('PRE')}#{prepositions.rotate[0]}"
     end
 
     # Generate a random prepositional phrase
@@ -657,13 +655,19 @@ module RandomWords
                  "#{random_article_for_word(noun)} #{noun}"
                end
 
-      "#{debug("Prepositional Phrase", :yellow)}#{preposition} #{phrase}"
+      "#{debug('PRP')}#{preposition} #{phrase}"
     end
 
     # Generate a random terminator
     # @return [Array] A randomly selected terminator pair
     def random_terminator
       terminators.sample
+    end
+
+    # Generate a random name
+    # @return [String] A randomly generated name
+    def name
+      "#{debug('NAM')}#{random_name}"
     end
 
     def random_name

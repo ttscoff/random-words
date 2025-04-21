@@ -67,5 +67,14 @@ module RandomWords
       full_names.delete_if(&:empty?)
       [first_names, last_names, full_names]
     end
+
+    def rotate
+      return self if empty?
+
+      # Rotate the array by moving the first element to the end
+      first_element = shift
+      push(first_element)
+      self
+    end
   end
 end

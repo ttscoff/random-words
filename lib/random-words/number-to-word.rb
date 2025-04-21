@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Original code by Mike Burns
+# Original code by Mike Burns 2007, updated by Brett Terpstra 2025
 
 # Copyright 2007 Mike Burns
 
@@ -51,7 +51,7 @@ module RandomWords
       true
     end
 
-    # protected
+    protected
 
     # Convert a number to its word representation for the hundreds place.
     def hundred_to_word(place = 0, numbers)

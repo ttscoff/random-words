@@ -44,6 +44,10 @@ module RandomWords
     end
 
     def colorize_text(text, color)
+      return text unless $stdout.isatty
+
+      return text unless colors.key?(color)
+
       color_code = colors[color]
 
       "\e[#{color_code}m#{text}\e[0m"
