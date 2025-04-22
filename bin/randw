@@ -423,7 +423,7 @@ def markdown_settings(settings)
   markdown_options
 end
 
-@rw = RandomWords::Generator.new(@options[:source], { debug: @options[:debug_level] > 1 })
+@rw = RandomWords::Generator.new(@options[:source], { debug: @options[:debug_level] && @options[:debug_level] > 1 })
 @rw.sentence_length = @options[:length] || :medium
 @rw.paragraph_length = @options[:paragraph_length] || 3
 @options[:use_extended_punctuation] = @options[:use_extended_punctuation] ? true : false
@@ -501,7 +501,7 @@ when :password
   cap_char = rand(20) while p[cap_char] !~ /[a-z]/
   p[cap_char] = p[cap_char].upcase
 
-  tail_char = p =~ /[^a-z0-9]/i ? "" : %w[! @ # $ % ^ & * ( ) _ + - = ; : < > , . ? /].sample
+  tail_char = /[^a-z0-9]/i.match?(p) ? "" : %w[! @ # $ % ^ & * ( ) _ + - = ; : < > , . ? /].sample
 
   print p.gsub(/ /, @options[:separator]) + tail_char
   debug "#{p.split(@options[:separator]).count}w, #{p.length}c"
