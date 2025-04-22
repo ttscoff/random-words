@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Original code by Mike Burns
+# Original code by Mike Burns 2007, updated by Brett Terpstra 2025
 
 # Copyright 2007 Mike Burns
 
@@ -40,7 +40,7 @@ module RandomWords
         place += 1
         tmp /= 1000
       end
-      final == '' ? 'zero' : final.sub(/\s+$/, '')
+      final == '' ? 'zero' : final.sub(/ and *$/, '').sub(/\s+$/, '')
     end
 
     # For testing edge cases
@@ -67,9 +67,9 @@ module RandomWords
         hundreds = self / 100
         tens = self % 100
         if tens.zero?
-          append_place(hundreds.digit_to_word(numbers) + " #{numbers[:places][2]}", place, numbers)
+          append_place(hundreds.digit_to_word(numbers) + " #{numbers[:places][2]} and ", place, numbers)
         else
-          append_place(hundreds.digit_to_word(numbers) + " #{numbers[:places][2]} " + tens.tens_place_to_word(numbers), place,
+          append_place(hundreds.digit_to_word(numbers) + " #{numbers[:places][2]} and " + tens.tens_place_to_word(numbers), place,
                        numbers)
         end
       end

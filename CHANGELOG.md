@@ -1,3 +1,17 @@
+### 1.0.10
+
+2025-04-22 06:30
+
+#### NEW
+
+- Debug mode that shows parts of speech in output
+
+#### IMPROVED
+
+- Fix clauses so sentences make more sense
+- Number to word phrasing
+- Fixes for spec tests
+
 ### 1.0.9
 
 2025-04-20 06:34

@@ -212,7 +212,7 @@ module RandomWords
         source: configuration[:source].to_source || :latin,
         sentence_length: configuration[:length].to_length || :medium,
         paragraph_length: configuration[:paragraph_length].to_i || 5,
-        use_extended_punctuation: ext_punc && ext_punc.trueish? || false
+        use_extended_punctuation: (ext_punc && ext_punc.trueish?) || false
       }
     end
 

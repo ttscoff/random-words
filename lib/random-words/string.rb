@@ -23,7 +23,7 @@ module RandomWords
       gsub(/[^-a-zA-Z0-9\s]/, '').strip
     end
 
-    # Captialize instances of "i" in a string.
+    # Capitalize instances of "i" in a string.
     # @return [String] The string with "i" capitalized.
     # @example
     #   "this is an i".capitalize_i # => "this is an I"
@@ -41,12 +41,20 @@ module RandomWords
     def capitalize
       return self if empty?
 
-      letters = split('')
+      str = dup
+
+      debug = ''
+      str.sub!(/^%[A-Z]+%/) do |match|
+        debug = match
+        ''
+      end
+
+      letters = str.split('')
       string = []
       string << letters.shift while letters[0] !~ /[[:word:]]/
       string << letters.shift.upcase
       string.concat(letters)
-      string.join('')
+      debug + string.join('')
     end
 
     # Downcase the first letter of a string, respecting punctuation.
@@ -76,19 +84,19 @@ module RandomWords
       return capitalize if terminator_ends.empty?
 
       terminator_regex = Regexp.new("[#{Regexp.escape(terminator_ends.join)}]")
-      return capitalize unless self =~ terminator_regex
+      return capitalize unless match?(terminator_regex)
 
       split(/(?<=#{terminator_regex}) /).map do |sentence|
         sentence.capitalize
       end.join(' ')
     end
 
-    # Remove duplicate commas
-    # @return [String] The string with duplicate commas removed.
+    # Remove duplicate punctuation
+    # @return [String] The string with duplicate punctuation removed.
     # @example
     #  "Hello, , World!".dedup_punctuation # => "Hello, World!"
     def dedup_punctuation
-      gsub(/([,.;:—] ?)+/, '\1').gsub(/([,;:—])/, '\1')
+      gsub(/((%[A-Z]+%)?[,.;:—] ?)+/, '\1').gsub(/([,;:—])/, '\1')
     end
 
     # Generate a sentence with capitalization and terminator
@@ -104,7 +112,9 @@ module RandomWords
     #   "Hello, World!\n\nThis is a test.".split_lines # => ["Hello World", "This is a test"]
     #
     def split_lines
-      strip.split("\n").map(&:clean).reject(&:empty?)
+      arr = strip.split("\n").map(&:clean)
+      arr.reject!(&:empty?)
+      arr
     end
 
     # Compress multiple spaces into a single space and remove leading/trailing spaces.
@@ -120,7 +130,13 @@ module RandomWords
     #   "Hello World".terminate(["", "."]) # => "Hello World."
     #
     def terminate(terminator)
-      sub(/^/, terminator[0]).sub(/[^a-zA-Z0-9]*$/, terminator[1])
+      debug = ''
+      str = dup
+      str.sub!(/^%[A-Z]+%/) do |match|
+        debug = match
+        ''
+      end
+      debug + str.sub(/^/, terminator[0]).sub(/[^a-zA-Z0-9]*$/, terminator[1])
     end
 
     # Remove any punctuation mark from the end of a string.
@@ -204,7 +220,7 @@ module RandomWords
 
       sources.each do |_k, v|
         v.names.each do |name|
-          next unless name.to_s =~ /^#{self}/i
+          next unless /^#{self}/i.match?(name.to_s)
 
           new_source = v.name
           break
@@ -229,6 +245,89 @@ module RandomWords
         :very_long
       else
         :medium
+      end
+    end
+
+    # Terminal output colors
+    def colors
+      {
+        black: 30,
+        red: 31,
+        green: 32,
+        yellow: 33,
+        blue: 34,
+        magenta: 35,
+        cyan: 36,
+        white: 37,
+        boldblack: '1;30',
+        boldred: '1;31',
+        boldgreen: '1;32',
+        boldyellow: '1;33',
+        boldblue: '1;34',
+        boldmagenta: '1;35',
+        boldcyan: '1;36',
+        boldwhite: '1;37',
+        reset: 0
+      }
+    end
+
+    # Colorize the text for terminal output.
+    # @param text [String] The text to colorize.
+    # @param color [Symbol] The color to use (e.g., :red, :green).
+    #
+    # If the output is not a TTY, the text is returned without colorization.
+    #
+    # @return [String] The colorized text.
+    # @example
+    #  colorize_text("Hello, World!", :red) # => "\e[31mHello, World!\e[0m"
+    def colorize_text(text, color, testing = false)
+      return text if !$stdout.isatty && !testing
+
+      return text unless colors.key?(color)
+
+      return text if text.empty?
+
+      color_code = colors[color]
+
+      "\e[#{color_code}m#{text}\e[0m"
+    end
+
+    # Dictionary of expansions
+    def expansions
+      {
+        'ADJ' => ['Adjective', :yellow],
+        'ADV' => ['Adverb', :boldyellow],
+        'ART' => ['Article', :cyan],
+        'CLA' => ['Clause', :magenta],
+        'COC' => ['Coordinating Conjunction', :magenta],
+        'CON' => ['Conjunction', :magenta],
+        'NAM' => ['Name', :boldblue],
+        'NOU' => ['Noun', :green],
+        'NUM' => ['Number', :red],
+        'PAV' => ['Passive Verb', :boldred],
+        'PHR' => ['Phrase', :boldcyan],
+        'PLA' => ['Plural Article', :yellow],
+        'PLN' => ['Plural Noun', :green],
+        'PLV' => ['Plural Verb', :boldred],
+        'PNO' => ['Proper Noun', :boldblack],
+        'PRE' => ['Preposition', :boldwhite],
+        'PRP' => ['Prepositional Phrase', :boldwhite],
+        'SEP' => ['Separator', :red],
+        'SUC' => ['Subordinate Conjunction', :magenta],
+        'TER' => ['Terminator', :boldcyan],
+        'VER' => ['Verb', :boldred]
+      }
+    end
+
+    # Expand abbreviated debug statements in the string.
+    # @return [String] The expanded debug string.
+    def expand_debug(testing = false)
+      gsub(/%(#{Regexp.union(expansions.keys)})%?/) do
+        match = Regexp.last_match
+
+        return match unless expansions.key?(match[1])
+
+        colorize_text("[#{expansions[match[1]][0] || match}]", expansions[match[1]][1] || :white, testing)
       end
     end
   end

@@ -31,14 +31,14 @@ RSpec.describe Integer do
 
     it 'converts hundreds' do
       expect(100.to_word(english_numbers)).to eq('one hundred')
-      expect(242.to_word(english_numbers)).to eq('two hundred forty two')
+      expect(242.to_word(english_numbers)).to eq('two hundred and forty two')
       expect(900.to_word(english_numbers)).to eq('nine hundred')
     end
 
     it 'converts thousands' do
       expect(1000.to_word(english_numbers)).to eq('one thousand')
-      expect(4521.to_word(english_numbers)).to eq('four thousand five hundred twenty one')
-      expect(126_620.to_word(english_numbers)).to eq('one hundred twenty six thousand six hundred twenty')
+      expect(4521.to_word(english_numbers)).to eq('four thousand five hundred and twenty one')
+      expect(126_620.to_word(english_numbers)).to eq('one hundred and twenty six thousand six hundred and twenty')
     end
 
     it 'converts zero' do

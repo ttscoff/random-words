@@ -1,7 +1,7 @@
 # RandomWords
 <!--README-->
 
-[![RubyGems.org](https://img.shields.io/gem/v/random-words)](https://rubygems.org/gems/random-words)[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![RubyGems.org](https://img.shields.io/gem/v/random-words)](https://rubygems.org/gems/random-words)[![](https://img.shields.io/github/license/ttscoff/random-words)](https://opensource.org/licenses/MIT)
 
 A random text (Lorem Ipsum) generator.
 
@@ -68,7 +68,7 @@ elements to include.
 
 First, the source language (defaults to latin), then the
 length of paragraphs and tables: e.g. `english/medium`. You
-can add any digits to determine how many paragraps are
+can add any digits to determine how many paragraphs are
 generated (default 5), e.g. `corporate/medium/10`.
 
 Then you can add individual elements, or use `/all` to
@@ -87,6 +87,7 @@ trigger all elements. The elements available are:
 | headers | add headlines             |
 | image   | add images                |
 | table   | add tables                |
+| x       | add extended punctuation  |
 
 The number of elements inserted depends on the length you specify.
 

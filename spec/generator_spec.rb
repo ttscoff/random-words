@@ -3,13 +3,13 @@
 RSpec.describe RandomWords::Generator do
   subject(:generator) { described_class.new }
   subject(:opening_regex) do
-    "[A-Z#{Regexp.escape(described_class.new.terminators.map do |t|
-      t[0].chars.first
+    "[0-9A-Z#{Regexp.escape(described_class.new.terminators.map do |t|
+      t[0][0]
     end.delete_if(&:nil?).sort.uniq.join)}]"
   end
   subject(:closing_regex) do
     "[#{Regexp.escape(described_class.new.terminators.map do |t|
-      t[1].chars.last
+      t[1][-1]
     end.delete_if(&:nil?).sort.uniq.join)}]"
   end
   subject(:sentence_regex) { Regexp.new("^#{opening_regex}.*?#{closing_regex}$") }
@@ -234,7 +234,7 @@ RSpec.describe RandomWords::Generator do
     end
   end
 
-  describe "#name" do
+  describe '#name' do
     it 'returns a valid name string' do
       expect(generator.name).to be_a(String)
       expect(generator.name).to match(/^[A-Z][a-z]+ ?(?:[A-Z] )?[A-Z][a-z]+$/)
@@ -243,7 +243,7 @@ RSpec.describe RandomWords::Generator do
 
   describe '#code_lang' do
     it 'returns a valid programming language symbol' do
-      valid_langs = [:python, :ruby, :swift, :javascript, :css, :rust, :go, :java]
+      valid_langs = %i[python ruby swift javascript css rust go java]
       expect(valid_langs).to include(generator.code_lang)
     end
   end
