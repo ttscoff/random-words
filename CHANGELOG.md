@@ -1,3 +1,12 @@
+### 1.0.11
+
+2025-04-22 07:11
+
+#### FIXED
+
+- Latin was outputting too many "quod est" clauses
+- Fix for nil debug setting
+
 ### 1.0.10
 
 2025-04-22 06:30
