@@ -141,6 +141,12 @@ RSpec.describe RandomWords::LoremMarkdown do
       expect(markdown.output).to include('<pre')
     end
 
+    it 'adds block after first paragraph when only 1 graf' do
+      markdown = described_class.new(grafs: 1, bq: true)
+      expect(markdown.output).to include('<blockquote>')
+      expect(markdown.output).to include('</blockquote>')
+    end
+
     it 'generates markdown with tables when specified' do
       markdown = described_class.new(table: true)
       expect(markdown.output).to include('<table>')

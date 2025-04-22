@@ -161,6 +161,7 @@ module RandomWords
     # @!visibility private
     def test_random
       RandomWords.testing = true
+      @debug = true
       @use_extended_punctuation = true
       res = []
       res << random_noun
@@ -370,6 +371,12 @@ module RandomWords
     # @return [String] A randomly generated HTML string
     def html(settings = {})
       RandomWords::LoremMarkdown.new(settings).output
+    end
+
+    # Generate a random name
+    # @return [String] A randomly generated name
+    def name
+      "#{debug('NAM')}#{random_name}"
     end
 
     private
@@ -662,12 +669,6 @@ module RandomWords
     # @return [Array] A randomly selected terminator pair
     def random_terminator
       terminators.sample
-    end
-
-    # Generate a random name
-    # @return [String] A randomly generated name
-    def name
-      "#{debug('NAM')}#{random_name}"
     end
 
     def random_name

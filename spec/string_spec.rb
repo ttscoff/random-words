@@ -46,6 +46,11 @@ RSpec.describe String do
       str = 'Hello World'
       expect(str.terminate(['(', ')'])).to match(/\(Hello World\)$/)
     end
+
+    it 'handles debug strings' do
+      str = '%NOU%Hello World'
+      expect(str.terminate(['(', ')'])).to match(/%NOU%\(Hello World\)$/)
+    end
   end
 
   describe '.to_sent' do
@@ -130,6 +135,11 @@ RSpec.describe String do
     it 'handles empty strings' do
       str = ''
       expect(str.capitalize).to eq('')
+    end
+
+    it 'handles debug strings' do
+      str = '%NOU%hello world'
+      expect(str.capitalize).to eq('%NOU%Hello world')
     end
   end
 
@@ -281,6 +291,64 @@ RSpec.describe String do
     it 'handles empty strings' do
       str = ''
       expect(str.indent('  ')).to eq('  ')
+    end
+  end
+
+  describe '.expansions' do
+    it 'returns a hash of grammar term expansions' do
+      expansions = ''.expansions
+
+      expect(expansions).to be_a(Hash)
+      expect(expansions['ADJ']).to eq(['Adjective', :yellow])
+      expect(expansions['NOU']).to eq(['Noun', :green])
+      expect(expansions['VER']).to eq(['Verb', :boldred])
+    end
+
+    it 'includes expected grammar terms and colors' do
+      expansions = ''.expansions
+
+      expect(expansions['ADJ'].first).to eq('Adjective')
+      expect(expansions['ADJ'].last).to eq(:yellow)
+      expect(expansions['PRE'].first).to eq('Preposition')
+      expect(expansions['PRE'].last).to eq(:boldwhite)
+      expect(expansions['TER'].first).to eq('Terminator')
+      expect(expansions['TER'].last).to eq(:boldcyan)
+    end
+
+    it 'contains all required grammar codes' do
+      expansions = ''.expansions
+      required_codes = %w[ADJ ADV ART CLA COC CON NAM NOU NUM PAV PHR PLA PLN PLV PNO PRE PRP SEP SUC TER VER]
+
+      required_codes.each do |code|
+        expect(expansions).to have_key(code)
+        expect(expansions[code].size).to eq(2)
+        expect(expansions[code].first).to be_a(String)
+        expect(expansions[code].last).to be_a(Symbol)
+      end
+    end
+  end
+
+  describe '.expand_debug' do
+    it 'expands debug strings with grammar terms' do
+      str = '%NOU%Hello World'
+      expect(str.expand_debug(true)).to match(/\e\[32m\[Noun\]\e\[0mHello World/)
+    end
+
+    it 'handles strings without debug codes' do
+      str = 'Hello World'
+      expect(str.expand_debug(true)).to eq('Hello World')
+    end
+  end
+
+  describe '.colorize_text' do
+    it 'adds color codes to text' do
+      str = 'Hello World'
+      expect(str.colorize_text(str, :boldred, true)).to match(/\e\[1;31mHello World\e\[0m/)
+    end
+
+    it 'handles empty strings' do
+      str = ''
+      expect(str.colorize_text(str, :boldred, true)).to eq('')
     end
   end
 end

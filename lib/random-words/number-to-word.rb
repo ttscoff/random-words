@@ -40,7 +40,7 @@ module RandomWords
         place += 1
         tmp /= 1000
       end
-      final == '' ? 'zero' : final.sub(/\s+$/, '')
+      final == '' ? 'zero' : final.sub(/ and *$/, '').sub(/\s+$/, '')
     end
 
     # For testing edge cases

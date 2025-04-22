@@ -1,7 +1,7 @@
 # RandomWords
 <!--README-->
 
-[![RubyGems.org](https://img.shields.io/gem/v/random-words)](https://rubygems.org/gems/random-words)[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![RubyGems.org](https://img.shields.io/gem/v/random-words)](https://rubygems.org/gems/random-words)[![](https://img.shields.io/github/license/ttscoff/random-words)](https://opensource.org/licenses/MIT)
 
 A random text (Lorem Ipsum) generator.
 
