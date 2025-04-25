@@ -1,3 +1,23 @@
+### 1.0.12
+
+2025-04-25 07:23
+
+#### NEW
+
+- Add footnote option
+- Add image option
+- Add horizontal rule option
+- Complete HTML output
+- Specify CSS with style:filename.css
+
+#### IMPROVED
+
+- More test coverage
+
+#### FIXED
+
+- Markdown output missing link definitions
+
 ### 1.0.11
 
 2025-04-22 07:11
