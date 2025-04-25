@@ -12,12 +12,18 @@ module RandomWords
     # Initialize the HTML2Markdown converter
     # @param str [String] The HTML string to convert
     # @param baseurl [String] The base URL for resolving relative links
-    def initialize(str, baseurl = nil)
+    def initialize(str, baseurl = nil, meta = {})
       @links = []
+      @footnotes = []
       @baseuri = (baseurl ? URI.parse(baseurl) : nil)
       @section_level = 0
-      @encoding = str.encoding
-      @markdown = output_for(Nokogiri::HTML(str, baseurl).root).gsub(/\n\n\n+/, "\n\n\n")
+      input = str.is_a?(String) ? str : str.output
+      @encoding = input.encoding
+      @markdown = output_for(Nokogiri::HTML(input, baseurl).root).gsub(/\n\n\n+/, "\n\n\n").strip
+      @title = meta[:title] if meta[:title]
+      @date = meta[:date] if meta[:date]
+      @style = meta[:style] if meta[:style]
+      @meta_type = meta[:type] if meta[:type]
     end
 
     # Convert the HTML to Markdown
@@ -26,12 +32,45 @@ module RandomWords
     #   converter = HTML2Markdown.new('<p>Hello world</p>')
     #   puts converter.to_s
     def to_s
+      meta = ''
+
+      if @meta_type
+        meta = <<~EOMETA
+          title: #{@title}
+          date: #{@date}
+          css: #{@style}
+        EOMETA
+        case @meta_type
+        when :multimarkdown
+          meta = <<~EOF
+            #{meta}
+
+          EOF
+        when :yaml
+          meta = <<~EOF
+            ---
+            #{meta}
+            ---
+          EOF
+        end
+      end
       i = 0
       @markdown = TableCleanup.new(@markdown).clean
-      "#{@markdown}\n\n" + @links.map { |link|
-        i += 1
-        "[#{i}]: #{link[:href]}" + (link[:title] ? %( "#{link[:title]}") : '')
-      }.join("\n")
+      out = "#{meta}#{@markdown}"
+
+      if @links.any?
+        out += "\n\n" + @links.map do |link|
+          i += 1
+          "[#{i}]: #{link[:href]}" + (link[:title] ? %( "#{link[:title]}") : '')
+        end.join("\n")
+      end
+
+      if @footnotes.any?
+        out += "\n\n" + @footnotes.map { |link|
+          "[^fn#{link[:counter]}]: #{link[:title]}"
+        }.join("\n\n")
+      end
+      out
     end
 
     # Recursively convert child nodes
@@ -40,6 +79,14 @@ module RandomWords
       node.children.map do |el|
         output_for(el)
       end.join
+    end
+
+    # Add a footnote to the list of links
+    # @param counter [String] The footnote counter
+    # @param link [Hash] The link to add
+    def add_footnote(counter, link)
+      @footnotes << { counter: counter, title: link[:title] }
+      @footnotes.length
     end
 
     # Add a link to the list of links
@@ -69,7 +116,7 @@ module RandomWords
     # @param str [String] The string to wrap
     # @return [String] The wrapped string
     def wrap(str)
-      return str if str =~ /\n/
+      return str if str.include?("\n")
 
       out = []
       line = []
@@ -80,7 +127,7 @@ module RandomWords
           line = []
         end
       end
-      out << (line.join(' ') + (str[-1..-1] =~ /[ \t\n]/ ? str[-1..-1] : ''))
+      out << (line.join(' ') + (/[ \t\n]/.match?(str[-1..-1]) ? str[-1..-1] : ''))
       out.join("\n")
     end
 
@@ -89,7 +136,13 @@ module RandomWords
     # @return [String] The converted Markdown string
     def output_for(node)
       case node.name
-      when 'head', 'style', 'script'
+      when 'title'
+        @title = node.content
+        ''
+      when 'head'
+        children = output_for_children(node)
+        ''
+      when 'style', 'script'
         ''
       when 'br'
         "  \n"
@@ -106,7 +159,8 @@ module RandomWords
         "==#{output_for_children(node)}=="
       when 'blockquote'
         @section_level += 1
-        o = "\n\n> #{output_for_children(node).lstrip.gsub("\n", "\n> ")}\n\n".gsub(/> \n(> \n)+/, "> \n")
+        o = "\n\n> #{output_for_children(node).lstrip.gsub("\n", "\n> ")}\n\n".gsub(/> \n(> \n)+/, "> \n").sub(/> \n$/,
+                                                                                                               "\n")
         @section_level -= 1
         o
       when 'cite'
@@ -130,7 +184,7 @@ module RandomWords
           @in_pre = false
           node.text.strip
         else
-          "`#{output_for_children(node).gsub("\n", ' ')}`"
+          "`#{output_for_children(node).tr("\n", ' ')}`"
         end
       when 'pre'
         @in_pre = true
@@ -138,19 +192,25 @@ module RandomWords
         lang = '' if lang.nil? || lang.empty?
         "\n\n```#{lang}\n" + output_for_children(node).lstrip + "\n```\n\n"
       when 'hr'
-        "\n\n----\n\n"
+        "\n\n* * * *\n\n"
       when 'a', 'link'
         link = { href: node['href'], title: node['title'] }
-        "[#{output_for_children(node).gsub("\n", ' ')}][#{add_link(link)}]"
+        if link[:href] =~ /^#fn:(\d+)/
+          counter = Regexp.last_match[1]
+          add_footnote(counter, link)
+          "[^fn#{counter}]"
+        else
+          "[#{output_for_children(node).tr("\n", ' ')}][#{add_link(link)}]"
+        end
       when 'img'
         link = { href: node['src'], title: node['title'] }
         "![#{node['alt']}][#{add_link(link)}]"
       when 'video', 'audio', 'embed'
         link = { href: node['src'], title: node['title'] }
-        "[#{output_for_children(node).gsub("\n", ' ')}][#{add_link(link)}]"
+        "[#{output_for_children(node).tr("\n", ' ')}][#{add_link(link)}]"
       when 'object'
         link = { href: node['data'], title: node['title'] }
-        "[#{output_for_children(node).gsub("\n", ' ')}][#{add_link(link)}]"
+        "[#{output_for_children(node).tr("\n", ' ')}][#{add_link(link)}]"
       when 'i', 'em', 'u'
         "_#{output_for_children(node)}_"
       when 'b', 'strong'
@@ -176,10 +236,10 @@ module RandomWords
         header = "\n"
         if @table_header
           @table_header = false
-          cells = node.children.select do |c|
+          cells = node.children.count do |c|
             %w[th td].include?(c.name)
-          end.count
-          header = "\n|#{cells.times.map { '-------' }.join('|')}|\n"
+          end
+          header = "\n|#{Array.new(cells) { '-------' }.join('|')}|\n"
         end
         node.children.select do |c|
           %w[th td].include?(c.name)
@@ -190,7 +250,7 @@ module RandomWords
         "| #{output_for_children(node)} |"
       when 'text'
         # Sometimes Nokogiri lies. Force the encoding back to what we know it is
-        if (c = node.content.force_encoding(@encoding)) =~ /\S/
+        if /\S/.match?((c = node.content.force_encoding(@encoding)))
           c.gsub!(/\n\n+/, '<$PreserveDouble$>')
           c.gsub!(/\s+/, ' ')
           c.gsub('<$PreserveDouble$>', "\n\n")

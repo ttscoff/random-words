@@ -21,6 +21,65 @@ RSpec.describe RandomWords::HTML2Markdown do
       html_test = described_class.new(source, baseurl)
       expect(html_test.markdown).to match(/# Quisque/)
     end
+
+    it 'handles input with metadata' do
+      meta = { title: 'Test Title', date: '2024-01-01', type: :yaml }
+      converter = described_class.new('<p>Test content</p>', nil, meta)
+      output = converter.to_s
+
+      expect(output).to include('---')
+      expect(output).to include('title: Test Title')
+      expect(output).to include('date: 2024-01-01')
+      expect(output).to match(/Test content/)
+    end
+
+    it 'converts footnotes correctly' do
+      html = '<p>Text<a href="#fn:1" title="Footnote 1">1</a> and <a href="#fn:2" title="Footnote 2">2</a></p>'
+      converter = described_class.new(html)
+      output = converter.to_s
+
+      expect(output).to include('[^fn1]')
+      expect(output).to include('[^fn2]')
+      expect(output).to include('[^fn1]: Footnote 1')
+      expect(output).to include('[^fn2]: Footnote 2')
+    end
+
+    it 'handles different input types' do
+      string_io = StringIO.new('<p>Test</p>')
+      def string_io.output
+        string
+      end
+
+      converter = described_class.new(string_io)
+      expect(converter.to_s.strip).to eq('Test')
+    end
+
+    it 'preserves encoding of input text' do
+      utf8_text = '<p>こんにちは</p>'.encode('UTF-8')
+      converter = described_class.new(utf8_text)
+      expect(converter.to_s.encoding).to eq(Encoding::UTF_8)
+    end
+
+    it 'handles complete html with title tag' do
+      complete_html = <<~HTML
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Test Title</title>
+          </head>
+          <body>
+            <p>Hello world</p>
+          </body>
+        </html>
+      HTML
+
+      converter = described_class.new(complete_html, 'https://example.com', { type: :yaml })
+      expect(converter.to_s).to include('Test Title')
+      expect(converter.to_s).to include('Hello world')
+
+      converter = described_class.new(complete_html, 'https://example.com', { type: :multimarkdown })
+      expect(converter.to_s).to include('title: Test Title')
+    end
   end
 
   describe '#to_s' do

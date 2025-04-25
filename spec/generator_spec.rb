@@ -280,6 +280,19 @@ RSpec.describe RandomWords::Generator do
       expect(result).to be_a(String)
       expect(result).not_to be_empty
     end
+
+    it 'contains yaml front matter' do
+      result = generator.markdown({ meta_type: :yaml })
+      expect(result).to include('---')
+      expect(result).to include('title:')
+      expect(result).to include('date:')
+    end
+
+    it 'contains multimarkdown front matter' do
+      result = generator.markdown({ meta_type: :multimarkdown })
+      expect(result).to include('title:')
+      expect(result).to include('date:')
+    end
   end
 
   describe '#html' do
@@ -288,6 +301,14 @@ RSpec.describe RandomWords::Generator do
       expect(result).to be_a(String)
       expect(result).not_to be_empty
       expect(result).to match(/<[^>]+>/)
+    end
+
+    it 'returns a complete html document' do
+      result = generator.html({ complete: true, style: 'random.css' })
+      expect(result).to be_a(String)
+      expect(result).not_to be_empty
+      expect(result).to match(/<title>/)
+      expect(result).to match(/<link rel="stylesheet" href="random.css">/)
     end
   end
 end

@@ -2,40 +2,40 @@
 
 # require 'test_helper'
 
-RSpec.describe RandomWords::LoremMarkdown do
+RSpec.describe RandomWords::LoremHTML do
   let(:options) { {} }
   let(:markdown) { described_class.new(options) }
 
   context 'when generating headers' do
     context 'with different paragraph counts' do
       it 'generates 1 header for 1 paragraph' do
-        markdown = RandomWords::LoremMarkdown.new(grafs: 1, headers: true)
+        markdown = RandomWords::LoremHTML.new(grafs: 1, headers: true)
         expect(markdown.output.scan(/<h\d>/).count).to eq(1)
       end
 
       it 'generates 2 headers for 2-3 paragraphs' do
-        markdown = RandomWords::LoremMarkdown.new(grafs: 3, headers: true)
+        markdown = RandomWords::LoremHTML.new(grafs: 3, headers: true)
         expect(markdown.output.scan(/<h\d>/).count).to eq(2)
       end
 
       it 'generates 4 headers for 4-5 paragraphs' do
-        markdown = RandomWords::LoremMarkdown.new(grafs: 5, headers: true)
+        markdown = RandomWords::LoremHTML.new(grafs: 5, headers: true)
         expect(markdown.output.scan(/<h\d>/).count).to eq(4)
       end
 
       it 'generates 5 headers for 6 paragraphs' do
-        markdown = RandomWords::LoremMarkdown.new(grafs: 6, headers: true)
+        markdown = RandomWords::LoremHTML.new(grafs: 6, headers: true)
         expect(markdown.output.scan(/<h\d>/).count).to eq(5)
       end
 
       it 'generates 6 headers for 7+ paragraphs' do
-        markdown = RandomWords::LoremMarkdown.new(grafs: 7, headers: true)
+        markdown = RandomWords::LoremHTML.new(grafs: 7, headers: true)
         expect(markdown.output.scan(/<h\d>/).count).to eq(6)
       end
     end
 
     it 'uses progressively deeper header levels' do
-      markdown = RandomWords::LoremMarkdown.new(grafs: 10, headers: true)
+      markdown = RandomWords::LoremHTML.new(grafs: 10, headers: true)
       headers = markdown.output.scan(/<h(\d)>/).flatten.map(&:to_i)
       expect(headers).to eq(headers.sort)
     end
