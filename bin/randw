@@ -31,6 +31,8 @@ markdown_help = <<HELP
                                      hr: add horizontal rules
                                      table: add tables
                                      fn: add footnotes
+                                     complete: complete HTML output
+                                     meta:[mmd|yaml]: add metadata header
 HELP
 
 OptionParser.new do |opts|
@@ -183,13 +185,16 @@ def markdown_settings(settings)
     table: false,
     extended: false,
     footnote: false,
-    hr: false
+    hr: false,
+    meta_type: nil,
+    complete: false,
+    style: "style.css"
   }
   sources = []
   RandomWords::Generator.new(:latin).sources.each { |k, v| sources.concat(v.names.map(&:to_s)) }
 
   markdown_options = defaults.dup
-  settings = settings.split(%r{[,/.\|]}).map(&:strip)
+  settings = settings.split(%r{[,/\|]}).map(&:strip)
 
   settings.each do |setting|
     case setting
@@ -207,7 +212,8 @@ def markdown_settings(settings)
         image: true,
         table: true,
         extended: true,
-        footnote: true
+        footnote: true,
+        hr: true
       }
       markdown_options.merge!(new_options)
     when Regexp.union(sources)
@@ -244,6 +250,17 @@ def markdown_settings(settings)
       markdown_options[:image] = true
     when 'hr'
       markdown_options[:hr] = true
+    when 'comp', 'complete'
+      markdown_options[:complete] = true
+    when /^(style|css):(.*)$/i
+      markdown_options[:style] = Regexp.last_match(2)
+    when /^meta:(.*?)$/i
+      case Regexp.last_match(1)
+      when 'mmd', 'multimarkdown'
+        markdown_options[:meta_type] = :multimarkdown
+      when 'yaml'
+        markdown_options[:meta_type] = :yaml
+      end
     else
       markdown_options[:source] = setting.to_source
     end

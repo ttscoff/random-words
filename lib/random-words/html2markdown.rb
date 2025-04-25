@@ -12,13 +12,17 @@ module RandomWords
     # Initialize the HTML2Markdown converter
     # @param str [String] The HTML string to convert
     # @param baseurl [String] The base URL for resolving relative links
-    def initialize(str, baseurl = nil)
+    def initialize(str, baseurl = nil, meta = {})
       @links = []
       @footnotes = []
       @baseuri = (baseurl ? URI.parse(baseurl) : nil)
       @section_level = 0
-      @encoding = str.encoding
-      @markdown = output_for(Nokogiri::HTML(str, baseurl).root).gsub(/\n\n\n+/, "\n\n\n")
+      @encoding = str.output.encoding
+      @markdown = output_for(Nokogiri::HTML(str.output, baseurl).root).gsub(/\n\n\n+/, "\n\n\n").strip
+      @title = meta[:title] if meta[:title]
+      @date = meta[:date] if meta[:date]
+      @style = meta[:style] if meta[:style]
+      @meta_type = meta[:type] if meta[:type]
     end
 
     # Convert the HTML to Markdown
@@ -27,9 +31,31 @@ module RandomWords
     #   converter = HTML2Markdown.new('<p>Hello world</p>')
     #   puts converter.to_s
     def to_s
+      meta = ''
+
+      if @meta_type
+        meta = <<~EOMETA
+          title: #{@title}
+          date: #{@date}
+          css: #{@style}
+        EOMETA
+        case @meta_type
+        when :multimarkdown
+          meta = <<~EOF
+            #{meta}
+
+          EOF
+        when :yaml
+          meta = <<~EOF
+            ---
+            #{meta}
+            ---
+          EOF
+        end
+      end
       i = 0
       @markdown = TableCleanup.new(@markdown).clean
-      out = "#{@markdown}"
+      out = "#{meta}#{@markdown}"
 
       if @links.any?
         out += "\n\n" + @links.map do |link|
@@ -109,7 +135,13 @@ module RandomWords
     # @return [String] The converted Markdown string
     def output_for(node)
       case node.name
-      when 'head', 'style', 'script'
+      when 'title'
+        @title = node.content
+        ''
+      when 'head'
+        children = output_for_children(node)
+        ''
+      when 'style', 'script'
         ''
       when 'br'
         "  \n"
@@ -126,7 +158,8 @@ module RandomWords
         "==#{output_for_children(node)}=="
       when 'blockquote'
         @section_level += 1
-        o = "\n\n> #{output_for_children(node).lstrip.gsub("\n", "\n> ")}\n\n".gsub(/> \n(> \n)+/, "> \n")
+        o = "\n\n> #{output_for_children(node).lstrip.gsub("\n", "\n> ")}\n\n".gsub(/> \n(> \n)+/, "> \n").sub(/> \n$/,
+                                                                                                               "\n")
         @section_level -= 1
         o
       when 'cite'
@@ -158,7 +191,7 @@ module RandomWords
         lang = '' if lang.nil? || lang.empty?
         "\n\n```#{lang}\n" + output_for_children(node).lstrip + "\n```\n\n"
       when 'hr'
-        "\n\n----\n\n"
+        "\n\n* * * *\n\n"
       when 'a', 'link'
         link = { href: node['href'], title: node['title'] }
         if /^(mailto|tel):/.match?(link[:href])

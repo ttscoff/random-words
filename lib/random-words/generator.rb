@@ -366,15 +366,41 @@ module RandomWords
     # @param settings [Hash] Settings for generating markdown
     # @return [String] A randomly generated markdown string
     def markdown(settings = {})
-      input = RandomWords::LoremHTML.new(settings).output
-      RandomWords::HTML2Markdown.new(input).to_s
+      input = RandomWords::LoremHTML.new(settings)
+      meta = {}
+      if settings[:meta_type]
+        meta[:type] = settings[:meta_type]
+        meta[:title] = input.title if input.title
+        meta[:style] = settings[:style] || 'style.css'
+        meta[:date] = Time.now.strftime('%Y-%m-%d %H:%M:%S')
+      end
+      RandomWords::HTML2Markdown.new(input, nil, meta).to_s
     end
 
     # Generate random HTML
     # @param settings [Hash] Settings for generating HTML
     # @return [String] A randomly generated HTML string
     def html(settings = {})
-      RandomWords::LoremHTML.new(settings).output
+      html = RandomWords::LoremHTML.new(settings)
+      if settings[:complete]
+        style = settings[:style] || 'style.css'
+        <<~EOOUTPUT
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+          \t<meta charset="UTF-8">
+          \t<meta name="viewport" content="width=device-width, initial-scale=1.0">
+          \t<title>#{html.title}</title>
+          \t<link rel="stylesheet" href="#{style}">
+          </head>
+          <body>
+            #{html.output.indent("\t")}
+          </body>
+          </html>
+        EOOUTPUT
+      else
+        html.output
+      end
     end
 
     # Generate a random name
