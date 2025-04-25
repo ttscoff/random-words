@@ -17,8 +17,9 @@ module RandomWords
       @footnotes = []
       @baseuri = (baseurl ? URI.parse(baseurl) : nil)
       @section_level = 0
-      @encoding = str.output.encoding
-      @markdown = output_for(Nokogiri::HTML(str.output, baseurl).root).gsub(/\n\n\n+/, "\n\n\n").strip
+      input = str.is_a?(String) ? str : str.output
+      @encoding = input.encoding
+      @markdown = output_for(Nokogiri::HTML(input, baseurl).root).gsub(/\n\n\n+/, "\n\n\n").strip
       @title = meta[:title] if meta[:title]
       @date = meta[:date] if meta[:date]
       @style = meta[:style] if meta[:style]
@@ -194,9 +195,7 @@ module RandomWords
         "\n\n* * * *\n\n"
       when 'a', 'link'
         link = { href: node['href'], title: node['title'] }
-        if /^(mailto|tel):/.match?(link[:href])
-          "<#{output_for_children(node)}>"
-        elsif link[:href] =~ /^#fn:(\d+)/
+        if link[:href] =~ /^#fn:(\d+)/
           counter = Regexp.last_match[1]
           add_footnote(counter, link)
           "[^fn#{counter}]"
