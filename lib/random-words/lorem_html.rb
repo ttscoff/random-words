@@ -14,10 +14,26 @@ module RandomWords
 
     # Generates random Lorem Ipsum text.
     # @param options [Hash] Options for generating Lorem Ipsum text.
+    #
+    # @option options [Symbol] :source The source of the words (:latin, :english, :french, etc.).
+    # @option options [Integer] :grafs The number of paragraphs to generate.
+    # @option options [Integer] :sentences The number of sentences per paragraph.
+    # @option options [Symbol] :length The length of the text (:short, :medium, :long, :very_long).
+    # @option options [Boolean] :decorate Whether to include emphasis and strong tags.
+    # @option options [Boolean] :link Whether to include links.
+    # @option options [Boolean] :ul Whether to include unordered lists.
+    # @option options [Boolean] :ol Whether to include ordered lists.
+    # @option options [Boolean] :dl Whether to include definition lists.
+    # @option options [Boolean] :bq Whether to include blockquotes.
+    # @option options [Boolean] :code Whether to include code blocks.
+    # @option options [Boolean] :mark Whether to include mark tags.
+    # @option options [Boolean] :headers Whether to include headers.
+    # @option options [Boolean] :table Whether to include tables.
+    # @option options [Boolean] :extended Whether to use extended punctuation.
     # @return [String] A string of random Lorem Ipsum text.
     def initialize(options = {})
       @added = {
-        em: false,
+        italic: false,
         strong: false,
         link: false,
         code: false,
@@ -58,31 +74,32 @@ module RandomWords
 
       @output = ''
       strong = @options[:decorate]
-      em = @options[:decorate]
+      italic = @options[:decorate]
       links = @options[:link]
       code = @options[:code]
       mark = @options[:mark]
       footnotes = @options[:footnote]
-      hr = @options[:hr]
-      image = @options[:image]
+      @options[:hr]
+      @options[:image]
       force = []
       # Generate the specified number of paragraphs.
       @options[:grafs].times.with_index do |_, i|
-        @output += paragraph(1, em: em, strong: strong, links: links, code: code, mark: mark, footnotes: footnotes,
+        if @options[:grafs] == 1 || i == @options[:grafs] - 2
+          force << :footnote if !@added[:footnote] && @options[:footnote]
+          force << :code if !@added[:code] && @options[:code]
+          force << :link if !@added[:link] && @options[:link]
+          force << :italic if !@added[:italic] && @options[:decorate]
+          force << :strong if !@added[:strong] && @options[:decorate]
+        end
+
+        @output += paragraph(1, italic: italic, strong: strong, links: links, code: code, mark: mark, footnotes: footnotes,
                                 force: force)
-        em = Random.rand(0..3).zero? && @options[:decorate]
+        italic = Random.rand(0..3).zero? && @options[:decorate]
         strong = Random.rand(0..3).zero? && @options[:decorate]
         links = Random.rand(0..3).zero? && @options[:link]
         code = Random.rand(0..3).zero? && @options[:code]
         footnotes = Random.rand(0..3).zero? && @options[:footnote]
 
-        if i == @options[:grafs] - 2
-          force << :footnote if !@added[:footnote] && @options[:footnote]
-          force << :code if !@added[:code] && @options[:code]
-          force << :link if !@added[:link] && @options[:link]
-          force << :em if !@added[:em] && @options[:decorate]
-          force << :strong if !@added[:strong] && @options[:decorate]
-        end
         @output += "\n\n"
       end
 
@@ -90,57 +107,61 @@ module RandomWords
     end
 
     # Use the RandomWords class to generate the Lorem Ipsum text.
+    #
+    # @return [String] The generated Lorem Ipsum HTML.
     def generate
       compress_newlines
+      handle_lists
+      handle_basic_elements
+      handle_content_blocks
+      finalize_output
+      @output
+    end
 
+    private
+
+    def handle_lists
       items = { short: 4, medium: 8, long: 10, very_long: 12 }[@options[:length]]
 
       if @options[:ul] && @options[:ol]
-        # If both unordered and ordered lists are specified, add them both.
         inject_block(1, -> { list(items, :ul) })
         inject_block(1, -> { list(items, :ol) })
       elsif @options[:ul]
-        # If only unordered list is specified, add it.
         inject_block(2, -> { list(items, :ul) })
       elsif @options[:ol]
-        # If only ordered list is specified, add it.
         inject_block(2, -> { list(items, :ol) })
       end
+    end
 
-      # Add horizontal rule if specified.
+    def handle_basic_elements
       inject_block(1, -> { "<hr>\n\n" }) if @options[:hr]
 
-      # Add image if specified.
-      if @options[:image]
-        inject_block(1, lambda {
-          "<img src=\"https://picsum.photos/400/200\" alt=\"#{fragment(1, 4).cap_first}\" />\n\n"
-        })
-      end
+      return unless @options[:image]
 
-      # Add definition list if specified.
+      inject_block(1, lambda {
+        "<img src=\"https://picsum.photos/400/200\" alt=\"#{fragment(1, 4).cap_first}\" />\n\n"
+      })
+    end
+
+    def handle_content_blocks
+      items = { short: 4, medium: 8, long: 10, very_long: 12 }[@options[:length]]
+
       inject_block(1, -> { list(items, :dl) }) if @options[:dl]
-
-      # Add blockquote if specified.
       inject_block(1, -> { blockquote(items / 2) }) if @options[:bq]
-
-      # Add headers if specified.
       inject_headers if @options[:headers]
-
-      # Add code block if specified.
       inject_block(1, -> { code }) if @options[:code]
-
-      # Add table if specified.
       inject_block(1, -> { table }) if @options[:table]
+    end
 
+    def finalize_output
       ensure_block_newlines
       compress_newlines
       convert_punctuation
     end
 
-    private
-
     # Convert non-ascii punctuation to Markdown equivalents.
     # @param [String] text The text to convert.
+    #
     # @return [String] The converted text.
     def convert_punctuation
       text = @output
@@ -154,29 +175,36 @@ module RandomWords
       @output = text
     end
 
-    # Rolls for zero with the specified odds.
-    def roll(odds)
-      Random.rand(0..odds).zero?
+    # Roll a random number to determine if an action should occur
+    # @param percent [Integer] 1-100 percent chance of the action occurring (1-100)
+    #
+    # @return [Boolean] True if the action occurs, false otherwise
+    #
+    # @example
+    #   roll(50) # 50% chance of returning true
+    def roll(percent)
+      rand(1..100) <= percent
     end
 
     # Generates a list of items.
     # @param [Integer] count The number of items to generate.
     # @param [Symbol] type The type of list to generate (:ul, :ol, :dl).
+    #
     # @return [String] The generated list.
     def list(count, type)
       ul = "\n\n<#{type}>\n"
 
       count.times do
-        links = roll(4) && @options[:link]
-        em = roll(2) && @options[:decorate]
-        strong = roll(2) && @options[:decorate]
-        code = roll(4) && @options[:code]
-        mark = roll(6) && @options[:mark]
+        links = roll(20) && @options[:link]
+        italic = roll(50) && @options[:decorate]
+        strong = roll(50) && @options[:decorate]
+        code = roll(10) && @options[:code]
+        mark = roll(10) && @options[:mark]
 
         frag = fragment(1, 4).cap_first
         long_frag = fragment(4, 8).cap_first
         long_frag = inject_inline(long_frag, -> { link }) if links
-        long_frag = inject_inline(long_frag, -> { emphasis(:em) }) if em
+        long_frag = inject_inline(long_frag, -> { emphasis(:em) }) if italic
         long_frag = inject_inline(long_frag, -> { emphasis(:strong) }) if strong
         long_frag = inject_inline(long_frag, -> { code_span }, 1) if code
         long_frag = inject_inline(long_frag, -> { emphasis(:mark) }, 1) if mark
@@ -195,8 +223,9 @@ module RandomWords
     # Generates a blockquote.
     # @param [Integer] count The number of items to generate.
     # @param [Boolean] nested Whether the blockquote is nested.
+    #
     # @return [String] The generated blockquote.
-    def blockquote(count, nested = false)
+    def blockquote(count, nested: false)
       if count > 1 && !nested
         level1 = Random.rand(1..count - 1).to_i
         level2 = count - level1
@@ -208,12 +237,12 @@ module RandomWords
       newline = nested ? '' : "\n\n"
       quote = "#{newline}<blockquote>\n"
       quote += paragraph(level1,
-                         em: @options[:decorate],
+                         italic: @options[:decorate],
                          strong: @options[:decorate],
                          links: @options[:link],
                          code: @options[:code],
                          mark: @options[:mark]).squeeze("\n")
-      quote += blockquote(level2, true).strip if level2.positive?
+      quote += blockquote(level2, nested: true).strip if level2.positive?
       "#{quote}#{cite}</blockquote>#{newline}"
     end
 
@@ -320,7 +349,7 @@ module RandomWords
       path = "/#{path_string(4, 8)}/#{path_string(4, 8)}"
       title = fragment(4, 8).cap_first
       "<a%%href=\"https://example.com#{path}\"%%title=\"#{title.preserve_spaces}\">#{fragment(1,
-                                                                                              8).cap_first}</a>"
+                                                                                              8)}</a>"
     end
 
     # Generates a random footnote
@@ -370,7 +399,7 @@ module RandomWords
     def inject_inline(text, block, max = nil)
       max ||= { short: 1, medium: 2, long: 3, very_long: 4 }[@options[:length]]
 
-      words = text.split(' ')
+      words = text.split
       out = []
       count = 0
       while words.any?
@@ -390,29 +419,30 @@ module RandomWords
     # Generates a paragraph of Lorem Ipsum text.
     # The `words` method generates a specified number of words.
     # @param [Integer] count The number of paragraphs to generate.
-    # @param [Boolean] em Whether to include emphasis tags.
+    # @param [Boolean] italic Whether to include italic tags.
     # @param [Boolean] strong Whether to include strong tags.
     # @param [Boolean] links Whether to include links.
     # @param [Boolean] code Whether to include code tags.
     # @param [Boolean] mark Whether to include mark tags.
     # @param [Array] force An array of tags to force.
     # @return [String] The generated paragraph.
-    def paragraph(count, em: false, strong: false, links: false, code: false, mark: false, footnotes: false, force: [])
+    def paragraph(count, italic: false, strong: false, links: false, code: false, mark: false, footnotes: false, force: [])
       output = ''
+
       s = { short: 2, medium: 4, long: 6, very_long: 8 }[@options[:length]]
       count.times do
         p = @generator.sentences(s).join(' ')
-        should_em = force.include?(:em) || (em && roll(1))
-        should_strong = force.include?(:strong) || (strong && roll(1))
-        should_code = force.include?(:code) || (code && roll(6))
-        should_link = force.include?(:links) || (links && roll(4))
-        should_mark = force.include?(:mark) || (mark && roll(8))
-        should_footnote = force.include?(:footnote) || (footnotes && roll(8))
+        should_em = force.include?(:italic) || (italic && roll(60))
+        should_strong = force.include?(:strong) || (strong && roll(60))
+        should_code = force.include?(:code) || (code && roll(40))
+        should_link = force.include?(:link) || (links && roll(40))
+        should_mark = force.include?(:mark) || (mark && roll(40))
+        should_footnote = force.include?(:footnote) || (footnotes && roll(40))
 
         p = inject_inline(p, -> { link }) if should_link
-        p = inject_inline(p, -> { emphasis('em') }) if should_em
-        p = inject_inline(p, -> { emphasis('strong') }) if should_strong
-        p = inject_inline(p, -> { emphasis('mark') }, 1) if should_mark
+        p = inject_inline(p, -> { emphasis(:em) }) if should_em
+        p = inject_inline(p, -> { emphasis(:strong) }) if should_strong
+        p = inject_inline(p, -> { emphasis(:mark) }, 1) if should_mark
         p = inject_inline(p, -> { code_span }, 1) if should_code
         fn = should_footnote ? footnote.restore_spaces : ''
         output += "<p>#{p.restore_spaces.cap_first.term('.')}#{fn}</p>\n\n"

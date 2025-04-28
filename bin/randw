@@ -155,7 +155,7 @@ OptionParser.new do |opts|
 end.parse!
 
 def debug(msg)
-  return unless @options[:debug]
+  return unless @options[:debug] && @options[:debug_level]&.positive?
 
   # length = msg.length
   # message = RandomWords::Terminal.new.colorize_text(msg, :boldblack)
@@ -331,23 +331,36 @@ when :markdown, :html
     puts @rw.html(settings)
   end
 when :password
-  p = @rw.characters(20, whitespace: @options[:whitespace])
+  p = @rw.characters(20, whitespace: @options[:whitespace], article: false)
 
-  m = p.match(/[oleats]/i)
+  m = p.match(/[olzeasbtg]/i)
   if m
     num_char = m.begin(0)
-    char = m[0].tr("oleats", "013475")
+    char = m[0].tr("olzeasbtbg", "0123456789")
   else
     num_char = p.length
-    char = rand(10).to_s
+    char = rand(9).to_s
   end
   p[num_char] = char
 
-  cap_char = rand(20)
-  cap_char = rand(20) while p[cap_char] !~ /[a-z]/
+  m = p.match(/[hcigatsbp]/i)
+  if m
+    sp_char = m.begin(0)
+    char = m[0].tr("hcigatsbp", "#<!&@+$>?")
+  end
+  p[sp_char] = char
+
+  cap_char = rand(19)
+  cap_char = rand(19) while p[cap_char] !~ /[a-z]/
   p[cap_char] = p[cap_char].upcase
 
-  tail_char = /[^a-z0-9]/i.match?(p) ? "" : %w[! @ # $ % ^ & * ( ) _ + - = ; : < > , . ? /].sample
+  special = %w[! @ # $ % ^ & * ( ) _ + - = ; : < > , . ? /]
+
+  tail_char = if special.include?(@options[:separator]) || p =~ /#{Regexp.union(special)}/
+                ''
+              else
+                /[^a-z0-9 ]/i.match?(p) ? "" : special.sample
+              end
 
   print p.gsub(/ /, @options[:separator]) + tail_char
   debug "#{p.split(@options[:separator]).count}w, #{p.length}c"
@@ -355,5 +368,6 @@ when :test
   t = RandomWords::Terminal.new(@options[:source])
   t.print_test
 else
-  puts "Please specify a valid method: sentences, paragraphs, words, or characters."
+  puts "Please specify a valid method: "
+  puts "sentences, paragraphs, words, characters, password, markdown, html"
 end

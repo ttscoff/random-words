@@ -1,3 +1,19 @@
+### 1.0.13
+
+2025-04-28 07:25
+
+#### NEW
+
+- Christopher Walken dictionary
+
+#### IMPROVED
+
+- Code cleanup
+
+#### FIXED
+
+- CLI outputting debug errantly
+
 ### 1.0.12
 
 2025-04-25 07:23

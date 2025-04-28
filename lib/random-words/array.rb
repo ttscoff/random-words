@@ -34,8 +34,6 @@ module RandomWords
       first_names = []
       last_names = []
       full_names = []
-      first_names_ended = false
-      last_names_ended = false
 
       sections = [[]]
       idx = 0

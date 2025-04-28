@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+# !/usr/bin/env ruby
 # frozen_string_literal: true
 
 # Random Sentence Generator
@@ -92,7 +92,7 @@ module RandomWords
     end
 
     # Display debug message
-    def debug(msg)
+    def dbg(msg)
       return unless @debug
 
       "%#{msg}%"
@@ -241,7 +241,7 @@ module RandomWords
       result = SENTENCE_PARTS.cycle.take(number).map { |part| send(part.to_sym) }.take(number)
       result.map do |word|
         word.split(/ /).last
-      end.join(' ').compress
+      end.join(' ').article_agree.compress
     end
 
     # Generate a series of random words up to a specified length
@@ -254,7 +254,7 @@ module RandomWords
     #   characters(50) # Generates a string with at least 50 characters
     #   characters(50, 100) # Generates a string with between 50 and 100 characters
     #   characters(50, whole_words: false) # Generates a string with 50 characters allowing word truncation
-    def characters(min, max = nil, whole_words: true, whitespace: true, dead_switch: 0)
+    def characters(min, max = nil, whole_words: true, whitespace: true, article: true, dead_switch: 0)
       result = ''
       max ||= min
       raise ArgumentError, 'Infinite loop detected' if dead_switch > 40
@@ -262,7 +262,7 @@ module RandomWords
       whole_words = false if dead_switch > 15
 
       space = whitespace ? ' ' : ''
-      current_part = 0
+      current_part = article ? 0 : 1
       while result.length < max && result.length < min
         word = send(SENTENCE_PARTS[current_part].to_sym)
         word.gsub!(/ +/, '') unless whitespace
@@ -342,7 +342,6 @@ module RandomWords
       code_langs[Random.rand(code_langs.count)]
     end
 
-    # rubocop:disable Layout/LineLength
     # Return random code snippet
     # @param lang [Symbol] The language of the code snippet
     # @return [String] A randomly generated code snippet
@@ -360,7 +359,6 @@ module RandomWords
       lang ||= code_lang
       code_snippets[lang.to_sym]
     end
-    # rubocop:enable Layout/LineLength
 
     # Generate random markdown
     # @param settings [Hash] Settings for generating markdown
@@ -406,7 +404,7 @@ module RandomWords
     # Generate a random name
     # @return [String] A randomly generated name
     def name
-      "#{debug('NAM')}#{random_name}"
+      "#{dbg('NAM')}#{random_name}"
     end
 
     private
@@ -539,7 +537,7 @@ module RandomWords
     # @example
     #  random_conjunction # Returns a random conjunction
     def random_conjunction
-      "#{debug('COC')}#{coordinating_conjunctions.sample}"
+      "#{dbg('COC')}#{coordinating_conjunctions.sample}"
     end
 
     # Generate a random number with a plural noun
@@ -556,65 +554,65 @@ module RandomWords
                end
       if num == 1 || (RandomWords.testing && !RandomWords.tested.include?('random_noun'))
         RandomWords.tested << 'random_noun' if RandomWords.testing
-        "#{debug('NUM')}#{number} #{random_noun}"
+        "#{dbg('NUM')}#{number} #{random_noun}"
       else
         RandomWords.tested << 'random_plural_noun' if RandomWords.testing
-        "#{debug('NUM')}#{number} #{random_plural_noun}"
+        "#{dbg('NUM')}#{number} #{random_plural_noun}"
       end
     end
 
     # Generate a random phrase
     # @return [String] A randomly selected phrase
     def random_phrase
-      "#{debug('PHR')}#{phrases.sample}"
+      "#{dbg('PHR')}#{phrases.sample}"
     end
 
     # Generate a random noun
     # @return [String] A randomly selected noun
     def random_noun
-      "#{debug('NOU')}#{nouns.sample}"
+      "#{dbg('NOU')}#{nouns.sample}"
     end
 
     # Generate a random plural noun
     # @return [String] A randomly selected plural noun
     def random_plural_noun
-      "#{debug('PLN')}#{plural_nouns.sample}"
+      "#{dbg('PLN')}#{plural_nouns.sample}"
     end
 
     # Generate a random verb
     # @return [String] A randomly selected verb
     def random_verb
-      "#{debug('VER')}#{verbs.sample}"
+      "#{dbg('VER')}#{verbs.sample}"
     end
 
     # Generate a random plural verb
     # @return [String] A randomly selected plural verb
     def random_plural_verb
-      "#{debug('PLV')}#{plural_verbs.sample}"
+      "#{dbg('PLV')}#{plural_verbs.sample}"
     end
 
     # Generate a random passive verb
     # @return [String] A randomly selected passive verb
     def random_passive_verb
-      "#{debug('PAV')}#{passive_verbs.sample}"
+      "#{dbg('PAV')}#{passive_verbs.sample}"
     end
 
     # Generate a random adverb
     # @return [String] A randomly selected adverb
     def random_adverb
-      "#{debug('ADV')}#{adverbs.sample}"
+      "#{dbg('ADV')}#{adverbs.sample}"
     end
 
     # Generate a random adjective
     # @return [String] A randomly selected adjective
     def random_adjective
-      "#{debug('ADJ')}#{adjectives.sample}"
+      "#{dbg('ADJ')}#{adjectives.sample}"
     end
 
     # Generate a random article
     # @return [String] A randomly selected article
     def random_article
-      "#{debug('ART')}#{articles.rotate[0]}"
+      "#{dbg('ART')}#{articles.rotate[0]}"
     end
 
     # Generate a random article for a noun
@@ -640,13 +638,13 @@ module RandomWords
     # Generate a random plural article
     # @return [String] A randomly selected plural article
     def random_plural_article
-      "#{debug('PLA')}#{plural_articles.rotate[0]}"
+      "#{dbg('PLA')}#{plural_articles.rotate[0]}"
     end
 
     # Generate a random clause
     # @return [String] A randomly selected clause
     def random_clause
-      "#{debug('CLA')}#{clauses.sample}"
+      "#{dbg('CLA')}#{clauses.sample}"
     end
 
     # Generate a random set of separators
@@ -657,25 +655,25 @@ module RandomWords
     # Generate a random separator
     # @return [String] A randomly selected separator
     def random_separator
-      "#{debug('SEP')}#{random_separators.sample}"
+      "#{dbg('SEP')}#{random_separators.sample}"
     end
 
     # Generate a random subordinate conjunction
     # @return [String] A randomly selected subordinate conjunction
     def random_subordinate_conjunction
-      "#{debug('SUC')}#{subordinate_conjunctions.rotate[0]}"
+      "#{dbg('SUC')}#{subordinate_conjunctions.rotate[0]}"
     end
 
     # Generate a random coordinating conjunction
     # @return [String] A randomly selected coordinating conjunction
     def random_coordinating_conjunction
-      "#{debug('COC')}#{coordinating_conjunctions.rotate[0]}"
+      "#{dbg('COC')}#{coordinating_conjunctions.rotate[0]}"
     end
 
     # Generate a random preposition
     # @return [String] A randomly selected preposition
     def random_preposition
-      "#{debug('PRE')}#{prepositions.rotate[0]}"
+      "#{dbg('PRE')}#{prepositions.rotate[0]}"
     end
 
     # Generate a random prepositional phrase
@@ -692,7 +690,7 @@ module RandomWords
                  "#{random_article_for_word(noun)} #{noun}"
                end
 
-      "#{debug('PRP')}#{preposition} #{phrase}"
+      "#{dbg('PRP')}#{preposition} #{phrase}"
     end
 
     # Generate a random terminator

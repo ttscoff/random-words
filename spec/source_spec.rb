@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe RandomWords::Source do
-  subject(:source) { described_class.new(:english, File.join(__dir__, '..', 'lib', 'random-words', 'words', 'english')) }
+  subject(:source) do
+    described_class.new(:english, File.join(__dir__, '..', 'lib', 'random-words', 'words', 'english'))
+  end
 
   describe '#initialize' do
     it 'creates a new source with default values' do

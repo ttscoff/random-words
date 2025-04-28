@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module RandomWords
   # Terminal methods for testing
   class Terminal
@@ -47,13 +49,13 @@ module RandomWords
       "\e[#{color_code}m#{text}\e[0m"
     end
 
-    def header_1(text)
+    def header1(text)
       puts colorize_text("\n\n#{text}", :boldgreen)
       puts colorize_text('=' * text.length, :boldgreen)
       puts "\n"
     end
 
-    def header_2(text)
+    def header2(text)
       puts colorize_text("\n\n#{text}", :boldyellow)
       puts colorize_text('-' * text.length, :boldyellow)
       puts "\n"
@@ -64,14 +66,14 @@ module RandomWords
       @sentence_generator.paragraph_length = count
       @sentence_generator.source = @sources.sample
 
-      header_2("Random Paragraph (#{@sentence_generator.paragraph_length} #{@sentence_generator.sentence_length} sentences)")
+      header2("Random Paragraph (#{@sentence_generator.paragraph_length} #{@sentence_generator.sentence_length} sentences)")
       graf = @sentence_generator.paragraph
       puts text(graf)
       puts counter("#{graf.split(/ /).count} words, #{graf.length} characters")
     end
 
     def sentence(length)
-      header_2("Random #{length} sentence")
+      header2("Random #{length} sentence")
       @sentence_generator.sentence_length = length
       s = @sentence_generator.sentence
       puts text(s)
@@ -82,7 +84,7 @@ module RandomWords
     def combined_sentences(length = nil)
       number_of_sentences = length || 2
 
-      header_1('Random Combined Sentences:')
+      header1('Random Combined Sentences:')
       @sources.count.times do |i|
         @sentence_generator.source = @sources[i - 1]
         @sentence_generator.sentence_length = :medium
@@ -96,7 +98,7 @@ module RandomWords
     end
 
     def random_sentences
-      header_1('Random Sentences')
+      header1('Random Sentences')
       @sentence_generator.lengths.keys.each_with_index do |length, index|
         @sentence_generator.source = @sources[index]
         sentence(length)
@@ -104,7 +106,7 @@ module RandomWords
     end
 
     def random_paragraphs
-      header_1('Random Paragraphs')
+      header1('Random Paragraphs')
       @sentence_generator.lengths.keys.each_with_index do |length, index|
         @sentence_generator.source = @sources[index]
         paragraphs(length, 3)
@@ -118,9 +120,9 @@ module RandomWords
         number_of_words << (((i * i) * 5) + 10)
       end
 
-      header_1("#{number_of_words} Random Words")
+      header1("#{number_of_words} Random Words")
       @sources.each_with_index do |source, index|
-        header_2("#{number_of_words[index]} Random Words")
+        header2("#{number_of_words[index]} Random Words")
         @sentence_generator.source = source
         s = @sentence_generator.words(number_of_words[index])
         puts "#{marker} #{text(s)}  "
@@ -130,7 +132,7 @@ module RandomWords
 
     # Generate and print specified number of characters
     def random_characters
-      header_1('Random Characters (exact length)')
+      header1('Random Characters (exact length)')
       [20, 50, 120, 200, 500].each_with_index do |i, index|
         @sentence_generator.source = @sources[index]
         chars = @sentence_generator.characters(i, whole_words: true)
@@ -141,7 +143,7 @@ module RandomWords
       max_characters = [15, 25, 53, 110, 600]
       min_characters = [10, 20, 50, 100, 500]
 
-      header_1('Random Characters (length range)')
+      header1('Random Characters (length range)')
       max_characters.count.times do |i|
         @sentence_generator.source = @sources[i]
         chars = @sentence_generator.characters(min_characters[i], max_characters[i], whole_words: true)
@@ -160,14 +162,14 @@ module RandomWords
 
     def language
       "#{colorize_text('(',
-                       @colors[:bracket])}#{colorize_text("#{@sentence_generator.source}",
+                       @colors[:bracket])}#{colorize_text(@sentence_generator.source,
                                                           @colors[:language])}#{colorize_text(')',
                                                                                               @colors[:bracket])}"
     end
 
     def counter(length)
       "#{colorize_text('[',
-                       @colors[:bracket])}#{colorize_text("#{length}",
+                       @colors[:bracket])}#{colorize_text(length.to_s,
                                                           @colors[:counter])}#{colorize_text(']',
                                                                                              @colors[:bracket])} #{language}"
     end
