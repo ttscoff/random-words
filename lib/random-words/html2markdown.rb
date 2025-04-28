@@ -43,13 +43,13 @@ module RandomWords
         case @meta_type
         when :multimarkdown
           meta = <<~EOMMD
-            #{meta}
+            #{meta.strip}
 
           EOMMD
         when :yaml
           meta = <<~EOYAML
             ---
-            #{meta}
+            #{meta.strip}
             ---
           EOYAML
         end
