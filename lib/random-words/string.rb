@@ -280,7 +280,7 @@ module RandomWords
     # @return [String] The colorized text.
     # @example
     #  colorize_text("Hello, World!", :red) # => "\e[31mHello, World!\e[0m"
-    def colorize_text(text, color, testing = false)
+    def colorize_text(text, color, testing: false)
       return text if !$stdout.isatty && !testing
 
       return text unless colors.key?(color)
@@ -321,13 +321,20 @@ module RandomWords
 
     # Expand abbreviated debug statements in the string.
     # @return [String] The expanded debug string.
-    def expand_debug(testing = false)
+    def expand_debug(testing: false)
       gsub(/%(#{Regexp.union(expansions.keys)})%?/) do
         match = Regexp.last_match
 
         return match unless expansions.key?(match[1])
 
-        colorize_text("[#{expansions[match[1]][0] || match}]", expansions[match[1]][1] || :white, testing)
+        colorize_text("[#{expansions[match[1]][0] || match}]", expansions[match[1]][1] || :white, testing: testing)
+      end
+    end
+
+    def article_agreement
+      gsub(/\ban? (\w)/i) do |match|
+        word = match[1]
+        /\A[aeiou]/i.match?(word) ? "an #{word}" : "a #{word}"
       end
     end
   end

@@ -34,9 +34,6 @@ module RandomWords
     # Source directory for languages
     attr_reader :source_dir
 
-    # Base config
-    attr_reader :config
-
     # Initialize the config with the given language
     # @param lang [Symbol] The language to use
     # @raise [RuntimeError] if no dictionary is found for the given language
@@ -117,7 +114,9 @@ module RandomWords
     # @return [Symbol, nil] The language symbol if successful, nil otherwise
     def create_user_dictionary(lang = nil)
       return lang.to_sym if File.directory?(File.join(config_dir, 'words',
-                                                      lang)) && all_parts_of_speech?(File.join(config_dir, 'words', lang), lang)
+                                                      lang)) && all_parts_of_speech?(
+                                                        File.join(config_dir, 'words', lang), lang
+                                                      )
 
       lang_dir = File.join(config_dir, 'words', lang)
 
@@ -153,7 +152,8 @@ module RandomWords
         warn "Created #{target_file}"
       end
 
-      unless all_parts_of_speech?(lang_dir, lang) || (RandomWords.testing && !RandomWords.tested.include?('create_user_dictionary'))
+      unless all_parts_of_speech?(lang_dir,
+                                  lang) || (RandomWords.testing && !RandomWords.tested.include?('create_user_dictionary'))
         return
       end
 
@@ -212,7 +212,7 @@ module RandomWords
         source: configuration[:source].to_source || :latin,
         sentence_length: configuration[:length].to_length || :medium,
         paragraph_length: configuration[:paragraph_length].to_i || 5,
-        use_extended_punctuation: (ext_punc && ext_punc.trueish?) || false
+        use_extended_punctuation: ext_punc&.trueish? || false
       }
     end
 

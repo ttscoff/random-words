@@ -174,8 +174,10 @@ RSpec.describe String do
     before do
       allow(RandomWords::Generator).to receive(:new).and_return(double(sources: {
                                                                          latin: double(names: [:latin]),
-                                                                         greek: double(names: %i[greek hellenic], name: :greek),
-                                                                         norse: double(names: %i[norse viking], name: :norse)
+                                                                         greek: double(names: %i[greek hellenic],
+                                                                                       name: :greek),
+                                                                         norse: double(names: %i[norse viking],
+                                                                                       name: :norse)
                                                                        }))
     end
 
@@ -331,24 +333,24 @@ RSpec.describe String do
   describe '.expand_debug' do
     it 'expands debug strings with grammar terms' do
       str = '%NOU%Hello World'
-      expect(str.expand_debug(true)).to match(/\e\[32m\[Noun\]\e\[0mHello World/)
+      expect(str.expand_debug(testing: true)).to match(/\e\[32m\[Noun\]\e\[0mHello World/)
     end
 
     it 'handles strings without debug codes' do
       str = 'Hello World'
-      expect(str.expand_debug(true)).to eq('Hello World')
+      expect(str.expand_debug(testing: true)).to eq('Hello World')
     end
   end
 
   describe '.colorize_text' do
     it 'adds color codes to text' do
       str = 'Hello World'
-      expect(str.colorize_text(str, :boldred, true)).to match(/\e\[1;31mHello World\e\[0m/)
+      expect(str.colorize_text(str, :boldred, testing: true)).to match(/\e\[1;31mHello World\e\[0m/)
     end
 
     it 'handles empty strings' do
       str = ''
-      expect(str.colorize_text(str, :boldred, true)).to eq('')
+      expect(str.colorize_text(str, :boldred, testing: true)).to eq('')
     end
   end
 end

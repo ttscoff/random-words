@@ -42,16 +42,16 @@ module RandomWords
         EOMETA
         case @meta_type
         when :multimarkdown
-          meta = <<~EOF
+          meta = <<~EOMMD
             #{meta}
 
-          EOF
+          EOMMD
         when :yaml
-          meta = <<~EOF
+          meta = <<~EOYAML
             ---
             #{meta}
             ---
-          EOF
+          EOYAML
         end
       end
       i = 0
@@ -140,7 +140,7 @@ module RandomWords
         @title = node.content
         ''
       when 'head'
-        children = output_for_children(node)
+        output_for_children(node)
         ''
       when 'style', 'script'
         ''

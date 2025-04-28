@@ -2,6 +2,7 @@ inherit_from: .rubocop_todo.yml
 
 AllCops:
   NewCops: enable
+  SuggestExtensions: false
 
 # Offense count: 3
 # This cop supports safe autocorrection (--autocorrect).
@@ -21,35 +22,27 @@ Lint/UselessAssignment:
 # Offense count: 3
 # Configuration parameters: AllowedMethods, AllowedPatterns, CountRepeatedAttributes.
 Metrics/AbcSize:
-  Max: 39
-
-# Offense count: 1
-# Configuration parameters: CountComments, CountAsOne.
-Metrics/ClassLength:
-  Max: 350
+  Max: 60
+  Exclude:
+    - 'lib/random-words/lorem_html.rb'
+    - 'lib/random-words/html2markdown.rb'
 
 # Offense count: 2
 # Configuration parameters: AllowedMethods, AllowedPatterns.
 Metrics/CyclomaticComplexity:
-  Max: 10
-
-# Offense count: 3
-# Configuration parameters: CountComments, CountAsOne, AllowedMethods, AllowedPatterns.
-Metrics/MethodLength:
-  Max: 50
+  Max: 20
+  Exclude:
+    - 'lib/random-words/html2markdown.rb'
 
 # Offense count: 1
 # Configuration parameters: AllowedMethods, AllowedPatterns.
 Metrics/PerceivedComplexity:
-  Max: 11
-
-# Offense count: 1
-# Configuration parameters: AllowedConstants.
-Style/Documentation:
+  Max: 20
   Exclude:
-    - 'spec/**/*'
-    - 'test/**/*'
-    - 'lib/random-words/string.rb'
+    - 'lib/random-words/html2markdown.rb'
+
+Metrics/ParameterLists:
+  Max: 10
 
 # Offense count: 1
 # This cop supports unsafe autocorrection (--autocorrect-all).
@@ -63,18 +56,14 @@ Style/SpecialGlobalVars:
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, AllowedPatterns, SplitStrings.
 # URISchemes: http, https
 Layout/LineLength:
-  Max: 135
+  Max: 150
   Exclude:
     - bin/randw
 
 Metrics/MethodLength:
-  Max: 50
+  Max: 100
   Exclude:
-    - lib/random-words/generator.rb
-    - lib/random-words/lorem-markdown.rb
-    - lib/random-words/string.rb
-    - lib/random-words/table-cleanup.rb
-    - lib/random-words/html2markdown.rb
+    - 'lib/random-words/html2markdown.rb'
 
 # Offense count: 1
 # This cop supports safe autocorrection (--autocorrect).
@@ -99,16 +88,6 @@ Layout/CaseIndentation:
 Layout/EndAlignment:
   Exclude:
     - 'bin/randw'
-
-# Offense count: 2
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: Max, AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, AllowedPatterns, SplitStrings.
-# URISchemes: http, https
-Layout/LineLength:
-  Exclude:
-    - 'bin/randw'
-    - 'lib/random-words/generator.rb'
-    - 'random-words.gemspec'
 
 # Offense count: 1
 # This cop supports safe autocorrection (--autocorrect).
@@ -149,63 +128,16 @@ Lint/UselessConstantScoping:
   Exclude:
     - 'lib/random-words/generator.rb'
 
-# Offense count: 12
-# Configuration parameters: AllowedMethods, AllowedPatterns, CountRepeatedAttributes, Max.
-Metrics/AbcSize:
-  Exclude:
-    - 'bin/randw'
-    - 'lib/random-words/config.rb'
-    - 'lib/random-words/generator.rb'
-    - 'lib/random-words/html2markdown.rb'
-    - 'lib/random-words/lorem-markdown.rb'
-    - 'lib/random-words/source.rb'
-    - 'lib/random-words/table-cleanup.rb'
-
 # Offense count: 19
 # Configuration parameters: CountComments, CountAsOne, AllowedMethods, AllowedPatterns.
 # AllowedMethods: refine
 Metrics/BlockLength:
-  Max: 250
+  Max: 300
 
 # Offense count: 1
 # Configuration parameters: CountComments, Max, CountAsOne.
 Metrics/ClassLength:
-  Exclude:
-    - 'lib/random-words/generator.rb'
-
-# Offense count: 9
-# Configuration parameters: AllowedMethods, AllowedPatterns, Max.
-Metrics/CyclomaticComplexity:
-  Exclude:
-    - 'bin/randw'
-    - 'lib/random-words/array.rb'
-    - 'lib/random-words/config.rb'
-    - 'lib/random-words/generator.rb'
-    - 'lib/random-words/html2markdown.rb'
-    - 'lib/random-words/lorem-markdown.rb'
-    - 'lib/random-words/table-cleanup.rb'
-
-# Offense count: 2
-# Configuration parameters: CountComments, Max, CountAsOne, AllowedMethods, AllowedPatterns.
-Metrics/MethodLength:
-  Exclude:
-    - 'bin/randw'
-    - 'lib/random-words/html2markdown.rb'
-
-# Offense count: 1
-# Configuration parameters: CountKeywordArgs, MaxOptionalParameters.
-Metrics/ParameterLists:
-  Max: 7
-
-# Offense count: 7
-# Configuration parameters: AllowedMethods, AllowedPatterns, Max.
-Metrics/PerceivedComplexity:
-  Exclude:
-    - 'lib/random-words/array.rb'
-    - 'lib/random-words/generator.rb'
-    - 'lib/random-words/html2markdown.rb'
-    - 'lib/random-words/lorem-markdown.rb'
-    - 'lib/random-words/table-cleanup.rb'
+  Max: 500
 
 # Offense count: 3
 # Configuration parameters: ExpectMatchingDefinition, CheckDefinitionPathHierarchy, CheckDefinitionPathHierarchyRoots, Regex, IgnoreExecutableScripts, AllowedAcronyms.

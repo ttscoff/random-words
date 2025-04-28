@@ -33,10 +33,10 @@ module RandomWords
     #  126620.to_word # => "one hundred twenty six thousand six hundred twenty"
     def to_word(numbers)
       tmp = self / 1000
-      final = (self % 1000).hundred_to_word(2, numbers)
+      final = (self % 1000).hundred_to_word(numbers, 2)
       place = 3 # special-case the tens and below
       until tmp.zero?
-        final = (tmp % 1000).hundred_to_word(place, numbers) + ' ' + final
+        final = "#{(tmp % 1000).hundred_to_word(numbers, place)} #{final}"
         place += 1
         tmp /= 1000
       end
@@ -54,7 +54,7 @@ module RandomWords
     protected
 
     # Convert a number to its word representation for the hundreds place.
-    def hundred_to_word(place = 0, numbers)
+    def hundred_to_word(numbers, place = 0)
       if zero?
         ''
       elsif self < 10
@@ -83,7 +83,7 @@ module RandomWords
     def append_place(word, place, numbers)
       places = numbers[:places]
       if place > 2
-        word + ' ' + places[place]
+        "#{word} #{places[place]}"
       else
         word
       end
@@ -100,7 +100,7 @@ module RandomWords
         tens = self / 10
         ones = self % 10
         ten = numbers[:tens][tens - 2]
-        ten + (ones.zero? ? '' : ' ' + ones.digit_to_word(numbers))
+        "#{ten} #{ones.zero? ? '' : ones.digit_to_word(numbers)}"
       else
         teen_to_word(numbers)
       end
