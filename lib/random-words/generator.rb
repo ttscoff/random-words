@@ -254,7 +254,7 @@ module RandomWords
     #   characters(50) # Generates a string with at least 50 characters
     #   characters(50, 100) # Generates a string with between 50 and 100 characters
     #   characters(50, whole_words: false) # Generates a string with 50 characters allowing word truncation
-    def characters(min, max = nil, whole_words: true, whitespace: true, dead_switch: 0)
+    def characters(min, max = nil, whole_words: true, whitespace: true, article: true, dead_switch: 0)
       result = ''
       max ||= min
       raise ArgumentError, 'Infinite loop detected' if dead_switch > 40
@@ -262,7 +262,7 @@ module RandomWords
       whole_words = false if dead_switch > 15
 
       space = whitespace ? ' ' : ''
-      current_part = 0
+      current_part = article ? 0 : 1
       while result.length < max && result.length < min
         word = send(SENTENCE_PARTS[current_part].to_sym)
         word.gsub!(/ +/, '') unless whitespace
