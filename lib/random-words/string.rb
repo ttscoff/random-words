@@ -331,7 +331,7 @@ module RandomWords
       end
     end
 
-    def article_agreement
+    def article_agree
       gsub(/\ban? (\w)/i) do |match|
         word = match[1]
         /\A[aeiou]/i.match?(word) ? "an #{word}" : "a #{word}"

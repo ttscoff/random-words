@@ -241,7 +241,7 @@ module RandomWords
       result = SENTENCE_PARTS.cycle.take(number).map { |part| send(part.to_sym) }.take(number)
       result.map do |word|
         word.split(/ /).last
-      end.join(' ').subject_agree.compress
+      end.join(' ').article_agree.compress
     end
 
     # Generate a series of random words up to a specified length
