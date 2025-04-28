@@ -155,7 +155,7 @@ OptionParser.new do |opts|
 end.parse!
 
 def debug(msg)
-  return unless @options[:debug] && @options[:debug_level] > 0
+  return unless @options[:debug] && @options[:debug_level]&.positive?
 
   # length = msg.length
   # message = RandomWords::Terminal.new.colorize_text(msg, :boldblack)
