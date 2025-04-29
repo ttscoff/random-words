@@ -90,7 +90,7 @@ if __FILE__ == $PROGRAM_NAME
         markdown_options[:headers] = true
       when 'table', 't'
         markdown_options[:table] = true
-      when 'short', 's', 'medium', 'med', 'm', 'long', 'l', 'very_long', 'vl'
+      when 'short', 's', 'medium', 'med', 'm', 'long', 'l', 'very_long', 'vl', 'v', 'verylong'
         markdown_options[:length] = setting.to_length
       when 'x', 'extended'
         markdown_options[:extended] = true
@@ -102,6 +102,10 @@ if __FILE__ == $PROGRAM_NAME
         markdown_options[:hr] = true
       when 'comp', 'complete'
         markdown_options[:complete] = true
+      when 'preview', 'prev'
+        markdown_options[:preview] = true
+      when 'html'
+        markdown_options[:html] = true
       when /^(style|css):(.*)$/i
         markdown_options[:style] = Regexp.last_match(2)
       when /^meta:(.*?)$/i
@@ -125,7 +129,8 @@ if __FILE__ == $PROGRAM_NAME
   args = 'all' if args.nil?
 
   settings = markdown_settings(args)
-  @rw.source = settings[:source]
+  @rw = RandomWords::Generator.new(settings[:source])
+
   @rw.sentence_length = settings[:length] || :medium
   @rw.paragraph_length = settings[:sentences] || 5
 
@@ -139,8 +144,12 @@ if __FILE__ == $PROGRAM_NAME
 
   settings[:source] = @params['source'][0].to_source if @params.key?('source')
 
-  if param?('html') || param?('preview') || param?('complete')
-    if param?('preview')
+  settings[:html] = true if param?('html') || param?('preview') || param?('complete')
+  settings[:complete] = true if param?('complete')
+  settings[:preview] = true if param?('preview')
+
+  if settings[:html]
+    if settings[:preview]
       print cgi.header('type' => 'text/html', 'expires' => Time.now - 180)
       puts @rw.html(settings)
     else
