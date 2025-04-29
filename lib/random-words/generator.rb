@@ -265,7 +265,7 @@ module RandomWords
       current_part = article ? 0 : 1
       while result.length < max && result.length < min
         word = send(SENTENCE_PARTS[current_part].to_sym)
-        word = word.gsub!(/ +/, '') unless whitespace
+        word = word.gsub(/ +/, '') unless whitespace
         current_part = (current_part + 1) % SENTENCE_PARTS.length
         new_result = "#{result}#{space}#{word}".compress
 
