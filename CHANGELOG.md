@@ -1,3 +1,12 @@
+### 1.0.14
+
+2025-04-29 12:56
+
+#### FIXED
+
+- Strip blank lines from yaml metadata
+- Frozen string error on 2.7
+
 ### 1.0.13
 
 2025-04-28 07:25
