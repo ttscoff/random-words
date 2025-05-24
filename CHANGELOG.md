@@ -1,3 +1,12 @@
+### 1.0.16
+
+2025-05-24 09:19
+
+#### FIXED
+
+- Improve Ruby 2.x compatibility
+- Encoding error
+
 ### 1.0.15
 
 2025-04-29 12:59
