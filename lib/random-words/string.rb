@@ -236,6 +236,8 @@ module RandomWords
       new_source = nil
       sources = RandomWords::Generator.new.sources
 
+      return sources.map { |k, v| v.name }.sample if /^(random|any)$/i.match?(self)
+
       sources.each do |_k, v|
         v.names.each do |name|
           next unless /^#{self}/i.match?(name.to_s)
@@ -354,6 +356,10 @@ module RandomWords
         word = match[1]
         /\A[aeiou]/i.match?(word) ? "an #{word}" : "a #{word}"
       end
+    end
+
+    def clean_output
+      encode('iso-8859-1', undef: :replace, invalid: :replace, replace: '').force_encoding('UTF-8')
     end
   end
 end

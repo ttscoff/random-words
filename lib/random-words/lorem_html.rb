@@ -124,8 +124,8 @@ module RandomWords
       items = { short: 4, medium: 8, long: 10, very_long: 12 }[@options[:length]]
 
       if @options[:ul] && @options[:ol]
-        inject_block(1, -> { list(items, :ul) })
-        inject_block(1, -> { list(items, :ol) })
+        inject_block(1, -> { list(items, :ul, rule: true) })
+        inject_block(1, -> { list(items, :ol, rule: true) })
       elsif @options[:ul]
         inject_block(2, -> { list(items, :ul) })
       elsif @options[:ol]
@@ -189,9 +189,10 @@ module RandomWords
     # Generates a list of items.
     # @param [Integer] count The number of items to generate.
     # @param [Symbol] type The type of list to generate (:ul, :ol, :dl).
+    # @param [Boolean] hr whether to add a horizontal rule after list
     #
     # @return [String] The generated list.
-    def list(count, type)
+    def list(count, type, rule: false)
       ul = "\n\n<#{type}>\n"
 
       count.times do
@@ -217,7 +218,9 @@ module RandomWords
           ul += "\t<li>#{long_frag}</li>\n"
         end
       end
-      ul + "</#{type}>\n\n"
+      ul += "</#{type}>\n\n"
+      ul += "<hr>\n\n" if rule
+      ul
     end
 
     # Generates a blockquote.
@@ -376,7 +379,6 @@ module RandomWords
 
       @output = "#{grafs.slice!(0, len).join("\n\n")}\n\n"
 
-      # count = { short: 4, medium: 8, long: 10, very_long: 12 }[@options[:length]]
       @output += block.call
       added = 1
       while grafs.any?

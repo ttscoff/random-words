@@ -288,7 +288,7 @@ when :sentences
   s = @rw.sentences(@options[:count]).join(" ")
   total[:words] += s.split(/ /).count
   total[:characters] += s.length
-  print s
+  print s.clean_output
   debug "#{s.split(/ /).count}w, #{s.length}c"
   # end
   debug "Total: #{total[:sentences]}s, #{total[:words]}w, #{total[:characters]}c"
@@ -303,18 +303,18 @@ when :paragraphs
     total[:sentences] += p.scan(/[?.!]/).count
     total[:words] += p.split(/ /).count
     total[:characters] += p.length
-    print p
+    print p.clean_output
     debug "#{p.scan(/[?.!]/).count}s, #{p.split(/ /).count}w, #{p.length}c"
     puts "\n\n"
   end
   debug "Total: #{total[:sentences]}s, #{total[:words]}w, #{total[:characters]}c"
 when :words
   w = @rw.words(@options[:count])
-  print w
+  print w.clean_output
   debug "#{w.split(/ /).count}w, #{w.length}c"
 when :characters
   c = @rw.characters(@options[:count], whitespace: @options[:whitespace])
-  print c
+  print c.clean_output
   debug "#{c.split(/ /).count}w, #{c.length}c"
 when :markdown, :html
   settings = markdown_settings(@options[:markdown_settings])
@@ -326,9 +326,9 @@ when :markdown, :html
   settings[:extended] = @rw.use_extended_punctuation
 
   if @options[:method] == :markdown
-    puts @rw.markdown(settings)
+    puts @rw.markdown(settings).clean_output
   else
-    puts @rw.html(settings)
+    puts @rw.html(settings).clean_output
   end
 when :password
   p = @rw.characters(20, whitespace: @options[:whitespace], article: false)
