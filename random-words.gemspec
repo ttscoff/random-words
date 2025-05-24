@@ -34,5 +34,6 @@ Gem::Specification.new do |spec|
 
   spec.metadata['rubygems_mfa_required'] = 'true'
 
-  spec.add_dependency 'nokogiri', '~> 1.12'
+  spec.add_dependency 'json', '2.7.6'
+  spec.add_dependency 'nokogiri', '1.13.2'
 end

@@ -13,6 +13,24 @@ module RandomWords
   #   str.terminate(["", "."]) # => "Hello World."
   #
   class ::String
+    ##
+    ## Get a clean UTF-8 string by forcing an ISO encoding and then re-encoding
+    ##
+    ## @return     [String] UTF-8 string
+    ##
+    def clean_encode
+      force_encoding('ISO-8859-1').encode('utf-8', replace: nil)
+    end
+
+    ##
+    ## Destructive version of #clean_encode
+    ##
+    ## @return     [String] UTF-8 string, in place
+    ##
+    def clean_encode!
+      replace clean_encode
+    end
+
     # Remove unwanted characters and whitespace from a string.
     # @return [String] The string with unwanted characters removed.
     # @example

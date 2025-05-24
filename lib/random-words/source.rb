@@ -78,7 +78,7 @@ module RandomWords
       filename = "#{filename.sub(/\.txt$/, '')}.txt"
       path = File.join(@path, filename)
 
-      File.read(path).strip.split("\n").map(&:strip) # Changed from split_lines to split("\n")
+      File.read(path).clean_encode.strip.split("\n").map(&:strip) # Changed from split_lines to split("\n")
     rescue Errno::ENOENT
       warn "File not found: #{path}"
       []
