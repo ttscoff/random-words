@@ -39,6 +39,58 @@ module RandomWords
     # These parts will be used to generate random sentences and character strings
     SENTENCE_PARTS = %w[random_article random_adjective random_noun random_adverb random_verb random_adjective
                         random_verb random_adverb random_phrase].freeze
+    TEMPLATES = [
+      # Simple declarative
+      %i[random_article random_adjective random_noun random_verb],
+      %i[random_plural_article random_adjective random_plural_noun random_plural_verb],
+
+      # With adverb
+      %i[random_article random_adjective random_noun random_adverb random_verb],
+      %i[random_name random_adverb random_verb],
+
+      # Passive voice
+      %i[random_article random_noun random_passive_verb random_preposition random_article random_noun],
+
+      # With prepositional phrase
+      %i[random_article random_adjective random_noun random_verb random_preposition random_article random_noun],
+
+      # Compound sentence
+      %i[random_article random_noun random_verb random_coordinating_conjunction random_article random_noun random_verb],
+
+      # Subordinate clause
+      %i[random_clause random_article random_noun random_verb],
+
+      # With phrase
+      %i[random_phrase],
+
+      # Name as subject
+      %i[random_name random_verb random_article random_noun],
+
+      # Plural with adverb and preposition
+      %i[random_plural_article random_plural_noun random_adverb random_plural_verb random_preposition random_article random_noun],
+
+      # Coordinating conjunction joining two clauses
+      %i[random_article random_noun random_verb random_coordinating_conjunction random_plural_article random_plural_noun random_plural_verb
+         random_phrase],
+
+      # Subordinate conjunction
+      %i[random_subordinate_conjunction random_article random_noun random_verb random_article random_noun random_verb],
+
+      # With random_adjective and random_adverb in various places
+      %i[random_adverb random_article random_adjective random_noun random_verb],
+      %i[random_article random_noun random_verb random_adverb],
+
+      # Name with phrase
+      %i[random_name random_verb random_phrase],
+
+      # Plural passive
+      %i[random_plural_article random_plural_noun random_passive_verb random_preposition random_article random_noun],
+
+      # Name with subordinate clause
+      %i[random_name random_verb random_subordinate_conjunction random_article random_noun random_verb]
+    ].freeze
+
+    OPTIONAL_PARTS = %i[adjectives adverbs].freeze
 
     # Initialize the generator with a source and options
     # @param source [Symbol] The source of the words (e.g., :english)
@@ -649,13 +701,14 @@ module RandomWords
 
     # Generate a random set of separators
     def random_separators
-      [',', ',', ',', ';', ':', ' —']
+      [',', ',', ',', ';', ':']
     end
 
     # Generate a random separator
     # @return [String] A randomly selected separator
     def random_separator
-      "#{dbg('SEP')}#{random_separators.sample}"
+      sep = random_separators.sample
+      "#{dbg('SEP')}#{sep}"
     end
 
     # Generate a random subordinate conjunction
@@ -726,18 +779,16 @@ module RandomWords
                     "#{random_number_with_plural} #{random_adverb} #{random_plural_verb}"
                   when 4..5
                     random_name
-                  when 6..7
-                    noun = random_noun
-                    "#{random_adverb}, #{random_article_for_word(noun)} #{noun} #{random_verb}"
+                  when 6
+                    "#{random_adverb}, #{random_article_for_word(random_noun)} #{random_noun} #{random_verb}"
                   else
-                    noun = random_noun
-                    adjective = random_adjective
-                    "#{random_article_for_word(adjective)} #{adjective} #{noun} #{random_adverb} #{random_verb}"
+                    TEMPLATES.sample.map { |part| send(part.to_sym) }.join(' ')
                   end
       tail = roll(50) ? " #{random_prepositional_phrase}" : ''
       separator = random_separator
+
       tail += roll(10) ? "#{separator} #{random_clause}" : ''
-      "#{beginning.strip.sub(/[#{Regexp.escape(separator)}]*$/, separator)}#{tail}"
+      "#{beginning.strip.sub(/([#{Regexp.escape(separator)}]|#{Regexp.escape(separator)})*$/, separator)}#{tail}"
     end
 
     # Simplified generate_additional_clauses
