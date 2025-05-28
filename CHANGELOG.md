@@ -1,3 +1,16 @@
+### 1.0.18
+
+2025-05-28 07:16
+
+#### IMPROVED
+
+- More templates for sentence structure variety
+
+#### FIXED
+
+- Just remove a/an from articles to avoid article disagreement
+- Remove m-dash from separators as it was causing a double-space bug
+
 ### 1.0.17
 
 2025-05-24 10:47
