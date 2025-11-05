@@ -39,6 +39,7 @@ module RandomWords
     # @raise [RuntimeError] if no dictionary is found for the given language
     def initialize(lang)
       @lang = lang.to_s
+      @requested_lang = lang.to_s # Store the requested language
       FileUtils.mkdir_p(config_dir) unless File.directory?(config_dir)
 
       @source_dir = user_dictionary_exist? ? user_lang_dir : builtin_lang_dir
@@ -222,13 +223,19 @@ module RandomWords
       config_file = File.join(config_dir, 'config.yml')
       if File.exist?(config_file)
         config = YAML.load_file(config_file).symbolize_keys
-        return handle_config(config)
+        config_hash = handle_config(config)
+        # Override with the language passed to initialize
+        config_hash[:source] = @requested_lang.to_sym if @requested_lang
+        return config_hash
       end
       # If the config file doesn't exist, create it
       # and return the default configuration
       create_base_config(config_file)
       config = YAML.load_file(config_file).symbolize_keys
-      handle_config(config)
+      config_hash = handle_config(config)
+      # Override with the language passed to initialize
+      config_hash[:source] = @requested_lang.to_sym if @requested_lang
+      config_hash
     end
 
     # Look for a config.yml file in the config directory
