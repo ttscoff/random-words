@@ -1,3 +1,21 @@
+### 1.0.20
+
+2026-10-29 07:12
+
+#### NEW
+
+- **who** dictionary with dialog, characters, and franchise lexicon
+- **triggers** who, doctorwho, and tardis for the Who source
+
+### 1.0.19
+
+2026-10-29 07:04
+
+#### NEW
+
+- **who** dictionary with dialog, characters, and franchise lexicon
+- **triggers** who, doctorwho, and tardis for the Who source
+
 ### 1.0.18
 
 2025-05-28 07:16

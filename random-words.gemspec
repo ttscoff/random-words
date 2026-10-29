@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description = 'Generate random text (lorem ipsum) from a variety of sources.'
   spec.homepage = 'https://github.com/ttscoff/random-words'
   spec.license = 'MIT'
-  spec.required_ruby_version = '>= 2.6.0'
+  spec.required_ruby_version = '>= 3.1.0'
 
   spec.metadata['rubygems_mfa_required'] = 'true'
   spec.metadata['homepage_uri'] = spec.homepage
@@ -35,5 +35,5 @@ Gem::Specification.new do |spec|
   spec.metadata['rubygems_mfa_required'] = 'true'
 
   spec.add_dependency 'json', '2.7.6'
-  spec.add_dependency 'nokogiri', '1.13.2'
+  spec.add_dependency 'nokogiri', '~> 1.18'
 end

@@ -1,0 +1,446 @@
+Adipose
+airlock
+alien
+alliance
+ambassador
+ambush
+android
+anomaly
+antidote
+archive
+armada
+arsenal
+artifact
+asteroid
+astronaut
+atmosphere
+atrocity
+Auton
+Bad Wolf
+barricade
+battalion
+battlefield
+battleship
+beacon
+betrayal
+biosphere
+black hole
+blaster
+blueprint
+bomb
+border
+bowtie
+bridge
+broadcast
+bunker
+captain
+captive
+Cardiff
+cargo bay
+carnage
+catastrophe
+cavern
+celery stick
+cell
+chamber
+chameleon circuit
+champion
+chancellor
+chronometer
+circuit
+citadel
+civilization
+clockwork droid
+cloister bell
+clone
+code
+colony
+comet
+command deck
+commander
+companion
+console
+conspiracy
+construct
+contagion
+control room
+convoy
+core
+corridor
+cosmos
+countdown
+courier
+creature
+crew
+crisis
+crossroads
+crystal
+Cyber-Controller
+Cyberleader
+Cyberman
+Dalek
+dalek casing
+Dalek Emperor
+danger
+darkness
+Davros
+deathtrap
+debris
+decoy
+defector
+defense grid
+delegate
+dematerialization circuit
+demon
+descent
+desert
+destiny
+destruction
+detonator
+device
+dimension
+dimensional rift
+disaster
+disguise
+disintegrator
+distress call
+doctor
+doom
+drive
+dungeon
+emergency
+emperor
+empire
+enemy
+energy
+engine
+engineer
+envoy
+escape pod
+eternity
+evacuation
+event horizon
+exile
+exo-skeleton
+expedition
+experiment
+explorer
+explosion
+extermination
+extinction
+extrapolator
+faction
+fate
+fear
+fez
+fleet
+flight
+force field
+forest
+fortress
+frequency
+frontier
+galaxy
+Gallifrey
+gambit
+gamma ray
+garrison
+gateway
+general
+generator
+ghost
+gravity
+gravity bubble
+Great Intelligence
+guardian
+guerrilla
+gunship
+hangar
+harvest
+hazard
+hermit
+hero
+hologram
+horizon
+horror
+hostage
+hull
+human
+hybrid
+hypothesis
+imposter
+incursion
+infection
+infiltrator
+inquisitor
+insurgent
+interface
+intruder
+invader
+invasion
+jelly baby
+Judoon
+jungle
+keeper
+key
+kingdom
+laboratory
+labyrinth
+landing
+laser
+legend
+legion
+library
+lifeboat
+lifeform
+lifeline
+lighthouse
+lumberyard
+lunar base
+machine
+magistrate
+mainframe
+maintenance shaft
+manifest
+marauder
+marker
+mask
+massacre
+Master
+matrix
+mayday
+mechanism
+Medusa Cascade
+memory
+memory worm
+menace
+mercenary
+message
+meteor
+meteor shower
+miracle
+mission
+monastery
+Mondas
+monitor
+monster
+monument
+mothership
+mutant
+mutation
+mystery
+myth
+navigator
+nebula
+nemesis
+nightmare
+nova
+nuclear reactor
+observatory
+Ogron
+omelette
+Ood
+operative
+orbit
+orbital station
+outpost
+override
+oxygen
+paradox
+pathogen
+patrol
+perception filter
+peril
+phantom
+phenomenon
+pilot
+pirate
+plague
+plan
+planet
+plot
+pocket watch
+police box
+portal
+Powell Estate
+power cell
+prediction
+prisoner
+probe
+projection
+prophecy
+prophet
+protector
+protocol
+psychic link
+psychic paper
+pulse
+pursuit
+pyramid
+quarantine
+quarry
+quest
+radiation
+raider
+Rassilon
+reactor
+rebel
+rebellion
+reconnaissance
+refuge
+refugee
+regeneration
+regeneration energy
+reinforcement
+relic
+repair bay
+rescue
+resistance
+revelation
+revolution
+rift
+robot
+rocket
+ruin
+runaway
+sabotage
+sacrifice
+salvage
+sanctuary
+sandshoe
+satellite
+Satellite Five
+scanner
+scarf
+scavenger
+scientist
+scout
+secret
+sector
+security door
+security officer
+sentinel
+sentry
+sewer
+shadow
+shelter
+shield
+shipwreck
+shockwave
+shuttle
+siege
+signal
+Silence
+silhouette
+Silurian
+simulation
+singularity
+Skaro
+slave
+smuggler
+soldier
+sonic screwdriver
+Sontaran
+soul
+space station
+spacecraft
+spaceship
+spacesuit
+specimen
+spectre
+spore
+spy
+stairwell
+stalker
+star
+starliner
+starship
+stasis chamber
+stasis pod
+station
+statue
+storm
+stowaway
+stranger
+stronghold
+submarine
+sun
+sunflower
+supernova
+survivor
+suspect
+swarm
+system
+TARDIS
+target
+technician
+telepath
+teleport
+Telos
+temple
+temporal fracture
+terror
+thief
+threat
+time bubble
+time lock
+time loop
+Time Lord
+time machine
+time rotor
+Time Vortex
+time vortex
+Time War
+time window
+timeline
+tomb
+Torchwood
+tower
+trace
+tracker
+traitor
+transmat
+transmat beam
+transmission
+transmitter
+trap
+treasure
+treaty
+Trenzalore
+trial
+tribunal
+trickster
+turbulence
+tyrant
+umbrella
+UNIT
+unit
+universe
+Untempered Schism
+uprising
+vault
+vessel
+victim
+villain
+virus
+volcano
+vortex
+vortex manipulator
+vow
+voyage
+voyager
+wardrobe
+warlord
+warning
+warp
+warrior
+wasteland
+watchtower
+weapon
+Weeping Angel
+whirlwind
+witness
+wormhole
+wreckage
+yo-yo
+Zygon

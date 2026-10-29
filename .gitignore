@@ -2,3 +2,12 @@
 .rspec_status
 Gemfile.lock
 .vscode
+*.code-workspace
+*.taskpaper
+*~
+pkg
+doc
+buildnotes.md
+coverage
+.DS_Store
+.yardoc

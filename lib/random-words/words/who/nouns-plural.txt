@@ -1,0 +1,404 @@
+Adipose
+airlocks
+aliens
+alliances
+ambassadors
+ambushes
+androids
+anomalies
+antidotes
+archives
+armadas
+arsenals
+artifacts
+asteroids
+astronauts
+atmospheres
+atrocities
+Autons
+barricades
+battalions
+battlefields
+battleships
+beacons
+betrayals
+biospheres
+black holes
+blasters
+blueprints
+bombs
+borders
+bowties
+bridges
+broadcasts
+bunkers
+captains
+captives
+cargo bays
+catastrophes
+caverns
+celery sticks
+cells
+chambers
+chameleon circuits
+champions
+chancellors
+chronometers
+circuits
+citadels
+civilizations
+clockwork droids
+cloister bells
+clones
+codes
+colonies
+comets
+command decks
+commanders
+companions
+consoles
+conspiracies
+constructs
+contagions
+control rooms
+convoys
+cores
+corridors
+countdowns
+couriers
+creatures
+crews
+crises
+crystals
+Cyber-Controllers
+Cyberleaders
+Cybermen
+Dalek Emperors
+Daleks
+dangers
+deathtraps
+decoys
+defectors
+defense grids
+delegates
+dematerialization circuits
+demons
+descents
+deserts
+destinies
+detonators
+devices
+dimensional rifts
+dimensions
+disasters
+disguises
+disintegrators
+distress calls
+doctors
+drives
+dungeons
+emergencies
+emperors
+empires
+enemies
+energies
+engineers
+engines
+envoys
+escape pods
+evacuations
+exiles
+exo-skeletons
+expeditions
+experiments
+explorers
+explosions
+exterminations
+extinctions
+extrapolators
+factions
+fates
+fears
+fezzes
+fleets
+flights
+force fields
+forests
+fortresses
+frequencies
+frontiers
+galaxies
+gambits
+gamma rays
+garrisons
+gateways
+generals
+generators
+ghosts
+gravity bubbles
+guardians
+guerrillas
+gunships
+hangars
+harvests
+hazards
+hermits
+heroes
+holograms
+horizons
+horrors
+hostages
+hulls
+humans
+hybrids
+hypotheses
+imposters
+incursions
+infections
+infiltrators
+inquisitors
+insurgents
+interfaces
+intruders
+invaders
+invasions
+jelly babies
+Judoon
+jungles
+keepers
+keys
+kingdoms
+laboratories
+labyrinths
+landings
+lasers
+legends
+legions
+libraries
+lifeboats
+lifeforms
+lifelines
+lighthouses
+lunar bases
+machines
+magistrates
+mainframes
+maintenance shafts
+manifests
+marauders
+markers
+masks
+massacres
+matrices
+maydays
+mechanisms
+memories
+memory worms
+menaces
+mercenaries
+messages
+meteor showers
+meteors
+miracles
+missions
+monasteries
+monitors
+monsters
+monuments
+motherships
+mutants
+mutations
+mysteries
+myths
+navigators
+nebulae
+nemeses
+nightmares
+novae
+nuclear reactors
+observatories
+Ogrons
+omelettes
+Ood
+operatives
+orbital stations
+orbits
+outposts
+overrides
+paradoxes
+pathogens
+patrols
+perception filters
+perils
+phantoms
+phenomena
+pilots
+pirates
+plagues
+planets
+plans
+plots
+pocket watches
+police boxes
+portals
+power cells
+predictions
+prisoners
+probes
+projections
+prophecies
+prophets
+protectors
+protocols
+psychic links
+pulses
+pursuits
+pyramids
+quarantines
+quarries
+quests
+raiders
+reactors
+rebellions
+rebels
+refugees
+refuges
+regenerations
+reinforcements
+relics
+repair bays
+rescues
+revelations
+revolutions
+rifts
+robots
+rockets
+ruins
+runaways
+sacrifices
+sanctuaries
+sandshoes
+satellites
+scanners
+scarves
+scavengers
+scientists
+scouts
+secrets
+sectors
+security doors
+security officers
+sentinels
+sentries
+sewers
+shadows
+shelters
+shields
+shipwrecks
+shockwaves
+shuttles
+sieges
+signals
+Silence
+silhouettes
+Silurians
+simulations
+singularities
+slaves
+smugglers
+soldiers
+sonic screwdrivers
+Sontarans
+souls
+space stations
+spacecraft
+spaceships
+spacesuits
+specimens
+spectres
+spies
+spores
+stairwells
+stalkers
+starliners
+stars
+starships
+stasis chambers
+stasis pods
+stations
+statues
+storms
+stowaways
+strangers
+strongholds
+submarines
+sunflowers
+suns
+supernovae
+survivors
+suspects
+swarms
+systems
+TARDISes
+targets
+technicians
+telepaths
+teleports
+temples
+temporal fractures
+terrors
+thieves
+threats
+time bubbles
+time locks
+time loops
+Time Lords
+time machines
+time rotors
+time vortices
+time windows
+timelines
+tombs
+towers
+traces
+trackers
+traitors
+transmat beams
+transmats
+transmissions
+transmitters
+traps
+treasures
+treaties
+trials
+tribunals
+tricksters
+tyrants
+umbrellas
+units
+universes
+uprisings
+vaults
+vessels
+victims
+villains
+viruses
+volcanoes
+vortex manipulators
+vortices
+vows
+voyagers
+voyages
+wardrobes
+warlords
+warnings
+warps
+warriors
+wastelands
+watchtowers
+weapons
+Weeping Angels
+whirlwinds
+witnesses
+wormholes
+Zygons
