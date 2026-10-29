@@ -1,4 +1,4 @@
 module RandomWords
   # The version of the RandomWords gem.
-  VERSION = '1.0.19'
+  VERSION = '1.0.20'
 end
